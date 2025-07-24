@@ -299,9 +299,11 @@ class ProfileScreenState extends State<ProfileScreen> {
       children: [
         icon,
         const SizedBox(width: 10),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(title, style: const TextStyle(fontSize: 19)),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(title, style: const TextStyle(fontSize: 19)),
+          ),
         ),
       ],
     );

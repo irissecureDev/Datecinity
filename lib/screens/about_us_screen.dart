@@ -43,11 +43,11 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 15),
               // App description
-              Text(
-                i18n.translate('about_us_description'),
-                style: const TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
+              // Text(
+              //   i18n.translate('about_us_description'),
+              //   style: const TextStyle(fontSize: 18),
+              //   textAlign: TextAlign.center,
+              // ),
               // Share app button
               const SizedBox(height: 10),
               TextButton.icon(
