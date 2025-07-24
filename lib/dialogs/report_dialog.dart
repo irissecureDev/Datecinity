@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:dating_app/api/blocked_users_api.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/dialogs/common_dialogs.dart';
-import 'package:dating_app/dialogs/flag_user_dialog.dart';
-import 'package:dating_app/dialogs/progress_dialog.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/main.dart';
-import 'package:dating_app/widgets/show_scaffold_msg.dart';
+import 'package:soulmate/api/blocked_users_api.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/dialogs/common_dialogs.dart';
+import 'package:soulmate/dialogs/flag_user_dialog.dart';
+import 'package:soulmate/dialogs/progress_dialog.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/main.dart';
+import 'package:soulmate/widgets/show_scaffold_msg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -31,9 +31,10 @@ class ReportDialog extends StatefulWidget {
     } else {
       // Android modal
       showModalBottomSheet(
-          context: context,
-          backgroundColor: Colors.transparent,
-          builder: (context) => modal);
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (context) => modal,
+      );
     }
   }
 
@@ -56,8 +57,9 @@ class _ReportDialogState extends State<ReportDialog> {
 
     // Show Flag Dialog
     showDialog(
-        context: context,
-        builder: (context) => FlagUserDialog(flaggedUserId: widget.userId));
+      context: context,
+      builder: (context) => FlagUserDialog(flaggedUserId: widget.userId),
+    );
   }
 
   // Block profile
@@ -66,34 +68,38 @@ class _ReportDialogState extends State<ReportDialog> {
     _close();
 
     // Confirm dialog
-    confirmDialog(context,
-        positiveText: _i18n.translate("BLOCK"),
-        message: _i18n.translate("this_profile_will_be_blocked"),
-        negativeAction: _close, positiveAction: () async {
-      // Hide confirm dialog
-      _close();
+    confirmDialog(
+      context,
+      positiveText: _i18n.translate("BLOCK"),
+      message: _i18n.translate("this_profile_will_be_blocked"),
+      negativeAction: _close,
+      positiveAction: () async {
+        // Hide confirm dialog
+        _close();
 
-      // Show processing dialog
-      _pr.show(_i18n.translate("processing"));
+        // Show processing dialog
+        _pr.show(_i18n.translate("processing"));
 
-      // Block profile
-      if (await BlockedUsersApi().blockUser(blockedUserId: widget.userId)) {
-        // Hide progress dialog
-        _pr.hide();
+        // Block profile
+        if (await BlockedUsersApi().blockUser(blockedUserId: widget.userId)) {
+          // Hide progress dialog
+          _pr.hide();
 
-        final String msg = _i18n.translate("user_has_been_blocked");
-        // Show success dialog
-        showScaffoldMessage(message: msg, bgcolor: Colors.green);
-      } else {
-        // Hide progress dialog
-        _pr.hide();
+          final String msg = _i18n.translate("user_has_been_blocked");
+          // Show success dialog
+          showScaffoldMessage(message: msg, bgcolor: Colors.green);
+        } else {
+          // Hide progress dialog
+          _pr.hide();
 
-        final String msg =
-            _i18n.translate("you_have_already_blocked_this_user");
-        // Show success dialog
-        showScaffoldMessage(message: msg, bgcolor: Colors.red);
-      }
-    });
+          final String msg = _i18n.translate(
+            "you_have_already_blocked_this_user",
+          );
+          // Show success dialog
+          showScaffoldMessage(message: msg, bgcolor: Colors.red);
+        }
+      },
+    );
   }
 
   @override
@@ -105,30 +111,38 @@ class _ReportDialogState extends State<ReportDialog> {
     // Check Platform
     if (Platform.isIOS) {
       return CupertinoActionSheet(
-        title: Text(_i18n.translate('select_an_option'),
-            style: const TextStyle(fontSize: 18)),
+        title: Text(
+          _i18n.translate('select_an_option'),
+          style: const TextStyle(fontSize: 18),
+        ),
         cancelButton: CupertinoActionSheetAction(
-          child: Text(_i18n.translate('CANCEL'),
-              style: const TextStyle(color: APP_PRIMARY_COLOR)),
+          child: Text(
+            _i18n.translate('CANCEL'),
+            style: const TextStyle(color: APP_PRIMARY_COLOR),
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           // Report bitton
           CupertinoActionSheetAction(
             onPressed: _reportProfile,
-            child: _iosButtonIcon(context,
-                color: Colors.red,
-                icon: Icons.flag,
-                text: _i18n.translate('report').toUpperCase()),
+            child: _iosButtonIcon(
+              context,
+              color: Colors.red,
+              icon: Icons.flag,
+              text: _i18n.translate('report').toUpperCase(),
+            ),
           ),
 
           // Block button
           CupertinoActionSheetAction(
             onPressed: _blockProfile,
-            child: _iosButtonIcon(context,
-                color: Colors.red,
-                icon: Icons.block,
-                text: _i18n.translate('BLOCK')),
+            child: _iosButtonIcon(
+              context,
+              color: Colors.red,
+              icon: Icons.block,
+              text: _i18n.translate('BLOCK'),
+            ),
           ),
         ],
       );
@@ -153,13 +167,16 @@ class _ReportDialogState extends State<ReportDialog> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(_i18n.translate('select_an_option'),
-                    style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                child: Text(
+                  _i18n.translate('select_an_option'),
+                  style: const TextStyle(fontSize: 18, color: Colors.grey),
+                ),
               ),
               // Close button
               IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.cancel, color: Colors.grey, size: 32))
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.cancel, color: Colors.grey, size: 32),
+              ),
             ],
           ),
 
@@ -167,12 +184,11 @@ class _ReportDialogState extends State<ReportDialog> {
 
           // Report button
           TextButton.icon(
-            icon: const Icon(
-              Icons.flag_outlined,
-              color: Colors.red,
+            icon: const Icon(Icons.flag_outlined, color: Colors.red),
+            label: Text(
+              _i18n.translate('report').toUpperCase(),
+              style: const TextStyle(fontSize: 18, color: Colors.red),
             ),
-            label: Text(_i18n.translate('report').toUpperCase(),
-                style: const TextStyle(fontSize: 18, color: Colors.red)),
             onPressed: _reportProfile,
           ),
 
@@ -180,13 +196,13 @@ class _ReportDialogState extends State<ReportDialog> {
 
           // Block button
           TextButton.icon(
-              icon: const Icon(
-                Icons.block,
-                color: Colors.red,
-              ),
-              label: Text(_i18n.translate('BLOCK'),
-                  style: const TextStyle(fontSize: 18, color: Colors.red)),
-              onPressed: _blockProfile),
+            icon: const Icon(Icons.block, color: Colors.red),
+            label: Text(
+              _i18n.translate('BLOCK'),
+              style: const TextStyle(fontSize: 18, color: Colors.red),
+            ),
+            onPressed: _blockProfile,
+          ),
           const SizedBox(height: 15),
         ],
       ),
@@ -194,8 +210,12 @@ class _ReportDialogState extends State<ReportDialog> {
   }
 
   // Build iOS button
-  Widget _iosButtonIcon(BuildContext context,
-      {required IconData icon, required String text, Color? color}) {
+  Widget _iosButtonIcon(
+    BuildContext context, {
+    required IconData icon,
+    required String text,
+    Color? color,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

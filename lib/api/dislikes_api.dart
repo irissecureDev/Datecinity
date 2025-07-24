@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/models/user_model.dart';
+import 'package:soulmate/models/user_model.dart';
 import 'package:flutter/material.dart';
-import 'package:dating_app/constants/constants.dart';
+import 'package:soulmate/constants/constants.dart';
 
 class DislikesApi {
   /// Get firestore instance
@@ -9,21 +9,26 @@ class DislikesApi {
   final _firestore = FirebaseFirestore.instance;
 
   Future<void> _saveDislike(String dislikedUserId) async {
-    _firestore.collection(C_DISLIKES).add({
-      DISLIKED_USER_ID: dislikedUserId,
-      DISLIKED_BY_USER_ID: UserModel().user.userId,
-      TIMESTAMP: FieldValue.serverTimestamp()
-    }).then((_) {
-      /// Update current user total disliked profiles
-      UserModel().updateUserData(
-          userId: UserModel().user.userId,
-          data: {USER_TOTAL_DISLIKED: FieldValue.increment(1)});
-    });
+    _firestore
+        .collection(C_DISLIKES)
+        .add({
+          DISLIKED_USER_ID: dislikedUserId,
+          DISLIKED_BY_USER_ID: UserModel().user.userId,
+          TIMESTAMP: FieldValue.serverTimestamp(),
+        })
+        .then((_) {
+          /// Update current user total disliked profiles
+          UserModel().updateUserData(
+            userId: UserModel().user.userId,
+            data: {USER_TOTAL_DISLIKED: FieldValue.increment(1)},
+          );
+        });
   }
 
-  Future<void> dislikeUser(
-      {required String dislikedUserId,
-      required Function(bool) onDislikeResult}) async {
+  Future<void> dislikeUser({
+    required String dislikedUserId,
+    required Function(bool) onDislikeResult,
+  }) async {
     /// Check if current user already disliked profile
     _firestore
         .collection(C_DISLIKES)
@@ -31,18 +36,19 @@ class DislikesApi {
         .where(DISLIKED_USER_ID, isEqualTo: dislikedUserId)
         .get()
         .then((QuerySnapshot<Map<String, dynamic>> snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        // Dislike user
-        _saveDislike(dislikedUserId);
-        onDislikeResult(true);
-        debugPrint('dislikeUser() -> success');
-      } else {
-        onDislikeResult(false);
-        debugPrint('You already disliked the user');
-      }
-    }).catchError((e) {
-      debugPrint('dislikeUser() -> error: $e');
-    });
+          if (snapshot.docs.isEmpty) {
+            // Dislike user
+            _saveDislike(dislikedUserId);
+            onDislikeResult(true);
+            debugPrint('dislikeUser() -> success');
+          } else {
+            onDislikeResult(false);
+            debugPrint('You already disliked the user');
+          }
+        })
+        .catchError((e) {
+          debugPrint('dislikeUser() -> error: $e');
+        });
   }
 
   /// Get disliked profiles for current user
@@ -85,25 +91,28 @@ class DislikesApi {
         .where(DISLIKED_BY_USER_ID, isEqualTo: UserModel().user.userId)
         .get()
         .then((QuerySnapshot<Map<String, dynamic>> snapshot) async {
-      /// Check if doc exists
-      if (snapshot.docs.isNotEmpty) {
-        // Get doc and delete it
-        final ref = snapshot.docs.first;
-        await ref.reference.delete();
+          /// Check if doc exists
+          if (snapshot.docs.isNotEmpty) {
+            // Get doc and delete it
+            final ref = snapshot.docs.first;
+            await ref.reference.delete();
 
-        /// Decrement current user total dislikes
-        final int currentUserDislikes = UserModel().user.userTotalDisliked - 1;
+            /// Decrement current user total dislikes
+            final int currentUserDislikes =
+                UserModel().user.userTotalDisliked - 1;
 
-        await UserModel().updateUserData(
-            userId: UserModel().user.userId,
-            data: {USER_TOTAL_DISLIKED: currentUserDislikes});
-        debugPrint('deleteDislike() -> success');
-      } else {
-        debugPrint('deleteDislike() -> doc does not exists');
-      }
-    }).catchError((e) {
-      debugPrint('deleteDislike() -> error: $e');
-    });
+            await UserModel().updateUserData(
+              userId: UserModel().user.userId,
+              data: {USER_TOTAL_DISLIKED: currentUserDislikes},
+            );
+            debugPrint('deleteDislike() -> success');
+          } else {
+            debugPrint('deleteDislike() -> doc does not exists');
+          }
+        })
+        .catchError((e) {
+          debugPrint('deleteDislike() -> error: $e');
+        });
   }
 
   Future<void> deleteDislikedUsers() async {
@@ -112,15 +121,15 @@ class DislikesApi {
         .where(DISLIKED_BY_USER_ID, isEqualTo: UserModel().user.userId)
         .get()
         .then((QuerySnapshot<Map<String, dynamic>> snapshot) async {
-      /// Check docs
-      if (snapshot.docs.isNotEmpty) {
-        // Loop docs to be deleted
-        for (var doc in snapshot.docs) {
-          await doc.reference.delete();
-        }
-        debugPrint('deleteDislikedUsers() -> deleted');
-      }
-    });
+          /// Check docs
+          if (snapshot.docs.isNotEmpty) {
+            // Loop docs to be deleted
+            for (var doc in snapshot.docs) {
+              await doc.reference.delete();
+            }
+            debugPrint('deleteDislikedUsers() -> deleted');
+          }
+        });
   }
 
   Future<void> deleteDislikedMeUsers() async {
@@ -129,14 +138,14 @@ class DislikesApi {
         .where(DISLIKED_USER_ID, isEqualTo: UserModel().user.userId)
         .get()
         .then((QuerySnapshot<Map<String, dynamic>> snapshot) async {
-      /// Check docs
-      if (snapshot.docs.isNotEmpty) {
-        // Loop docs to be deleted
-        for (var doc in snapshot.docs) {
-          await doc.reference.delete();
-        }
-        debugPrint('deleteDislikedMeUsers() -> deleted');
-      }
-    });
+          /// Check docs
+          if (snapshot.docs.isNotEmpty) {
+            // Loop docs to be deleted
+            for (var doc in snapshot.docs) {
+              await doc.reference.delete();
+            }
+            debugPrint('deleteDislikedMeUsers() -> deleted');
+          }
+        });
   }
 }

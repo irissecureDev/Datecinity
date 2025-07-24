@@ -1,7 +1,7 @@
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/sign_in_screen.dart';
-import 'package:dating_app/widgets/default_card_border.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/sign_in_screen.dart';
+import 'package:soulmate/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 
 class SignOutButtonCard extends StatelessWidget {
@@ -16,7 +16,10 @@ class SignOutButtonCard extends StatelessWidget {
       shape: defaultCardBorder(),
       child: ListTile(
         leading: const Icon(Icons.exit_to_app),
-        title: Text(i18n.translate("sign_out"), style: const TextStyle(fontSize: 18)),
+        title: Text(
+          i18n.translate("sign_out"),
+          style: const TextStyle(fontSize: 18),
+        ),
         trailing: const Icon(Icons.arrow_forward),
         onTap: () {
           // Log out button
@@ -25,7 +28,8 @@ class SignOutButtonCard extends StatelessWidget {
             Future(() {
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const SignInScreen()));
+                MaterialPageRoute(builder: (context) => const SignInScreen()),
+              );
             });
           });
         },

@@ -1,10 +1,10 @@
-import 'package:dating_app/dialogs/common_dialogs.dart';
-import 'package:dating_app/dialogs/progress_dialog.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/widgets/default_card_border.dart';
-import 'package:dating_app/widgets/image_source_sheet.dart';
-import 'package:dating_app/dialogs/vip_dialog.dart';
+import 'package:soulmate/dialogs/common_dialogs.dart';
+import 'package:soulmate/dialogs/progress_dialog.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/widgets/default_card_border.dart';
+import 'package:soulmate/widgets/image_source_sheet.dart';
+import 'package:soulmate/dialogs/vip_dialog.dart';
 import 'package:flutter/material.dart';
 
 class GalleryImageCard extends StatelessWidget {
@@ -44,23 +44,26 @@ class GalleryImageCard extends StatelessWidget {
             right: 8,
             bottom: 5,
             child: IconButton(
-                icon: CircleAvatar(
-                  radius: 15,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: Icon(imageUrl == null ? Icons.add : Icons.close,
-                      color: Colors.white),
+              icon: CircleAvatar(
+                radius: 15,
+                backgroundColor: Theme.of(context).primaryColor,
+                child: Icon(
+                  imageUrl == null ? Icons.add : Icons.close,
+                  color: Colors.white,
                 ),
-                onPressed: () {
-                  /// Check image url to exe action
-                  if (imageUrl == null) {
-                    /// Add or update image
-                    _selectImage(context);
-                  } else {
-                    /// Delete image from gallery
-                    _deleteGalleryImage(context);
-                  }
-                }),
-          )
+              ),
+              onPressed: () {
+                /// Check image url to exe action
+                if (imageUrl == null) {
+                  /// Add or update image
+                  _selectImage(context);
+                } else {
+                  /// Delete image from gallery
+                  _deleteGalleryImage(context);
+                }
+              },
+            ),
+          ),
         ],
       ),
       onTap: () {
@@ -85,27 +88,29 @@ class GalleryImageCard extends StatelessWidget {
     }
 
     await showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (context) => ImageSourceSheet(
-              onImageSelected: (image) async {
-                if (image != null) {
-                  /// Show progress dialog
-                  pr.show(i18n.translate("processing"));
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ImageSourceSheet(
+        onImageSelected: (image) async {
+          if (image != null) {
+            /// Show progress dialog
+            pr.show(i18n.translate("processing"));
 
-                  /// Update gallery image
-                  await UserModel().updateProfileImage(
-                      imageFile: image,
-                      oldImageUrl: imageUrl,
-                      path: 'gallery',
-                      index: index);
-                  // Hide dialog
-                  pr.hide();
-                  // close modal
-                  Future(() => Navigator.of(context).pop());
-                }
-              },
-            ));
+            /// Update gallery image
+            await UserModel().updateProfileImage(
+              imageFile: image,
+              oldImageUrl: imageUrl,
+              path: 'gallery',
+              index: index,
+            );
+            // Hide dialog
+            pr.hide();
+            // close modal
+            Future(() => Navigator.of(context).pop());
+          }
+        },
+      ),
+    );
   }
 
   /// Delete image from gallery
@@ -123,22 +128,23 @@ class GalleryImageCard extends StatelessWidget {
     }
 
     /// Confirm before
-    confirmDialog(context,
-        message: i18n.translate("photo_will_be_deleted"),
-        negativeAction: () => Navigator.of(context).pop(),
-        positiveText: i18n.translate("DELETE"),
-        positiveAction: () async {
-          // Show processing dialog
-          pr.show(i18n.translate("processing"));
+    confirmDialog(
+      context,
+      message: i18n.translate("photo_will_be_deleted"),
+      negativeAction: () => Navigator.of(context).pop(),
+      positiveText: i18n.translate("DELETE"),
+      positiveAction: () async {
+        // Show processing dialog
+        pr.show(i18n.translate("processing"));
 
-          /// Delete image
-          await UserModel()
-              .deleteGalleryImage(imageUrl: imageUrl!, index: index);
+        /// Delete image
+        await UserModel().deleteGalleryImage(imageUrl: imageUrl!, index: index);
 
-          // Hide progress dialog
-          pr.hide();
-          // Hide confirm dialog
-          Future(() => Navigator.of(context).pop());
-        });
+        // Hide progress dialog
+        pr.hide();
+        // Hide confirm dialog
+        Future(() => Navigator.of(context).pop());
+      },
+    );
   }
 }

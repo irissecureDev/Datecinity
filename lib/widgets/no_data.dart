@@ -1,4 +1,4 @@
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class NoData extends StatelessWidget {
@@ -16,8 +16,12 @@ class NoData extends StatelessWidget {
     // Check svgName
     if (svgName != null) {
       // Get SVG icon
-      icon01 = SvgIcon("assets/icons/$svgName.svg",
-          width: 100, height: 100, color: Theme.of(context).primaryColor);
+      icon01 = SvgIcon(
+        "assets/icons/$svgName.svg",
+        width: 100,
+        height: 100,
+        color: Theme.of(context).primaryColor,
+      );
     } else {
       icon01 = icon;
     }
@@ -28,9 +32,11 @@ class NoData extends StatelessWidget {
         children: <Widget>[
           // Show icon
           icon01 ?? const SizedBox.shrink(),
-          Text(text,
-              style: const TextStyle(fontSize: 18),
-              textAlign: TextAlign.center),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

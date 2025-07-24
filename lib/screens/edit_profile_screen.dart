@@ -1,11 +1,11 @@
-import 'package:dating_app/dialogs/common_dialogs.dart';
-import 'package:dating_app/dialogs/progress_dialog.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/profile_screen.dart';
-import 'package:dating_app/widgets/image_source_sheet.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
-import 'package:dating_app/widgets/user_gallery.dart';
+import 'package:soulmate/dialogs/common_dialogs.dart';
+import 'package:soulmate/dialogs/progress_dialog.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/profile_screen.dart';
+import 'package:soulmate/widgets/image_source_sheet.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:soulmate/widgets/user_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -20,10 +20,12 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   // Variables
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _schoolController =
-      TextEditingController(text: UserModel().user.userSchool);
-  final _jobController =
-      TextEditingController(text: UserModel().user.userJobTitle);
+  final _schoolController = TextEditingController(
+    text: UserModel().user.userSchool,
+  );
+  final _jobController = TextEditingController(
+    text: UserModel().user.userJobTitle,
+  );
   final _bioController = TextEditingController(text: UserModel().user.userBio);
   late AppLocalizations _i18n;
   late ProgressDialog _pr;
@@ -41,15 +43,17 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           // Save changes button
           TextButton(
-            child: Text(_i18n.translate("SAVE"),
-                style: TextStyle(color: Theme.of(context).primaryColor)),
+            child: Text(
+              _i18n.translate("SAVE"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
             onPressed: () {
               /// Validate form
               if (_formKey.currentState!.validate()) {
                 _saveChanges();
               }
             },
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -57,124 +61,136 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         child: Form(
           key: _formKey,
           child: ScopedModelDescendant<UserModel>(
-              builder: (context, child, userModel) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// Profile photo
-                GestureDetector(
-                  child: Center(
-                    child: Stack(
-                      children: <Widget>[
-                        CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(userModel.user.userProfilePhoto),
-                          radius: 80,
-                          backgroundColor: Theme.of(context).primaryColor,
-                        ),
-
-                        /// Edit icon
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: CircleAvatar(
-                            radius: 18,
+            builder: (context, child, userModel) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Profile photo
+                  GestureDetector(
+                    child: Center(
+                      child: Stack(
+                        children: <Widget>[
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              userModel.user.userProfilePhoto,
+                            ),
+                            radius: 80,
                             backgroundColor: Theme.of(context).primaryColor,
-                            child: const Icon(Icons.edit, color: Colors.white),
                           ),
-                        ),
-                      ],
+
+                          /// Edit icon
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: CircleAvatar(
+                              radius: 18,
+                              backgroundColor: Theme.of(context).primaryColor,
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  onTap: () async {
-                    /// Update profile image
-                    _selectImage(
+                    onTap: () async {
+                      /// Update profile image
+                      _selectImage(
                         imageUrl: userModel.user.userProfilePhoto,
-                        path: 'profile');
-                  },
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: Text(_i18n.translate("profile_photo"),
+                        path: 'profile',
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Text(
+                      _i18n.translate("profile_photo"),
                       style: const TextStyle(fontSize: 18),
-                      textAlign: TextAlign.center),
-                ),
-
-                /// Profile gallery
-                Text(_i18n.translate("gallery"),
-                    style: const TextStyle(fontSize: 18, color: Colors.grey),
-                    textAlign: TextAlign.left),
-                const SizedBox(height: 5),
-
-                /// Show gallery
-                const UserGallery(),
-
-                const SizedBox(height: 20),
-
-                /// Bio field
-                TextFormField(
-                  controller: _bioController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    labelText: _i18n.translate("bio"),
-                    hintText: _i18n.translate("write_about_you"),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    prefixIcon: const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: SvgIcon("assets/icons/info_icon.svg"),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  validator: (bio) {
-                    if (bio == null) {
-                      return _i18n.translate("please_write_your_bio");
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
 
-                /// School field
-                TextFormField(
-                  controller: _schoolController,
-                  decoration: InputDecoration(
+                  /// Profile gallery
+                  Text(
+                    _i18n.translate("gallery"),
+                    style: const TextStyle(fontSize: 18, color: Colors.grey),
+                    textAlign: TextAlign.left,
+                  ),
+                  const SizedBox(height: 5),
+
+                  /// Show gallery
+                  const UserGallery(),
+
+                  const SizedBox(height: 20),
+
+                  /// Bio field
+                  TextFormField(
+                    controller: _bioController,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      labelText: _i18n.translate("bio"),
+                      hintText: _i18n.translate("write_about_you"),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: SvgIcon("assets/icons/info_icon.svg"),
+                      ),
+                    ),
+                    validator: (bio) {
+                      if (bio == null) {
+                        return _i18n.translate("please_write_your_bio");
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  /// School field
+                  TextFormField(
+                    controller: _schoolController,
+                    decoration: InputDecoration(
                       labelText: _i18n.translate("school"),
                       hintText: _i18n.translate("enter_your_school_name"),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: const Padding(
                         padding: EdgeInsets.all(9.0),
                         child: SvgIcon("assets/icons/university_icon.svg"),
-                      )),
-                  validator: (school) {
-                    if (school == null) {
-                      return _i18n.translate("please_enter_your_school_name");
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
+                      ),
+                    ),
+                    validator: (school) {
+                      if (school == null) {
+                        return _i18n.translate("please_enter_your_school_name");
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
 
-                /// Job title field
-                TextFormField(
-                  controller: _jobController,
-                  decoration: InputDecoration(
+                  /// Job title field
+                  TextFormField(
+                    controller: _jobController,
+                    decoration: InputDecoration(
                       labelText: _i18n.translate("job_title"),
                       hintText: _i18n.translate("enter_your_job_title"),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: const Padding(
                         padding: EdgeInsets.all(12.0),
                         child: SvgIcon("assets/icons/job_bag_icon.svg"),
-                      )),
-                  validator: (job) {
-                    if (job == null) {
-                      return _i18n.translate("please_enter_your_job_title");
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
-            );
-          }),
+                      ),
+                    ),
+                    validator: (job) {
+                      if (job == null) {
+                        return _i18n.translate("please_enter_your_job_title");
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -183,54 +199,67 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   /// Get image from camera / gallery
   void _selectImage({required String imageUrl, required String path}) async {
     await showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (context) => ImageSourceSheet(
-              onImageSelected: (image) async {
-                if (image != null) {
-                  /// Show progress dialog
-                  _pr.show(_i18n.translate("processing"));
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ImageSourceSheet(
+        onImageSelected: (image) async {
+          if (image != null) {
+            /// Show progress dialog
+            _pr.show(_i18n.translate("processing"));
 
-                  /// Update profile image
-                  await UserModel().updateProfileImage(
-                      imageFile: image, oldImageUrl: imageUrl, path: 'profile');
-                  // Hide dialog
-                  _pr.hide();
-                  // close modal
-                  Future(() => Navigator.of(context).pop());
-                }
-              },
-            ));
+            /// Update profile image
+            await UserModel().updateProfileImage(
+              imageFile: image,
+              oldImageUrl: imageUrl,
+              path: 'profile',
+            );
+            // Hide dialog
+            _pr.hide();
+            // close modal
+            Future(() => Navigator.of(context).pop());
+          }
+        },
+      ),
+    );
   }
 
   /// Update profile changes for TextFormField only
   void _saveChanges() {
     /// Update uer profile
     UserModel().updateProfile(
-        userSchool: _schoolController.text.trim(),
-        userJobTitle: _jobController.text.trim(),
-        userBio: _bioController.text.trim(),
-        onSuccess: () {
-          /// Show success message
-          successDialog(context,
-              message: _i18n.translate("profile_updated_successfully"),
-              positiveAction: () {
+      userSchool: _schoolController.text.trim(),
+      userJobTitle: _jobController.text.trim(),
+      userBio: _bioController.text.trim(),
+      onSuccess: () {
+        /// Show success message
+        successDialog(
+          context,
+          message: _i18n.translate("profile_updated_successfully"),
+          positiveAction: () {
             /// Close dialog
             Future(() => Navigator.of(context).pop());
 
             /// Go to profilescreen
-            Navigator.of(context).push(MaterialPageRoute(
+            Navigator.of(context).push(
+              MaterialPageRoute(
                 builder: (context) =>
-                    ProfileScreen(user: UserModel().user, showButtons: false)));
-          });
-        },
-        onFail: (error) {
-          // Debug error
-          debugPrint(error);
-          // Show error message
-          errorDialog(context,
-              message: _i18n
-                  .translate("an_error_occurred_while_updating_your_profile"));
-        });
+                    ProfileScreen(user: UserModel().user, showButtons: false),
+              ),
+            );
+          },
+        );
+      },
+      onFail: (error) {
+        // Debug error
+        debugPrint(error);
+        // Show error message
+        errorDialog(
+          context,
+          message: _i18n.translate(
+            "an_error_occurred_while_updating_your_profile",
+          ),
+        );
+      },
+    );
   }
 }

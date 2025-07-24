@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/api/conversations_api.dart';
+import 'package:soulmate/api/conversations_api.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/models/user_model.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/models/user_model.dart';
 
 class MessagesApi {
   /// FINAL VARIABLES
@@ -39,22 +39,23 @@ class MessagesApi {
         .collection(receiverId)
         .doc()
         .set(<String, dynamic>{
-      USER_ID: fromUserId,
-      MESSAGE_TYPE: type,
-      MESSAGE_TEXT: textMsg,
-      MESSAGE_IMG_LINK: imgLink,
-      TIMESTAMP: FieldValue.serverTimestamp(),
-    });
+          USER_ID: fromUserId,
+          MESSAGE_TYPE: type,
+          MESSAGE_TEXT: textMsg,
+          MESSAGE_IMG_LINK: imgLink,
+          TIMESTAMP: FieldValue.serverTimestamp(),
+        });
 
     /// Save last conversation
     await _conversationsApi.saveConversation(
-        type: type,
-        senderId: senderId,
-        receiverId: receiverId,
-        userPhotoLink: userPhotoLink,
-        userFullName: userFullName,
-        textMsg: textMsg,
-        isRead: isRead);
+      type: type,
+      senderId: senderId,
+      receiverId: receiverId,
+      userPhotoLink: userPhotoLink,
+      userFullName: userFullName,
+      textMsg: textMsg,
+      isRead: isRead,
+    );
   }
 
   /// Delete current user chat

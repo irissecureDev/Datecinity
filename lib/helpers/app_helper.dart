@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/models/app_model.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/plugins/geoflutterfire/geoflutterfire.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/models/app_model.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/plugins/geoflutterfire/geoflutterfire.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';

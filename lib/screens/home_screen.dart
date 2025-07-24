@@ -2,22 +2,22 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/api/conversations_api.dart';
-import 'package:dating_app/api/notifications_api.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/helpers/app_notifications.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/notifications_screen.dart';
-import 'package:dating_app/tabs/conversations_tab.dart';
-import 'package:dating_app/tabs/discover_tab.dart';
-import 'package:dating_app/tabs/matches_tab.dart';
-import 'package:dating_app/tabs/profile_tab.dart';
-import 'package:dating_app/widgets/notification_counter.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/api/conversations_api.dart';
+import 'package:soulmate/api/notifications_api.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/helpers/app_notifications.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/notifications_screen.dart';
+import 'package:soulmate/tabs/conversations_tab.dart';
+import 'package:soulmate/tabs/discover_tab.dart';
+import 'package:soulmate/tabs/matches_tab.dart';
+import 'package:soulmate/tabs/profile_tab.dart';
+import 'package:soulmate/widgets/notification_counter.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:dating_app/constants/constants.dart';
+import 'package:soulmate/constants/constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -46,7 +46,7 @@ class HomeScreenState extends State<HomeScreen> {
       const DiscoverTab(),
       const MatchesTab(),
       const ConversationsTab(),
-      const ProfileTab()
+      const ProfileTab(),
     ];
 
     return options.elementAt(_selectedIndex);
@@ -76,8 +76,9 @@ class HomeScreenState extends State<HomeScreen> {
   ///
   void _handlePurchaseUpdates() {
     // Listen purchase updates
-    _inAppPurchaseStream =
-        InAppPurchase.instance.purchaseStream.listen((purchases) async {
+    _inAppPurchaseStream = InAppPurchase.instance.purchaseStream.listen((
+      purchases,
+    ) async {
       // Loop incoming purchases
       for (var purchase in purchases) {
         // Control purchase status
@@ -96,16 +97,19 @@ class HomeScreenState extends State<HomeScreen> {
 
             /// Update user verified status
             await UserModel().updateUserData(
-                userId: UserModel().user.userId,
-                data: {USER_IS_VERIFIED: true});
+              userId: UserModel().user.userId,
+              data: {USER_IS_VERIFIED: true},
+            );
 
             // User first name
-            final String userFirstname =
-                UserModel().user.userFullname.split(' ')[0];
+            final String userFirstname = UserModel().user.userFullname.split(
+              ' ',
+            )[0];
 
             /// Save notification in database for user
             _notificationsApi.onPurchaseNotification(
-              nMessage: '${_i18n.translate("hello")} $userFirstname, '
+              nMessage:
+                  '${_i18n.translate("hello")} $userFirstname, '
                   '${_i18n.translate("your_vip_account_is_active")}\n '
                   '${_i18n.translate("thanks_for_buying")}',
             );
@@ -144,8 +148,9 @@ class HomeScreenState extends State<HomeScreen> {
           case PurchaseStatus.canceled:
             // Show canceled feedback
             Fluttertoast.showToast(
-              msg:
-                  _i18n.translate('you_canceled_the_purchase_please_try_again'),
+              msg: _i18n.translate(
+                'you_canceled_the_purchase_please_try_again',
+              ),
               gravity: ToastGravity.BOTTOM,
               backgroundColor: APP_PRIMARY_COLOR,
               textColor: Colors.white,
@@ -261,12 +266,14 @@ class HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-              icon: _getNotificationCounter(),
-              onPressed: () async {
-                // Go to Notifications Screen
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => NotificationsScreen()));
-              })
+            icon: _getNotificationCounter(),
+            onPressed: () async {
+              // Go to Notifications Screen
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => NotificationsScreen()),
+              );
+            },
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -277,39 +284,48 @@ class HomeScreenState extends State<HomeScreen> {
         items: [
           /// Discover Tab
           BottomNavigationBarItem(
-              icon: SvgIcon("assets/icons/search_icon.svg",
-                  width: 27,
-                  height: 27,
-                  color: _selectedIndex == 0
-                      ? Theme.of(context).primaryColor
-                      : null),
-              label: _i18n.translate("discover")),
+            icon: SvgIcon(
+              "assets/icons/search_icon.svg",
+              width: 27,
+              height: 27,
+              color: _selectedIndex == 0
+                  ? Theme.of(context).primaryColor
+                  : null,
+            ),
+            label: _i18n.translate("discover"),
+          ),
 
           /// Matches Tab
           BottomNavigationBarItem(
-              icon: SvgIcon(
-                  _selectedIndex == 1
-                      ? "assets/icons/heart_2_icon.svg"
-                      : "assets/icons/heart_icon.svg",
-                  color: _selectedIndex == 1
-                      ? Theme.of(context).primaryColor
-                      : null),
-              label: _i18n.translate("matches")),
+            icon: SvgIcon(
+              _selectedIndex == 1
+                  ? "assets/icons/heart_2_icon.svg"
+                  : "assets/icons/heart_icon.svg",
+              color: _selectedIndex == 1
+                  ? Theme.of(context).primaryColor
+                  : null,
+            ),
+            label: _i18n.translate("matches"),
+          ),
 
           /// Conversations Tab
           BottomNavigationBarItem(
-              icon: _getConversationCounter(), label: _i18n.translate("chats")),
+            icon: _getConversationCounter(),
+            label: _i18n.translate("chats"),
+          ),
 
           /// Profile Tab
           BottomNavigationBarItem(
-              icon: SvgIcon(
-                  _selectedIndex == 3
-                      ? "assets/icons/user_2_icon.svg"
-                      : "assets/icons/user_icon.svg",
-                  color: _selectedIndex == 3
-                      ? Theme.of(context).primaryColor
-                      : null),
-              label: _i18n.translate("profile")),
+            icon: SvgIcon(
+              _selectedIndex == 3
+                  ? "assets/icons/user_2_icon.svg"
+                  : "assets/icons/user_icon.svg",
+              color: _selectedIndex == 3
+                  ? Theme.of(context).primaryColor
+                  : null,
+            ),
+            label: _i18n.translate("profile"),
+          ),
         ],
       ),
       body: _showCurrentNavBar(),
@@ -323,50 +339,53 @@ class HomeScreenState extends State<HomeScreen> {
 
     /// Handle stream
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: _notificationsApi.getNotifications(),
-        builder: (context, snapshot) {
-          // Check result
-          if (!snapshot.hasData) {
-            return icon;
-          } else {
-            /// Get total counter to alert user
-            final total = snapshot.data!.docs
-                .where((doc) => doc.data()[N_READ] == false)
-                .toList()
-                .length;
-            if (total == 0) return icon;
-            return NotificationCounter(icon: icon, counter: total);
-          }
-        });
+      stream: _notificationsApi.getNotifications(),
+      builder: (context, snapshot) {
+        // Check result
+        if (!snapshot.hasData) {
+          return icon;
+        } else {
+          /// Get total counter to alert user
+          final total = snapshot.data!.docs
+              .where((doc) => doc.data()[N_READ] == false)
+              .toList()
+              .length;
+          if (total == 0) return icon;
+          return NotificationCounter(icon: icon, counter: total);
+        }
+      },
+    );
   }
 
   /// Count unread chats
   Widget _getConversationCounter() {
     // Set icon
     final icon = SvgIcon(
-        _selectedIndex == 2
-            ? "assets/icons/message_2_icon.svg"
-            : "assets/icons/message_icon.svg",
-        width: 30,
-        height: 30,
-        color: _selectedIndex == 2 ? Theme.of(context).primaryColor : null);
+      _selectedIndex == 2
+          ? "assets/icons/message_2_icon.svg"
+          : "assets/icons/message_icon.svg",
+      width: 30,
+      height: 30,
+      color: _selectedIndex == 2 ? Theme.of(context).primaryColor : null,
+    );
 
     /// Handle stream
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: _conversationsApi.getConversations(),
-        builder: (context, snapshot) {
-          // Check result
-          if (!snapshot.hasData) {
-            return icon;
-          } else {
-            /// Get total counter to alert user
-            final total = snapshot.data!.docs
-                .where((doc) => doc.data()[MESSAGE_READ] == false)
-                .toList()
-                .length;
-            if (total == 0) return icon;
-            return NotificationCounter(icon: icon, counter: total);
-          }
-        });
+      stream: _conversationsApi.getConversations(),
+      builder: (context, snapshot) {
+        // Check result
+        if (!snapshot.hasData) {
+          return icon;
+        } else {
+          /// Get total counter to alert user
+          final total = snapshot.data!.docs
+              .where((doc) => doc.data()[MESSAGE_READ] == false)
+              .toList()
+              .length;
+          if (total == 0) return icon;
+          return NotificationCounter(icon: icon, counter: total);
+        }
+      },
+    );
   }
 }

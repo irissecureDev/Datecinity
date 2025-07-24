@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/models/user_model.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -24,20 +24,21 @@ class AppAdHelper {
   // Create Interstitial Ad
   Future<void> _createInterstitialAd() async {
     await InterstitialAd.load(
-        adUnitId: _interstitialID,
-        request: const AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (InterstitialAd ad) {
-            debugPrint('$ad loaded');
-            _interstitialAd = ad;
-            _interstitialAd!.setImmersiveMode(true);
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            debugPrint('InterstitialAd failed to load: $error.');
-            _interstitialAd = null;
-            _createInterstitialAd();
-          },
-        ));
+      adUnitId: _interstitialID,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          debugPrint('$ad loaded');
+          _interstitialAd = ad;
+          _interstitialAd!.setImmersiveMode(true);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          debugPrint('InterstitialAd failed to load: $error.');
+          _interstitialAd = null;
+          _createInterstitialAd();
+        },
+      ),
+    );
   }
 
   // Show Interstitial Ads for Non VIP Users

@@ -1,8 +1,8 @@
-import 'package:dating_app/dialogs/progress_dialog.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/main.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/widgets/show_scaffold_msg.dart';
+import 'package:soulmate/dialogs/progress_dialog.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/main.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/widgets/show_scaffold_msg.dart';
 import 'package:flutter/material.dart';
 
 class FlagUserDialog extends StatefulWidget {
@@ -44,15 +44,13 @@ class FlagUserDialogState extends State<FlagUserDialog> {
     ];
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       elevation: 3,
       child: _dialogContent(context, flagOptions),
     );
   }
 
-// Build dialog
+  // Build dialog
   Widget _dialogContent(BuildContext context, List<String> flagOptions) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -73,37 +71,37 @@ class FlagUserDialogState extends State<FlagUserDialog> {
             ],
           ),
         ),
-        const Divider(
-          color: Colors.black,
-          height: 5,
-        ),
+        const Divider(color: Colors.black, height: 5),
         Flexible(
           fit: FlexFit.loose,
           child: SingleChildScrollView(
             child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: flagOptions.map((selectedOption) {
-                  return RadioListTile(
-                      selected: _selectedFlagOption == selectedOption,
-                      title: Text(selectedOption),
-                      activeColor: Theme.of(context).primaryColor,
-                      value: selectedOption,
-                      groupValue: _selectedFlagOption,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedFlagOption = value.toString();
-                          // Check selected option for other
-                          if (_i18n.translate('other') == value.toString()) {
-                            _isOtherSelected = true;
-                          } else {
-                            _isOtherSelected = false;
-                          }
-                        });
-                        // Debug
-                        debugPrint(
-                            'Selected option: $_selectedFlagOption, _isOtherSelected: $_isOtherSelected');
-                      });
-                }).toList()),
+              mainAxisSize: MainAxisSize.min,
+              children: flagOptions.map((selectedOption) {
+                return RadioListTile(
+                  selected: _selectedFlagOption == selectedOption,
+                  title: Text(selectedOption),
+                  activeColor: Theme.of(context).primaryColor,
+                  value: selectedOption,
+                  groupValue: _selectedFlagOption,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFlagOption = value.toString();
+                      // Check selected option for other
+                      if (_i18n.translate('other') == value.toString()) {
+                        _isOtherSelected = true;
+                      } else {
+                        _isOtherSelected = false;
+                      }
+                    });
+                    // Debug
+                    debugPrint(
+                      'Selected option: $_selectedFlagOption, _isOtherSelected: $_isOtherSelected',
+                    );
+                  },
+                );
+              }).toList(),
+            ),
           ),
         ),
         // Show Input field for other information
@@ -115,13 +113,14 @@ class FlagUserDialogState extends State<FlagUserDialog> {
               child: TextFormField(
                 controller: _otherController,
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    //labelText: _i18n.translate("other"),
-                    hintText: _i18n.translate("type_the_reason"),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    prefixIcon: const Icon(Icons.info_outline)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  //labelText: _i18n.translate("other"),
+                  hintText: _i18n.translate("type_the_reason"),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  prefixIcon: const Icon(Icons.info_outline),
+                ),
                 validator: (reason) {
                   // Basic validation
                   if (reason?.isEmpty ?? false) {
@@ -144,8 +143,10 @@ class FlagUserDialogState extends State<FlagUserDialog> {
                 children: <Widget>[
                   TextButton(
                     onPressed: _close,
-                    child: Text(_i18n.translate("CANCEL"),
-                        style: const TextStyle(color: Colors.grey)),
+                    child: Text(
+                      _i18n.translate("CANCEL"),
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextButton(
                     onPressed: _selectedFlagOption == ''
@@ -164,8 +165,9 @@ class FlagUserDialogState extends State<FlagUserDialog> {
 
                             /// Flag profile
                             await UserModel().flagUserProfile(
-                                flaggedUserId: widget.flaggedUserId,
-                                reason: _selectedFlagOption);
+                              flaggedUserId: widget.flaggedUserId,
+                              reason: _selectedFlagOption,
+                            );
 
                             // Close progress
                             _pr.hide();
@@ -174,23 +176,29 @@ class FlagUserDialogState extends State<FlagUserDialog> {
                             debugPrint('flagUserProfile() -> success');
 
                             String message = _i18n.translate(
-                                "thank_you_the_profile_will_be_reviewed");
+                              "thank_you_the_profile_will_be_reviewed",
+                            );
 
                             // Show success dialog
                             showScaffoldMessage(
-                                message: message, bgcolor: Colors.green);
+                              message: message,
+                              bgcolor: Colors.green,
+                            );
                           },
-                    child: Text(_i18n.translate("report").toUpperCase(),
-                        style: TextStyle(
-                            color: _selectedFlagOption != ''
-                                ? Theme.of(context).primaryColor
-                                : Colors.grey)),
+                    child: Text(
+                      _i18n.translate("report").toUpperCase(),
+                      style: TextStyle(
+                        color: _selectedFlagOption != ''
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey,
+                      ),
+                    ),
                   ),
                 ],
               ),
             );
           },
-        )
+        ),
       ],
     );
   }

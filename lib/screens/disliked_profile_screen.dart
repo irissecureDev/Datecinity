@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/api/dislikes_api.dart';
-import 'package:dating_app/api/visits_api.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/dialogs/vip_dialog.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/profile_screen.dart';
-import 'package:dating_app/widgets/build_title.dart';
-import 'package:dating_app/widgets/loading_card.dart';
-import 'package:dating_app/widgets/no_data.dart';
-import 'package:dating_app/widgets/processing.dart';
-import 'package:dating_app/widgets/profile_card.dart';
-import 'package:dating_app/widgets/users_grid.dart';
+import 'package:soulmate/api/dislikes_api.dart';
+import 'package:soulmate/api/visits_api.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/dialogs/vip_dialog.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/profile_screen.dart';
+import 'package:soulmate/widgets/build_title.dart';
+import 'package:soulmate/widgets/loading_card.dart';
+import 'package:soulmate/widgets/no_data.dart';
+import 'package:soulmate/widgets/processing.dart';
+import 'package:soulmate/widgets/profile_card.dart';
+import 'package:soulmate/widgets/users_grid.dart';
 import 'package:flutter/material.dart';
 
 class DislikedProfilesScreen extends StatefulWidget {
@@ -42,16 +42,19 @@ class DislikedProfilesScreenState extends State<DislikedProfilesScreen> {
         if (_loadMore) {
           _dislikesApi
               .getDislikedUsers(
-                  withLimit: true, loadMore: true, userLastDoc: _userLastDoc)
+                withLimit: true,
+                loadMore: true,
+                userLastDoc: _userLastDoc,
+              )
               .then((users) {
-            /// Update user list
-            if (users.isNotEmpty) {
-              _updateUserList(users);
-            } else {
-              setState(() => _loadMore = false);
-            }
-            debugPrint('load more users: ${users.length}');
-          });
+                /// Update user list
+                if (users.isNotEmpty) {
+                  _updateUserList(users);
+                } else {
+                  setState(() => _loadMore = false);
+                }
+                debugPrint('load more users: ${users.length}');
+              });
         } else {
           debugPrint('No more users');
         }
@@ -104,21 +107,20 @@ class DislikedProfilesScreenState extends State<DislikedProfilesScreen> {
     _i18n = AppLocalizations.of(context);
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(_i18n.translate("disliked_profiles")),
-        ),
-        body: Column(
-          children: [
-            /// Header Title
-            BuildTitle(
-              svgIconName: "close_icon",
-              title: _i18n.translate("profiles_you_rejected"),
-            ),
+      appBar: AppBar(title: Text(_i18n.translate("disliked_profiles"))),
+      body: Column(
+        children: [
+          /// Header Title
+          BuildTitle(
+            svgIconName: "close_icon",
+            title: _i18n.translate("profiles_you_rejected"),
+          ),
 
-            /// Matches
-            Expanded(child: _showProfiles())
-          ],
-        ));
+          /// Matches
+          Expanded(child: _showProfiles()),
+        ],
+      ),
+    );
   }
 
   /// Show profiles
@@ -143,63 +145,67 @@ class DislikedProfilesScreenState extends State<DislikedProfilesScreen> {
 
             /// Load profile
             return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                future: UserModel().getUser(userId),
-                builder: (context, snapshot) {
-                  /// Check result
-                  if (!snapshot.hasData) {
-                    return const LoadingCard();
-                  } else if (snapshot.data?.data() == null) {
-                    AppHelper()
-                        .ambiguate(WidgetsBinding.instance)!
-                        .addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _dislikedUsers!.removeAt(index);
-                        });
-                      }
-                    });
-
-                    return const LoadingCard();
-                  } else {
-                    /// Get user object
-                    final User user = User.fromDocument(snapshot.data!.data()!);
-
-                    /// Show user card
-                    return GestureDetector(
-                      child: ProfileCard(user: user, page: 'require_vip'),
-                      onTap: () {
-                        /// Check vip account
-                        if (UserModel().userIsVip) {
-                          /// Go to profile screen - using showDialog to
-                          /// prevents reloading getUser FutureBuilder
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return ProfileScreen(
-                                    user: user,
-                                    hideDislikeButton: true,
-                                    fromDislikesScreen: true);
-                              });
-
-                          /// Increment user visits an push notification
-                          _visitsApi.visitUserProfile(
-                            visitedUserId: user.userId,
-                            userDeviceToken: user.userDeviceToken,
-                            nMessage:
-                                "${UserModel().user.userFullname.split(' ')[0]}, "
-                                "${_i18n.translate("visited_your_profile_click_and_see")}",
-                          );
-                        } else {
-                          /// Show VIP dialog
-                          showDialog(
-                              context: context,
-                              builder: (context) => const VipDialog());
+              future: UserModel().getUser(userId),
+              builder: (context, snapshot) {
+                /// Check result
+                if (!snapshot.hasData) {
+                  return const LoadingCard();
+                } else if (snapshot.data?.data() == null) {
+                  AppHelper()
+                      .ambiguate(WidgetsBinding.instance)!
+                      .addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() {
+                            _dislikedUsers!.removeAt(index);
+                          });
                         }
-                      },
-                    );
-                  }
-                });
+                      });
+
+                  return const LoadingCard();
+                } else {
+                  /// Get user object
+                  final User user = User.fromDocument(snapshot.data!.data()!);
+
+                  /// Show user card
+                  return GestureDetector(
+                    child: ProfileCard(user: user, page: 'require_vip'),
+                    onTap: () {
+                      /// Check vip account
+                      if (UserModel().userIsVip) {
+                        /// Go to profile screen - using showDialog to
+                        /// prevents reloading getUser FutureBuilder
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) {
+                            return ProfileScreen(
+                              user: user,
+                              hideDislikeButton: true,
+                              fromDislikesScreen: true,
+                            );
+                          },
+                        );
+
+                        /// Increment user visits an push notification
+                        _visitsApi.visitUserProfile(
+                          visitedUserId: user.userId,
+                          userDeviceToken: user.userDeviceToken,
+                          nMessage:
+                              "${UserModel().user.userFullname.split(' ')[0]}, "
+                              "${_i18n.translate("visited_your_profile_click_and_see")}",
+                        );
+                      } else {
+                        /// Show VIP dialog
+                        showDialog(
+                          context: context,
+                          builder: (context) => const VipDialog(),
+                        );
+                      }
+                    },
+                  );
+                }
+              },
+            );
           } else {
             return Container();
           }

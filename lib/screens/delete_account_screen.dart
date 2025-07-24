@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/api/blocked_users_api.dart';
-import 'package:dating_app/api/conversations_api.dart';
-import 'package:dating_app/api/dislikes_api.dart';
-import 'package:dating_app/api/likes_api.dart';
-import 'package:dating_app/api/matches_api.dart';
-import 'package:dating_app/api/messages_api.dart';
-import 'package:dating_app/api/notifications_api.dart';
-import 'package:dating_app/api/visits_api.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/sign_in_screen.dart';
-import 'package:dating_app/widgets/processing.dart';
+import 'package:soulmate/api/blocked_users_api.dart';
+import 'package:soulmate/api/conversations_api.dart';
+import 'package:soulmate/api/dislikes_api.dart';
+import 'package:soulmate/api/likes_api.dart';
+import 'package:soulmate/api/matches_api.dart';
+import 'package:soulmate/api/messages_api.dart';
+import 'package:soulmate/api/notifications_api.dart';
+import 'package:soulmate/api/visits_api.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/sign_in_screen.dart';
+import 'package:soulmate/widgets/processing.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -47,8 +47,9 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
     debugPrint('Profile account -> deleted...');
 
     // Get user uploaded profile image links
-    final List<String> userImagesRef =
-        UserModel().getUserProfileImages(UserModel().user);
+    final List<String> userImagesRef = UserModel().getUserProfileImages(
+      UserModel().user,
+    );
 
     /// DELETE PROFILE IMAGE AND GALLERY
     ///
@@ -127,7 +128,8 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
         Future(() {
           Navigator.of(context).popUntil((route) => route.isFirst);
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const SignInScreen()));
+            MaterialPageRoute(builder: (context) => const SignInScreen()),
+          );
         });
       });
     });
@@ -137,9 +139,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
   Widget build(BuildContext context) {
     final i18n = AppLocalizations.of(context);
     return Scaffold(
-      body: Processing(
-        text: i18n.translate("deleting_your_account"),
-      ),
+      body: Processing(text: i18n.translate("deleting_your_account")),
     );
   }
 }

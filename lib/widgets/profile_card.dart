@@ -1,13 +1,13 @@
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/dialogs/report_dialog.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/plugins/swipe_stack/swipe_stack.dart';
-import 'package:dating_app/widgets/custom_badge.dart';
-import 'package:dating_app/widgets/default_card_border.dart';
-import 'package:dating_app/widgets/show_like_or_dislike.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/dialogs/report_dialog.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/plugins/swipe_stack/swipe_stack.dart';
+import 'package:soulmate/widgets/custom_badge.dart';
+import 'package:soulmate/widgets/default_card_border.dart';
+import 'package:soulmate/widgets/show_like_or_dislike.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:dating_app/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_helper.dart';
 
 class ProfileCard extends StatelessWidget {
   /// User object
@@ -38,8 +38,11 @@ class ProfileCard extends StatelessWidget {
 
     //
     // Get User Birthday
-    final DateTime userBirthday = DateTime(UserModel().user.userBirthYear,
-        UserModel().user.userBirthMonth, UserModel().user.userBirthDay);
+    final DateTime userBirthday = DateTime(
+      UserModel().user.userBirthYear,
+      UserModel().user.userBirthMonth,
+      UserModel().user.userBirthDay,
+    );
     // Get User Current Age
     final int userAge = UserModel().calculateUserAge(userBirthday);
 
@@ -59,20 +62,21 @@ class ProfileCard extends StatelessWidget {
               decoration: BoxDecoration(
                 /// User profile image
                 image: DecorationImage(
-
-                    /// Show VIP icon if user is not vip member
-                    image: userPhoto,
-                    fit: requireVip ? BoxFit.contain : BoxFit.cover),
+                  /// Show VIP icon if user is not vip member
+                  image: userPhoto,
+                  fit: requireVip ? BoxFit.contain : BoxFit.cover,
+                ),
               ),
               child: Container(
                 /// BoxDecoration to make user info visible
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      begin: Alignment.bottomRight,
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Colors.transparent
-                      ]),
+                    begin: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      Colors.transparent,
+                    ],
+                  ),
                 ),
 
                 /// User info container
@@ -91,9 +95,10 @@ class ProfileCard extends StatelessWidget {
                               '${user.userFullname}, '
                               '${userAge.toString()}',
                               style: TextStyle(
-                                  fontSize: page == 'discover' ? 20 : 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                fontSize: page == 'discover' ? 20 : 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -107,8 +112,12 @@ class ProfileCard extends StatelessWidget {
                       Row(
                         children: [
                           // Icon
-                          const SvgIcon("assets/icons/location_point_icon.svg",
-                              color: Color(0xffFFFFFF), width: 24, height: 24),
+                          const SvgIcon(
+                            "assets/icons/location_point_icon.svg",
+                            color: Color(0xffFFFFFF),
+                            width: 24,
+                            height: 24,
+                          ),
 
                           const SizedBox(width: 5),
 
@@ -173,7 +182,6 @@ class ProfileCard extends StatelessWidget {
                       //     ),
                       //   ],
                       // ),
-
                       page == 'discover'
                           ? const SizedBox(height: 70)
                           : const SizedBox(width: 0, height: 0),
@@ -189,12 +197,17 @@ class ProfileCard extends StatelessWidget {
             top: 10,
             left: page == 'discover' ? 8 : 5,
             child: CustomBadge(
-                icon: page == 'discover'
-                    ? const SvgIcon("assets/icons/location_point_icon.svg",
-                        color: Colors.white, width: 15, height: 15)
-                    : null,
-                text:
-                    '${_appHelper.getDistanceBetweenUsers(userLat: user.userGeoPoint.latitude, userLong: user.userGeoPoint.longitude)}km'),
+              icon: page == 'discover'
+                  ? const SvgIcon(
+                      "assets/icons/location_point_icon.svg",
+                      color: Colors.white,
+                      width: 15,
+                      height: 15,
+                    )
+                  : null,
+              text:
+                  '${_appHelper.getDistanceBetweenUsers(userLat: user.userGeoPoint.latitude, userLong: user.userGeoPoint.longitude)}km',
+            ),
           ),
 
           /// Show Like or Dislike
@@ -208,13 +221,18 @@ class ProfileCard extends StatelessWidget {
                   bottom: 5,
                   right: 5,
                   child: Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const SvgIcon("assets/icons/message_icon.svg",
-                          color: Colors.white, width: 30, height: 30)),
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const SvgIcon(
+                      "assets/icons/message_icon.svg",
+                      color: Colors.white,
+                      width: 30,
+                      height: 30,
+                    ),
+                  ),
                 )
               : const SizedBox(width: 0, height: 0),
 
@@ -223,10 +241,14 @@ class ProfileCard extends StatelessWidget {
               ? Positioned(
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.flag,
-                          color: Theme.of(context).primaryColor, size: 32),
-                      onPressed: () =>
-                          ReportDialog(userId: user.userId).show()))
+                    icon: Icon(
+                      Icons.flag,
+                      color: Theme.of(context).primaryColor,
+                      size: 32,
+                    ),
+                    onPressed: () => ReportDialog(userId: user.userId).show(),
+                  ),
+                )
               : const SizedBox(width: 0, height: 0),
         ],
       ),

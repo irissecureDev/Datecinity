@@ -1,17 +1,17 @@
-import 'package:dating_app/api/dislikes_api.dart';
-import 'package:dating_app/api/likes_api.dart';
-import 'package:dating_app/api/matches_api.dart';
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/dialogs/its_match_dialog.dart';
-import 'package:dating_app/dialogs/report_dialog.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/plugins/carousel_pro/carousel_pro.dart';
-import 'package:dating_app/widgets/custom_badge.dart';
-import 'package:dating_app/widgets/cicle_button.dart';
-import 'package:dating_app/widgets/show_scaffold_msg.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/api/dislikes_api.dart';
+import 'package:soulmate/api/likes_api.dart';
+import 'package:soulmate/api/matches_api.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/dialogs/its_match_dialog.dart';
+import 'package:soulmate/dialogs/report_dialog.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/plugins/carousel_pro/carousel_pro.dart';
+import 'package:soulmate/widgets/custom_badge.dart';
+import 'package:soulmate/widgets/cicle_button.dart';
+import 'package:soulmate/widgets/show_scaffold_msg.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -25,12 +25,13 @@ class ProfileScreen extends StatefulWidget {
   final bool fromDislikesScreen;
 
   // Constructor
-  const ProfileScreen(
-      {super.key,
-      required this.user,
-      this.showButtons = true,
-      this.hideDislikeButton = false,
-      this.fromDislikesScreen = false});
+  const ProfileScreen({
+    super.key,
+    required this.user,
+    this.showButtons = true,
+    this.hideDislikeButton = false,
+    this.fromDislikesScreen = false,
+  });
 
   @override
   ProfileScreenState createState() => ProfileScreenState();
@@ -66,15 +67,18 @@ class ProfileScreenState extends State<ProfileScreen> {
     _i18n = AppLocalizations.of(context);
     //
     // Get User Birthday
-    final DateTime userBirthday = DateTime(widget.user.userBirthYear,
-        widget.user.userBirthMonth, widget.user.userBirthDay);
+    final DateTime userBirthday = DateTime(
+      widget.user.userBirthYear,
+      widget.user.userBirthMonth,
+      widget.user.userBirthDay,
+    );
     // Get User Current Age
     final int userAge = UserModel().calculateUserAge(userBirthday);
 
     return Scaffold(
-        key: _scaffoldKey,
-        body: ScopedModelDescendant<UserModel>(
-            builder: (context, child, userModel) {
+      key: _scaffoldKey,
+      body: ScopedModelDescendant<UserModel>(
+        builder: (context, child, userModel) {
           return Stack(
             children: [
               SingleChildScrollView(
@@ -85,13 +89,14 @@ class ProfileScreenState extends State<ProfileScreen> {
                     AspectRatio(
                       aspectRatio: 1 / 1,
                       child: Carousel(
-                          autoplay: false,
-                          dotBgColor: Colors.transparent,
-                          dotIncreasedColor: Theme.of(context).primaryColor,
-                          images: UserModel()
-                              .getUserProfileImages(widget.user)
-                              .map((url) => NetworkImage(url))
-                              .toList()),
+                        autoplay: false,
+                        dotBgColor: Colors.transparent,
+                        dotIncreasedColor: Theme.of(context).primaryColor,
+                        images: UserModel()
+                            .getUserProfileImages(widget.user)
+                            .map((url) => NetworkImage(url))
+                            .toList(),
+                      ),
                     ),
 
                     /// Profile details
@@ -109,8 +114,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                                   '${widget.user.userFullname}, '
                                   '${userAge.toString()}',
                                   style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
 
@@ -119,9 +125,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                                   ? Container(
                                       margin: const EdgeInsets.only(right: 5),
                                       child: Image.asset(
-                                          'assets/images/verified_badge.png',
-                                          width: 30,
-                                          height: 30))
+                                        'assets/images/verified_badge.png',
+                                        width: 30,
+                                        height: 30,
+                                      ),
+                                    )
                                   : const SizedBox(width: 0, height: 0),
 
                               /// Show VIP badge for current user
@@ -130,20 +138,24 @@ class ProfileScreenState extends State<ProfileScreen> {
                                   ? Container(
                                       margin: const EdgeInsets.only(right: 5),
                                       child: Image.asset(
-                                          'assets/images/crow_badge.png',
-                                          width: 25,
-                                          height: 25))
+                                        'assets/images/crow_badge.png',
+                                        width: 25,
+                                        height: 25,
+                                      ),
+                                    )
                                   : const SizedBox(width: 0, height: 0),
 
                               /// Location distance
                               CustomBadge(
-                                  icon: const SvgIcon(
-                                      "assets/icons/location_point_icon.svg",
-                                      color: Colors.white,
-                                      width: 15,
-                                      height: 15),
-                                  text:
-                                      '${_appHelper.getDistanceBetweenUsers(userLat: widget.user.userGeoPoint.latitude, userLong: widget.user.userGeoPoint.longitude)}km')
+                                icon: const SvgIcon(
+                                  "assets/icons/location_point_icon.svg",
+                                  color: Colors.white,
+                                  width: 15,
+                                  height: 15,
+                                ),
+                                text:
+                                    '${_appHelper.getDistanceBetweenUsers(userLat: widget.user.userGeoPoint.latitude, userLong: widget.user.userGeoPoint.longitude)}km',
+                              ),
                             ],
                           ),
 
@@ -153,10 +165,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                           _rowProfileInfo(
                             context,
                             icon: SvgIcon(
-                                "assets/icons/location_point_icon.svg",
-                                color: Theme.of(context).primaryColor,
-                                width: 24,
-                                height: 24),
+                              "assets/icons/location_point_icon.svg",
+                              color: Theme.of(context).primaryColor,
+                              width: 24,
+                              height: 24,
+                            ),
                             title:
                                 "${widget.user.userLocality}, ${widget.user.userCountry}",
                           ),
@@ -164,54 +177,77 @@ class ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 5),
 
                           /// Job title
-                          _rowProfileInfo(context,
-                              icon: SvgIcon("assets/icons/job_bag_icon.svg",
-                                  color: Theme.of(context).primaryColor,
-                                  width: 27,
-                                  height: 27),
-                              title: widget.user.userJobTitle),
+                          _rowProfileInfo(
+                            context,
+                            icon: SvgIcon(
+                              "assets/icons/job_bag_icon.svg",
+                              color: Theme.of(context).primaryColor,
+                              width: 27,
+                              height: 27,
+                            ),
+                            title: widget.user.userJobTitle,
+                          ),
 
                           const SizedBox(height: 5),
 
                           /// Education
-                          _rowProfileInfo(context,
-                              icon: SvgIcon("assets/icons/university_icon.svg",
-                                  color: Theme.of(context).primaryColor,
-                                  width: 34,
-                                  height: 34),
-                              title: widget.user.userSchool),
+                          _rowProfileInfo(
+                            context,
+                            icon: SvgIcon(
+                              "assets/icons/university_icon.svg",
+                              color: Theme.of(context).primaryColor,
+                              width: 34,
+                              height: 34,
+                            ),
+                            title: widget.user.userSchool,
+                          ),
 
                           /// Birthday
-                          _rowProfileInfo(context,
-                              icon: SvgIcon("assets/icons/gift_icon.svg",
-                                  color: Theme.of(context).primaryColor,
-                                  width: 28,
-                                  height: 28),
-                              title:
-                                  '${_i18n.translate('birthday')} ${widget.user.userBirthYear}/${widget.user.userBirthMonth}/${widget.user.userBirthDay}'),
+                          _rowProfileInfo(
+                            context,
+                            icon: SvgIcon(
+                              "assets/icons/gift_icon.svg",
+                              color: Theme.of(context).primaryColor,
+                              width: 28,
+                              height: 28,
+                            ),
+                            title:
+                                '${_i18n.translate('birthday')} ${widget.user.userBirthYear}/${widget.user.userBirthMonth}/${widget.user.userBirthDay}',
+                          ),
 
                           /// Join date
-                          _rowProfileInfo(context,
-                              icon: SvgIcon("assets/icons/info_icon.svg",
-                                  color: Theme.of(context).primaryColor,
-                                  width: 28,
-                                  height: 28),
-                              title:
-                                  '${_i18n.translate('join_date')} ${timeago.format(widget.user.userRegDate)}'),
+                          _rowProfileInfo(
+                            context,
+                            icon: SvgIcon(
+                              "assets/icons/info_icon.svg",
+                              color: Theme.of(context).primaryColor,
+                              width: 28,
+                              height: 28,
+                            ),
+                            title:
+                                '${_i18n.translate('join_date')} ${timeago.format(widget.user.userRegDate)}',
+                          ),
 
                           const Divider(),
 
                           /// Profile bio
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(_i18n.translate("bio"),
-                                style: TextStyle(
-                                    fontSize: 22,
-                                    color: Theme.of(context).primaryColor)),
+                            child: Text(
+                              _i18n.translate("bio"),
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
                           ),
-                          Text(widget.user.userBio,
-                              style: const TextStyle(
-                                  fontSize: 18, color: Colors.grey)),
+                          Text(
+                            widget.user.userBio,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -227,30 +263,38 @@ class ProfileScreenState extends State<ProfileScreen> {
                 child: AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  iconTheme:
-                      IconThemeData(color: Theme.of(context).primaryColor),
+                  iconTheme: IconThemeData(
+                    color: Theme.of(context).primaryColor,
+                  ),
                   actions: <Widget>[
                     // Check the current User ID
                     if (UserModel().user.userId != widget.user.userId)
                       IconButton(
-                        icon: Icon(Icons.flag,
-                            color: Theme.of(context).primaryColor, size: 32),
+                        icon: Icon(
+                          Icons.flag,
+                          color: Theme.of(context).primaryColor,
+                          size: 32,
+                        ),
                         // Report/Block profile dialog
                         onPressed: () =>
                             ReportDialog(userId: widget.user.userId).show(),
-                      )
+                      ),
                   ],
                 ),
               ),
             ],
           );
-        }),
-        bottomNavigationBar:
-            widget.showButtons ? _buildButtons(context) : null);
+        },
+      ),
+      bottomNavigationBar: widget.showButtons ? _buildButtons(context) : null,
+    );
   }
 
-  Widget _rowProfileInfo(BuildContext context,
-      {required Widget icon, required String title}) {
+  Widget _rowProfileInfo(
+    BuildContext context, {
+    required Widget icon,
+    required String title,
+  }) {
     return Row(
       children: [
         icon,
@@ -266,44 +310,49 @@ class ProfileScreenState extends State<ProfileScreen> {
   /// Build Like and Dislike buttons
   Widget _buildButtons(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            /// Dislike profile button
-            if (!widget.hideDislikeButton)
-              cicleButton(
-                  padding: 8.0,
-                  icon:
-                      Icon(Icons.close, color: Theme.of(context).primaryColor),
-                  bgColor: Colors.grey,
-                  onTap: () {
-                    // Dislike profile
-                    _dislikesApi.dislikeUser(
-                        dislikedUserId: widget.user.userId,
-                        onDislikeResult: (result) {
-                          /// Check result to show message
-                          if (!result) {
-                            // Show error message
-                            showScaffoldMessage(
-                                context: context,
-                                message: _i18n.translate(
-                                    "you_already_disliked_this_profile"));
-                          }
-                        });
-                  }),
-
-            /// Like profile button
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          /// Dislike profile button
+          if (!widget.hideDislikeButton)
             cicleButton(
-                padding: 8.0,
-                icon: const Icon(Icons.favorite_border, color: Colors.white),
-                bgColor: Theme.of(context).primaryColor,
-                onTap: () {
-                  // Like user
-                  _likeUser(context);
-                }),
-          ],
-        ));
+              padding: 8.0,
+              icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
+              bgColor: Colors.grey,
+              onTap: () {
+                // Dislike profile
+                _dislikesApi.dislikeUser(
+                  dislikedUserId: widget.user.userId,
+                  onDislikeResult: (result) {
+                    /// Check result to show message
+                    if (!result) {
+                      // Show error message
+                      showScaffoldMessage(
+                        context: context,
+                        message: _i18n.translate(
+                          "you_already_disliked_this_profile",
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+
+          /// Like profile button
+          cicleButton(
+            padding: 8.0,
+            icon: const Icon(Icons.favorite_border, color: Colors.white),
+            bgColor: Theme.of(context).primaryColor,
+            onTap: () {
+              // Like user
+              _likeUser(context);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   /// Like user function
@@ -311,49 +360,54 @@ class ProfileScreenState extends State<ProfileScreen> {
     /// Check match first
     _matchesApi
         .checkMatch(
-            userId: widget.user.userId,
-            onMatchResult: (result) {
-              if (result) {
-                /// Show It`s match dialog
-                showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) {
-                      return ItsMatchDialog(
-                        matchedUser: widget.user,
-                        showSwipeButton: false,
-                        swipeKey: null,
-                      );
-                    });
-              }
-            })
-        .then((_) {
-      /// Like user
-      _likesApi.likeUser(
-          likedUserId: widget.user.userId,
-          userDeviceToken: widget.user.userDeviceToken,
-          nMessage: "${UserModel().user.userFullname.split(' ')[0]}, "
-              "${_i18n.translate("liked_your_profile_click_and_see")}",
-          onLikeResult: (result) async {
+          userId: widget.user.userId,
+          onMatchResult: (result) {
             if (result) {
-              // Show success message
-              showScaffoldMessage(
+              /// Show It`s match dialog
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return ItsMatchDialog(
+                    matchedUser: widget.user,
+                    showSwipeButton: false,
+                    swipeKey: null,
+                  );
+                },
+              );
+            }
+          },
+        )
+        .then((_) {
+          /// Like user
+          _likesApi.likeUser(
+            likedUserId: widget.user.userId,
+            userDeviceToken: widget.user.userDeviceToken,
+            nMessage:
+                "${UserModel().user.userFullname.split(' ')[0]}, "
+                "${_i18n.translate("liked_your_profile_click_and_see")}",
+            onLikeResult: (result) async {
+              if (result) {
+                // Show success message
+                showScaffoldMessage(
                   context: context,
                   message:
-                      '${_i18n.translate("like_sent_to")} ${widget.user.userFullname}');
-            } else if (!result) {
-              // Show error message
-              showScaffoldMessage(
+                      '${_i18n.translate("like_sent_to")} ${widget.user.userFullname}',
+                );
+              } else if (!result) {
+                // Show error message
+                showScaffoldMessage(
                   context: context,
-                  message: _i18n.translate("you_already_liked_this_profile"));
-            }
-
-            /// Validate to delete disliked user from disliked list
-            else if (result && widget.fromDislikesScreen) {
-              // Delete in database
-              await _dislikesApi.deleteDislikedUser(widget.user.userId);
-            }
-          });
-    });
+                  message: _i18n.translate("you_already_liked_this_profile"),
+                );
+              }
+              /// Validate to delete disliked user from disliked list
+              else if (result && widget.fromDislikesScreen) {
+                // Delete in database
+                await _dislikesApi.deleteDislikedUser(widget.user.userId);
+              }
+            },
+          );
+        });
   }
 }

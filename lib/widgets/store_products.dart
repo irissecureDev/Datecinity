@@ -1,7 +1,7 @@
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/app_model.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/widgets/my_circular_progress.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/app_model.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/widgets/my_circular_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -10,7 +10,11 @@ class StoreProducts extends StatefulWidget {
   final Widget icon;
   final Color priceColor;
 
-  const StoreProducts({super.key, required this.icon, required this.priceColor});
+  const StoreProducts({
+    super.key,
+    required this.icon,
+    required this.priceColor,
+  });
 
   @override
   StoreProductsState createState() => StoreProductsState();
@@ -40,27 +44,29 @@ class StoreProductsState extends State<StoreProducts> {
     InAppPurchase.instance
         .queryProductDetails(AppModel().appInfo.subscriptionIds.toSet())
         .then((ProductDetailsResponse response) {
-      /// Update UI
-      if (mounted) {
-        setState(() {
-          // Get product list
-          _products = response.productDetails;
-          // Check result
-          if (_products!.isNotEmpty) {
-            // Order price by ASC
-            _products!.sort((a, b) {
-              // Get int prices to be ordered
-              final priceA =
-                  int.parse(a.price.replaceAll(RegExp(r'[^0-9]'), ''));
-              final priceB =
-                  int.parse(b.price.replaceAll(RegExp(r'[^0-9]'), ''));
-              // ASC order
-              return priceA.compareTo(priceB);
+          /// Update UI
+          if (mounted) {
+            setState(() {
+              // Get product list
+              _products = response.productDetails;
+              // Check result
+              if (_products!.isNotEmpty) {
+                // Order price by ASC
+                _products!.sort((a, b) {
+                  // Get int prices to be ordered
+                  final priceA = int.parse(
+                    a.price.replaceAll(RegExp(r'[^0-9]'), ''),
+                  );
+                  final priceB = int.parse(
+                    b.price.replaceAll(RegExp(r'[^0-9]'), ''),
+                  );
+                  // ASC order
+                  return priceA.compareTo(priceB);
+                });
+              }
             });
           }
         });
-      }
-    });
   }
 
   @override
@@ -81,12 +87,16 @@ class StoreProductsState extends State<StoreProducts> {
             children: <Widget>[
               const MyCircularProgress(),
               const SizedBox(height: 5),
-              Text(_i18n.translate("processing"),
-                  style: const TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center),
-              Text(_i18n.translate("please_wait"),
-                  style: const TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center)
+              Text(
+                _i18n.translate("processing"),
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                _i18n.translate("please_wait"),
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -94,47 +104,61 @@ class StoreProductsState extends State<StoreProducts> {
     } else if (_products!.isNotEmpty) {
       // Show Subscriptions
       return ScopedModelDescendant<UserModel>(
-          builder: (context, child, userModel) {
-        return Column(
+        builder: (context, child, userModel) {
+          return Column(
             children: _products!.map<Widget>((item) {
-          return Card(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: ListTile(
-              enabled: userModel.activeVipId == item.id ? false : true,
-              leading: widget.icon,
-              title: Text(
-                  // Android only - remove the app name from title
-                  item.title.replaceAll(
-                      RegExp(r"\([^]*\)", caseSensitive: false), ''),
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-              subtitle: Text(item.price,
-                  style: TextStyle(
+              return Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: ListTile(
+                  enabled: userModel.activeVipId == item.id ? false : true,
+                  leading: widget.icon,
+                  title: Text(
+                    // Android only - remove the app name from title
+                    item.title.replaceAll(
+                      RegExp(r"\([^]*\)", caseSensitive: false),
+                      '',
+                    ),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    item.price,
+                    style: TextStyle(
                       fontSize: 19,
                       color: widget.priceColor,
-                      fontWeight: FontWeight.bold)),
-              trailing: ElevatedButton(
-                  onPressed: userModel.activeVipId == item.id
-                      ? null
-                      : () async {
-                          // Purchase parameters
-                          final pParam = PurchaseParam(
-                            productDetails: item,
-                          );
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  trailing: ElevatedButton(
+                    onPressed: userModel.activeVipId == item.id
+                        ? null
+                        : () async {
+                            // Purchase parameters
+                            final pParam = PurchaseParam(productDetails: item);
 
-                          /// Subscribe
-                          InAppPurchase.instance
-                              .buyNonConsumable(purchaseParam: pParam);
-                        },
-                  child: userModel.activeVipId == item.id
-                      ? Text(_i18n.translate("ACTIVE"),
-                          style: const TextStyle(color: Colors.white))
-                      : Text(_i18n.translate("SUBSCRIBE"),
-                          style: const TextStyle(color: Colors.white))),
-            ),
+                            /// Subscribe
+                            InAppPurchase.instance.buyNonConsumable(
+                              purchaseParam: pParam,
+                            );
+                          },
+                    child: userModel.activeVipId == item.id
+                        ? Text(
+                            _i18n.translate("ACTIVE"),
+                            style: const TextStyle(color: Colors.white),
+                          )
+                        : Text(
+                            _i18n.translate("SUBSCRIBE"),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                  ),
+                ),
+              );
+            }).toList(),
           );
-        }).toList());
-      });
+        },
+      );
     } else {
       return Center(
         child: Padding(
@@ -142,11 +166,16 @@ class StoreProductsState extends State<StoreProducts> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(Icons.search,
-                  size: 80, color: Theme.of(context).primaryColor),
-              Text(_i18n.translate("no_products_or_subscriptions"),
-                  style: const TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center),
+              Icon(
+                Icons.search,
+                size: 80,
+                color: Theme.of(context).primaryColor,
+              ),
+              Text(
+                _i18n.translate("no_products_or_subscriptions"),
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -159,11 +188,16 @@ class StoreProductsState extends State<StoreProducts> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(Icons.error_outline,
-              size: 80, color: Theme.of(context).primaryColor),
-          Text(_i18n.translate("oops_an_error_has_occurred"),
-              style: const TextStyle(fontSize: 18.0),
-              textAlign: TextAlign.center),
+          Icon(
+            Icons.error_outline,
+            size: 80,
+            color: Theme.of(context).primaryColor,
+          ),
+          Text(
+            _i18n.translate("oops_an_error_has_occurred"),
+            style: const TextStyle(fontSize: 18.0),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

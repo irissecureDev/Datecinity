@@ -1,6 +1,6 @@
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ShowMeDialog extends StatefulWidget {
@@ -43,15 +43,13 @@ class ShowMeDialogState extends State<ShowMeDialog> {
     };
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       elevation: 3,
       child: _dialogContent(context, mapOptions),
     );
   }
 
-// Build dialog
+  // Build dialog
   Widget _dialogContent(BuildContext context, Map<String, String> mapOptions) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -72,36 +70,32 @@ class ShowMeDialogState extends State<ShowMeDialog> {
             ],
           ),
         ),
-        const Divider(
-          color: Colors.black,
-          height: 5,
-        ),
+        const Divider(color: Colors.black, height: 5),
         Flexible(
           fit: FlexFit.loose,
           child: SingleChildScrollView(
             child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: mapOptions.entries.map((option) {
-                  return RadioListTile<String>(
-                      selected: _selectedOption == option.value ? true : false,
-                      title: Text(option.value),
-                      activeColor: Theme.of(context).primaryColor,
-                      value: option.value,
-                      groupValue: _selectedOption,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedOption = value.toString();
-                          _selectedOptionKey = option.key;
-                        });
-                        debugPrint('Selected option: $value');
-                      });
-                }).toList()),
+              mainAxisSize: MainAxisSize.min,
+              children: mapOptions.entries.map((option) {
+                return RadioListTile<String>(
+                  selected: _selectedOption == option.value ? true : false,
+                  title: Text(option.value),
+                  activeColor: Theme.of(context).primaryColor,
+                  value: option.value,
+                  groupValue: _selectedOption,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedOption = value.toString();
+                      _selectedOptionKey = option.key;
+                    });
+                    debugPrint('Selected option: $value');
+                  },
+                );
+              }).toList(),
+            ),
           ),
         ),
-        const Divider(
-          color: Colors.black,
-          height: 5,
-        ),
+        const Divider(color: Colors.black, height: 5),
         Builder(
           builder: (context) {
             return Padding(
@@ -121,25 +115,27 @@ class ShowMeDialogState extends State<ShowMeDialog> {
                         : () async {
                             /// Save option
                             await UserModel().updateUserData(
-                                userId: UserModel().user.userId,
-                                data: {
-                                  '$USER_SETTINGS.$USER_SHOW_ME':
-                                      _selectedOptionKey
-                                });
+                              userId: UserModel().user.userId,
+                              data: {
+                                '$USER_SETTINGS.$USER_SHOW_ME':
+                                    _selectedOptionKey,
+                              },
+                            );
 
                             // Close dialog
                             Future(() => Navigator.of(context).pop());
                             debugPrint('Show me option() -> saved');
                           },
-                    child: Text(_i18n.translate("SAVE"),
-                        style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
+                    child: Text(
+                      _i18n.translate("SAVE"),
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
                   ),
                 ],
               ),
             );
           },
-        )
+        ),
       ],
     );
   }

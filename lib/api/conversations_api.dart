@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/models/user_model.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/models/user_model.dart';
 
 class ConversationsApi {
   /// Get firestore instance
@@ -24,18 +24,20 @@ class ConversationsApi {
         .collection(C_CONVERSATIONS)
         .doc(receiverId)
         .set(<String, dynamic>{
-      USER_ID: receiverId,
-      USER_PROFILE_PHOTO: userPhotoLink,
-      USER_FULLNAME: userFullName,
-      MESSAGE_TYPE: type,
-      LAST_MESSAGE: textMsg,
-      MESSAGE_READ: isRead,
-      TIMESTAMP: FieldValue.serverTimestamp(),
-    }).then((value) {
-      debugPrint('saveConversation() -> succes');
-    }).catchError((e) {
-      debugPrint('saveConversation() -> error: $e');
-    });
+          USER_ID: receiverId,
+          USER_PROFILE_PHOTO: userPhotoLink,
+          USER_FULLNAME: userFullName,
+          MESSAGE_TYPE: type,
+          LAST_MESSAGE: textMsg,
+          MESSAGE_READ: isRead,
+          TIMESTAMP: FieldValue.serverTimestamp(),
+        })
+        .then((value) {
+          debugPrint('saveConversation() -> succes');
+        })
+        .catchError((e) {
+          debugPrint('saveConversation() -> error: $e');
+        });
   }
 
   /// Get stream chats for current user
@@ -49,8 +51,10 @@ class ConversationsApi {
   }
 
   /// Delete current user conversation
-  Future<void> deleteConverce(String withUserId,
-      {bool isDoubleDel = false}) async {
+  Future<void> deleteConverce(
+    String withUserId, {
+    bool isDoubleDel = false,
+  }) async {
     // For current user
     await _firestore
         .collection(C_CONNECTIONS)

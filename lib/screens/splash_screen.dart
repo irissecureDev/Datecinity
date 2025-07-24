@@ -1,18 +1,18 @@
 import 'dart:io';
 
-import 'package:dating_app/screens/blocked_account_screen.dart';
-import 'package:dating_app/screens/update_location_sceen.dart';
+import 'package:soulmate/screens/blocked_account_screen.dart';
+import 'package:soulmate/screens/update_location_sceen.dart';
 import 'package:flutter/material.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/screens/update_app_screen.dart';
-import 'package:dating_app/widgets/app_logo.dart';
-import 'package:dating_app/widgets/my_circular_progress.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/home_screen.dart';
-import 'package:dating_app/screens/sign_up_screen.dart';
-import 'package:dating_app/screens/sign_in_screen.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/screens/update_app_screen.dart';
+import 'package:soulmate/widgets/app_logo.dart';
+import 'package:soulmate/widgets/my_circular_progress.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/home_screen.dart';
+import 'package:soulmate/screens/sign_up_screen.dart';
+import 'package:soulmate/screens/sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,7 +31,9 @@ class SplashScreenState extends State<SplashScreen> {
     // Go to next page route
     Future(() {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => screen), (route) => false);
+        MaterialPageRoute(builder: (context) => screen),
+        (route) => false,
+      );
     });
   }
 
@@ -60,11 +62,12 @@ class SplashScreenState extends State<SplashScreen> {
       } else {
         /// Authenticate User Account
         UserModel().authUserAccount(
-            updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
-            signInScreen: () => _nextScreen(const SignInScreen()),
-            signUpScreen: () => _nextScreen(const SignUpScreen()),
-            homeScreen: () => _nextScreen(const HomeScreen()),
-            blockedScreen: () => _nextScreen(const BlockedAccountScreen()));
+          updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
+          signInScreen: () => _nextScreen(const SignInScreen()),
+          signUpScreen: () => _nextScreen(const SignUpScreen()),
+          homeScreen: () => _nextScreen(const HomeScreen()),
+          blockedScreen: () => _nextScreen(const BlockedAccountScreen()),
+        );
       }
     });
   }
@@ -83,15 +86,18 @@ class SplashScreenState extends State<SplashScreen> {
                 children: <Widget>[
                   const AppLogo(),
                   const SizedBox(height: 10),
-                  const Text(APP_NAME,
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+                  const Text(
+                    APP_NAME,
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 5),
-                  Text(_i18n.translate("app_short_description"),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text(
+                    _i18n.translate("app_short_description"),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
                   const SizedBox(height: 20),
-                  const MyCircularProgress()
+                  const MyCircularProgress(),
                 ],
               ),
             ),

@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/widgets/app_logo.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/widgets/app_logo.dart';
 
 class UpdateAppScreen extends StatelessWidget {
   // Variables
@@ -15,9 +15,7 @@ class UpdateAppScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final i18n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(i18n.translate('update_application')),
-      ),
+      appBar: AppBar(title: Text(i18n.translate('update_application'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(25),
         child: Center(
@@ -29,33 +27,49 @@ class UpdateAppScreen extends StatelessWidget {
               const SizedBox(height: 10),
 
               /// App name
-              const Text(APP_NAME,
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+              const Text(
+                APP_NAME,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 20),
-              Text(i18n.translate('app_new_version'),
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center),
+              Text(
+                i18n.translate('app_new_version'),
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 10),
-              Text(i18n.translate("please_install_it_now"),
-                  style: const TextStyle(fontSize: 18), textAlign: TextAlign.center),
+              Text(
+                i18n.translate("please_install_it_now"),
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 5),
-              Text(i18n.translate("don_worry_your_data_will_not_be_lost"),
-                  style: const TextStyle(fontSize: 18), textAlign: TextAlign.center),
+              Text(
+                i18n.translate("don_worry_your_data_will_not_be_lost"),
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
               const Divider(thickness: 1),
-              Text(i18n.translate("click_this_button_to_install"),
-                  style: const TextStyle(fontSize: 18), textAlign: TextAlign.center),
+              Text(
+                i18n.translate("click_this_button_to_install"),
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
               GestureDetector(
-                child: Image.asset(Platform.isAndroid
-                    ? "assets/images/google_play_badge.png"
-                    : "assets/images/apple_store_badge.png"),
+                child: Image.asset(
+                  Platform.isAndroid
+                      ? "assets/images/google_play_badge.png"
+                      : "assets/images/apple_store_badge.png",
+                ),
                 onTap: () {
                   /// Open app store - Google Play / Apple Store
                   AppHelper().openAppStore();
                 },
-              )
+              ),
             ],
           ),
         ),

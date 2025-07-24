@@ -1,24 +1,24 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/api/blocked_users_api.dart';
-import 'package:dating_app/api/likes_api.dart';
-import 'package:dating_app/api/matches_api.dart';
-import 'package:dating_app/api/messages_api.dart';
-import 'package:dating_app/api/notifications_api.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/dialogs/common_dialogs.dart';
-import 'package:dating_app/dialogs/progress_dialog.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/main.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/profile_screen.dart';
-import 'package:dating_app/widgets/chat_message.dart';
-import 'package:dating_app/widgets/image_source_sheet.dart';
-import 'package:dating_app/widgets/my_circular_progress.dart';
-import 'package:dating_app/widgets/show_scaffold_msg.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/api/blocked_users_api.dart';
+import 'package:soulmate/api/likes_api.dart';
+import 'package:soulmate/api/matches_api.dart';
+import 'package:soulmate/api/messages_api.dart';
+import 'package:soulmate/api/notifications_api.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/dialogs/common_dialogs.dart';
+import 'package:soulmate/dialogs/progress_dialog.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/main.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/profile_screen.dart';
+import 'package:soulmate/widgets/chat_message.dart';
+import 'package:soulmate/widgets/image_source_sheet.dart';
+import 'package:soulmate/widgets/my_circular_progress.dart';
+import 'package:soulmate/widgets/show_scaffold_msg.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -63,70 +63,79 @@ class ChatScreenState extends State<ChatScreen> {
   /// *** Block remote user profile *** ///
   void _blockProfile() async {
     // Confirm dialog
-    confirmDialog(context,
-        positiveText: _i18n.translate("BLOCK"),
-        message: _i18n.translate("this_profile_will_be_blocked"),
-        negativeAction: _close, positiveAction: () async {
-      // Hide confirm dialog
-      _close();
+    confirmDialog(
+      context,
+      positiveText: _i18n.translate("BLOCK"),
+      message: _i18n.translate("this_profile_will_be_blocked"),
+      negativeAction: _close,
+      positiveAction: () async {
+        // Hide confirm dialog
+        _close();
 
-      // Show processing dialog
-      _pr.show(_i18n.translate("processing"));
+        // Show processing dialog
+        _pr.show(_i18n.translate("processing"));
 
-      // Block profile
-      if (await BlockedUsersApi()
-          .blockUser(blockedUserId: widget.user.userId)) {
-        // Hide progress dialog
-        _pr.hide();
+        // Block profile
+        if (await BlockedUsersApi().blockUser(
+          blockedUserId: widget.user.userId,
+        )) {
+          // Hide progress dialog
+          _pr.hide();
 
-        final String msg = _i18n.translate("user_has_been_blocked");
-        // Show success dialog
-        showScaffoldMessage(message: msg, bgcolor: Colors.green);
+          final String msg = _i18n.translate("user_has_been_blocked");
+          // Show success dialog
+          showScaffoldMessage(message: msg, bgcolor: Colors.green);
 
-        // Update blocked status
-        _remoteUserBlockedStatus(true);
-      } else {
-        // Hide progress dialog
-        _pr.hide();
+          // Update blocked status
+          _remoteUserBlockedStatus(true);
+        } else {
+          // Hide progress dialog
+          _pr.hide();
 
-        final String msg =
-            _i18n.translate("you_have_already_blocked_this_user");
-        // Show success dialog
-        showScaffoldMessage(message: msg, bgcolor: Colors.red);
+          final String msg = _i18n.translate(
+            "you_have_already_blocked_this_user",
+          );
+          // Show success dialog
+          showScaffoldMessage(message: msg, bgcolor: Colors.red);
 
-        // Update blocked status
-        _remoteUserBlockedStatus(true);
-      }
-    });
+          // Update blocked status
+          _remoteUserBlockedStatus(true);
+        }
+      },
+    );
   }
 
   /// *** UnBlock remote user profile *** ///
   void _unblockProfile() async {
     // Confirm dialog
-    confirmDialog(context,
-        positiveText: _i18n.translate("UNBLOCK"),
-        message: _i18n.translate(
-            "this_profile_will_be_removed_from_the_blocked_users_list"),
-        negativeAction: _close, positiveAction: () async {
-      // Hide confirm dialog
-      _close();
+    confirmDialog(
+      context,
+      positiveText: _i18n.translate("UNBLOCK"),
+      message: _i18n.translate(
+        "this_profile_will_be_removed_from_the_blocked_users_list",
+      ),
+      negativeAction: _close,
+      positiveAction: () async {
+        // Hide confirm dialog
+        _close();
 
-      // Show processing dialog
-      _pr.show(_i18n.translate("processing"));
+        // Show processing dialog
+        _pr.show(_i18n.translate("processing"));
 
-      // Delete blocked profile from the list
-      await BlockedUsersApi().deleteBlockedUser(widget.user.userId);
+        // Delete blocked profile from the list
+        await BlockedUsersApi().deleteBlockedUser(widget.user.userId);
 
-      // Hide progress dialog
-      _close();
+        // Hide progress dialog
+        _close();
 
-      final String msg = _i18n.translate("user_has_been_unblocked");
-      // Show success dialog
-      showScaffoldMessage(message: msg, bgcolor: Colors.green);
+        final String msg = _i18n.translate("user_has_been_unblocked");
+        // Show success dialog
+        showScaffoldMessage(message: msg, bgcolor: Colors.green);
 
-      // Update blocked status
-      _remoteUserBlockedStatus(false);
-    });
+        // Update blocked status
+        _remoteUserBlockedStatus(false);
+      },
+    );
   }
 
   // Check the Blocked user on initState
@@ -134,55 +143,64 @@ class ChatScreenState extends State<ChatScreen> {
     // Check Receiver user blocked status
     BlockedUsersApi()
         .isBlocked(
-            blockedUserId: widget.user.userId, // Receiver user on chat
-            blockedByUserId: UserModel().user.userId // Logged user on chat
-            )
+          blockedUserId: widget.user.userId, // Receiver user on chat
+          blockedByUserId: UserModel().user.userId, // Logged user on chat
+        )
         .then((result) => _remoteUserBlockedStatus(result));
 
     // Check Local user blocked status
     BlockedUsersApi()
         .isBlocked(
-            blockedUserId: UserModel().user.userId,
-            blockedByUserId: widget.user.userId)
+          blockedUserId: UserModel().user.userId,
+          blockedByUserId: widget.user.userId,
+        )
         .then((result) {
-      if (mounted) {
-        setState(() => _isLocalUserBlocked = result);
-      }
-    });
+          if (mounted) {
+            setState(() => _isLocalUserBlocked = result);
+          }
+        });
   }
 
   void _scrollMessageList() {
     /// Scroll to button
-    _messagesController.animateTo(0.0,
-        duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
+    _messagesController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
   }
 
   /// Get image from camera / gallery
   Future<void> _getImage() async {
     await showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (context) => ImageSourceSheet(
-              onImageSelected: (image) async {
-                if (image != null) {
-                  await _sendMessage(type: 'image', imgFile: image);
-                  // close modal
-                  Future(() => Navigator.of(context).pop());
-                }
-              },
-            ));
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ImageSourceSheet(
+        onImageSelected: (image) async {
+          if (image != null) {
+            await _sendMessage(type: 'image', imgFile: image);
+            // close modal
+            Future(() => Navigator.of(context).pop());
+          }
+        },
+      ),
+    );
   }
 
   // Send message
-  Future<void> _sendMessage(
-      {required String type, String? text, File? imgFile}) async {
+  Future<void> _sendMessage({
+    required String type,
+    String? text,
+    File? imgFile,
+  }) async {
     String textMsg = '';
     String imageUrl = '';
 
     // Check local user blocked status
     if (_isLocalUserBlocked) {
       final String msg = _i18n.translate(
-          "oops_your_profile_has_been_blocked_by_this_user_so_you_can_send_a_message");
+        "oops_your_profile_has_been_blocked_by_this_user_so_you_can_send_a_message",
+      );
       // Show success dialog
       showScaffoldMessage(message: msg, bgcolor: Colors.red);
       return;
@@ -200,9 +218,10 @@ class ChatScreenState extends State<ChatScreen> {
 
         /// Upload image file
         imageUrl = await UserModel().uploadFile(
-            file: imgFile!,
-            path: 'uploads/messages',
-            userId: UserModel().user.userId);
+          file: imgFile!,
+          path: 'uploads/messages',
+          userId: UserModel().user.userId,
+        );
 
         _pr.hide();
         break;
@@ -210,36 +229,40 @@ class ChatScreenState extends State<ChatScreen> {
 
     /// Save message for current user
     await _messagesApi.saveMessage(
-        type: type,
-        fromUserId: UserModel().user.userId,
-        senderId: UserModel().user.userId,
-        receiverId: widget.user.userId,
-        userPhotoLink: widget.user.userProfilePhoto, // other user photo
-        userFullName: widget.user.userFullname, // other user ful name
-        textMsg: textMsg,
-        imgLink: imageUrl,
-        isRead: true);
+      type: type,
+      fromUserId: UserModel().user.userId,
+      senderId: UserModel().user.userId,
+      receiverId: widget.user.userId,
+      userPhotoLink: widget.user.userProfilePhoto, // other user photo
+      userFullName: widget.user.userFullname, // other user ful name
+      textMsg: textMsg,
+      imgLink: imageUrl,
+      isRead: true,
+    );
 
     /// Save copy message for receiver
     await _messagesApi.saveMessage(
-        type: type,
-        fromUserId: UserModel().user.userId,
-        senderId: widget.user.userId,
-        receiverId: UserModel().user.userId,
-        userPhotoLink: UserModel().user.userProfilePhoto, // current user photo
-        userFullName: UserModel().user.userFullname, // current user ful name
-        textMsg: textMsg,
-        imgLink: imageUrl,
-        isRead: false);
+      type: type,
+      fromUserId: UserModel().user.userId,
+      senderId: widget.user.userId,
+      receiverId: UserModel().user.userId,
+      userPhotoLink: UserModel().user.userProfilePhoto, // current user photo
+      userFullName: UserModel().user.userFullname, // current user ful name
+      textMsg: textMsg,
+      imgLink: imageUrl,
+      isRead: false,
+    );
 
     /// Send push notification
     await _notificationsApi.sendPushNotification(
-        nTitle: APP_NAME,
-        nBody: '${UserModel().user.userFullname}, '
-            '${_i18n.translate("sent_a_message_to_you")}',
-        nType: 'message',
-        nSenderId: UserModel().user.userId,
-        nUserDeviceToken: widget.user.userDeviceToken);
+      nTitle: APP_NAME,
+      nBody:
+          '${UserModel().user.userFullname}, '
+          '${_i18n.translate("sent_a_message_to_you")}',
+      nType: 'message',
+      nSenderId: UserModel().user.userId,
+      nUserDeviceToken: widget.user.userDeviceToken,
+    );
   }
 
   @override
@@ -275,14 +298,19 @@ class ChatScreenState extends State<ChatScreen> {
               backgroundImage: NetworkImage(widget.user.userProfilePhoto),
               onBackgroundImageError: (e, s) => {debugPrint(e.toString())},
             ),
-            title: Text(widget.user.userFullname,
-                style: const TextStyle(fontSize: 18)),
+            title: Text(
+              widget.user.userFullname,
+              style: const TextStyle(fontSize: 18),
+            ),
           ),
           onTap: () {
             /// Go to profile screen
-            Navigator.of(context).push(MaterialPageRoute(
+            Navigator.of(context).push(
+              MaterialPageRoute(
                 builder: (context) =>
-                    ProfileScreen(user: widget.user, showButtons: false)));
+                    ProfileScreen(user: widget.user, showButtons: false),
+              ),
+            );
           },
         ),
         actions: <Widget>[
@@ -292,44 +320,52 @@ class ChatScreenState extends State<ChatScreen> {
             itemBuilder: (context) => <PopupMenuEntry<String>>[
               /// Delete Chat
               PopupMenuItem(
-                  value: "delete_chat",
-                  child: Row(
-                    children: <Widget>[
-                      SvgIcon("assets/icons/trash_icon.svg",
-                          width: 20,
-                          height: 20,
-                          color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 5),
-                      Text(_i18n.translate("delete_conversation")),
-                    ],
-                  )),
+                value: "delete_chat",
+                child: Row(
+                  children: <Widget>[
+                    SvgIcon(
+                      "assets/icons/trash_icon.svg",
+                      width: 20,
+                      height: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(_i18n.translate("delete_conversation")),
+                  ],
+                ),
+              ),
 
               /// Delete Match
               PopupMenuItem(
-                  value: "delete_match",
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.highlight_off,
-                          color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 5),
-                      Text(_i18n.translate("delete_match"))
-                    ],
-                  )),
+                value: "delete_match",
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.highlight_off,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(_i18n.translate("delete_match")),
+                  ],
+                ),
+              ),
 
               // Show Block/Unblock User acticon
               if (_isRemoteUserBlocked != null)
                 PopupMenuItem(
-                    value: "block",
-                    child: Row(
-                      children: <Widget>[
-                        Icon(Icons.block,
-                            color: Theme.of(context).primaryColor),
-                        const SizedBox(width: 5),
-                        Text(_isRemoteUserBlocked!
+                  value: "block",
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.block, color: Theme.of(context).primaryColor),
+                      const SizedBox(width: 5),
+                      Text(
+                        _isRemoteUserBlocked!
                             ? _i18n.translate("UNBLOCK")
-                            : _i18n.translate("BLOCK"))
-                      ],
-                    )),
+                            : _i18n.translate("BLOCK"),
+                      ),
+                    ],
+                  ),
+                ),
             ],
             onSelected: (val) {
               /// Control selected value
@@ -337,55 +373,59 @@ class ChatScreenState extends State<ChatScreen> {
                 case "delete_chat":
 
                   /// Delete chat
-                  confirmDialog(context,
-                      title: _i18n.translate("delete_conversation"),
-                      message: _i18n.translate("conversation_will_be_deleted"),
-                      negativeAction: () => Navigator.of(context).pop(),
-                      positiveText: _i18n.translate("DELETE"),
-                      positiveAction: () async {
-                        // Close the confirm dialog
-                        Future(() => Navigator.of(context).pop());
+                  confirmDialog(
+                    context,
+                    title: _i18n.translate("delete_conversation"),
+                    message: _i18n.translate("conversation_will_be_deleted"),
+                    negativeAction: () => Navigator.of(context).pop(),
+                    positiveText: _i18n.translate("DELETE"),
+                    positiveAction: () async {
+                      // Close the confirm dialog
+                      Future(() => Navigator.of(context).pop());
 
-                        // Show processing dialog
-                        _pr.show(_i18n.translate("processing"));
+                      // Show processing dialog
+                      _pr.show(_i18n.translate("processing"));
 
-                        /// Delete chat
-                        await _messagesApi.deleteChat(widget.user.userId);
+                      /// Delete chat
+                      await _messagesApi.deleteChat(widget.user.userId);
 
-                        // Hide progress
-                        await _pr.hide();
-                      });
+                      // Hide progress
+                      await _pr.hide();
+                    },
+                  );
                   break;
 
                 case "delete_match":
-                  errorDialog(context,
-                      title: _i18n.translate("delete_match"),
-                      message:
-                          "${_i18n.translate("are_you_sure_you_want_to_delete_your_match_with")}: "
-                          "${widget.user.userFullname}?\n\n"
-                          "${_i18n.translate("this_action_cannot_be_reversed")}",
-                      positiveText: _i18n.translate("DELETE"),
-                      negativeAction: () => Navigator.of(context).pop(),
-                      positiveAction: () async {
-                        // Show processing dialog
-                        _pr.show(_i18n.translate("processing"));
+                  errorDialog(
+                    context,
+                    title: _i18n.translate("delete_match"),
+                    message:
+                        "${_i18n.translate("are_you_sure_you_want_to_delete_your_match_with")}: "
+                        "${widget.user.userFullname}?\n\n"
+                        "${_i18n.translate("this_action_cannot_be_reversed")}",
+                    positiveText: _i18n.translate("DELETE"),
+                    negativeAction: () => Navigator.of(context).pop(),
+                    positiveAction: () async {
+                      // Show processing dialog
+                      _pr.show(_i18n.translate("processing"));
 
-                        /// Delete match
-                        await _matchesApi.deleteMatch(widget.user.userId);
+                      /// Delete match
+                      await _matchesApi.deleteMatch(widget.user.userId);
 
-                        /// Delete chat
-                        await _messagesApi.deleteChat(widget.user.userId);
+                      /// Delete chat
+                      await _messagesApi.deleteChat(widget.user.userId);
 
-                        /// Delete like
-                        await _likesApi.deleteLike(widget.user.userId);
+                      /// Delete like
+                      await _likesApi.deleteLike(widget.user.userId);
 
-                        // Hide progress
-                        _pr.hide();
-                        // Hide dialog
-                        Future(() => Navigator.of(context).pop());
-                        // Close chat screen
-                        Future(() => Navigator.of(context).pop());
-                      });
+                      // Hide progress
+                      _pr.hide();
+                      // Hide dialog
+                      Future(() => Navigator.of(context).pop());
+                      // Close chat screen
+                      Future(() => Navigator.of(context).pop());
+                    },
+                  );
                   break;
 
                 // Handle Block/Unblock profile
@@ -414,52 +454,61 @@ class ChatScreenState extends State<ChatScreen> {
           Container(
             color: Colors.grey.withAlpha(50),
             child: ListTile(
-                leading: IconButton(
-                    icon: const SvgIcon("assets/icons/camera_icon.svg",
-                        width: 20, height: 20),
-                    onPressed: () async {
-                      /// Send image file
-                      await _getImage();
-
-                      /// Update scroll
-                      _scrollMessageList();
-                    }),
-                title: TextField(
-                  controller: _textController,
-                  minLines: 1,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                      hintText: _i18n.translate("type_a_message"),
-                      border: InputBorder.none),
-                  onChanged: (text) {
-                    setState(() {
-                      _isComposing = text.isNotEmpty;
-                    });
-                  },
+              leading: IconButton(
+                icon: const SvgIcon(
+                  "assets/icons/camera_icon.svg",
+                  width: 20,
+                  height: 20,
                 ),
-                trailing: IconButton(
-                    icon: Icon(Icons.send,
-                        color: _isComposing
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey),
-                    onPressed: _isComposing
-                        ? () async {
-                            /// Get text
-                            final text = _textController.text.trim();
+                onPressed: () async {
+                  /// Send image file
+                  await _getImage();
 
-                            /// clear input text
-                            _textController.clear();
-                            setState(() {
-                              _isComposing = false;
-                            });
+                  /// Update scroll
+                  _scrollMessageList();
+                },
+              ),
+              title: TextField(
+                controller: _textController,
+                minLines: 1,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: _i18n.translate("type_a_message"),
+                  border: InputBorder.none,
+                ),
+                onChanged: (text) {
+                  setState(() {
+                    _isComposing = text.isNotEmpty;
+                  });
+                },
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  Icons.send,
+                  color: _isComposing
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey,
+                ),
+                onPressed: _isComposing
+                    ? () async {
+                        /// Get text
+                        final text = _textController.text.trim();
 
-                            /// Send text message
-                            await _sendMessage(type: 'text', text: text);
+                        /// clear input text
+                        _textController.clear();
+                        setState(() {
+                          _isComposing = false;
+                        });
 
-                            /// Update scroll
-                            _scrollMessageList();
-                          }
-                        : null)),
+                        /// Send text message
+                        await _sendMessage(type: 'text', text: text);
+
+                        /// Update scroll
+                        _scrollMessageList();
+                      }
+                    : null,
+              ),
+            ),
           ),
         ],
       ),
@@ -469,51 +518,54 @@ class ChatScreenState extends State<ChatScreen> {
   /// Build bubble message
   Widget _showMessages() {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: _messages,
-        builder: (context, snapshot) {
-          // Check data
-          if (!snapshot.hasData) {
-            return const MyCircularProgress();
-          } else {
-            return ListView.builder(
-                controller: _messagesController,
-                reverse: true,
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  // Get message list
-                  final List<DocumentSnapshot<Map<String, dynamic>>> messages =
-                      snapshot.data!.docs.reversed.toList();
-                  // Get message doc map
-                  final Map<String, dynamic> msg = messages[index].data()!;
+      stream: _messages,
+      builder: (context, snapshot) {
+        // Check data
+        if (!snapshot.hasData) {
+          return const MyCircularProgress();
+        } else {
+          return ListView.builder(
+            controller: _messagesController,
+            reverse: true,
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              // Get message list
+              final List<DocumentSnapshot<Map<String, dynamic>>> messages =
+                  snapshot.data!.docs.reversed.toList();
+              // Get message doc map
+              final Map<String, dynamic> msg = messages[index].data()!;
 
-                  /// Variables
-                  bool isUserSender;
-                  String userPhotoLink;
-                  final bool isImage = msg[MESSAGE_TYPE] == 'image';
-                  final String textMessage = msg[MESSAGE_TEXT];
-                  final String? imageLink = msg[MESSAGE_IMG_LINK];
-                  final String timeAgo =
-                      timeago.format(msg[TIMESTAMP]?.toDate() ?? DateTime.now());
+              /// Variables
+              bool isUserSender;
+              String userPhotoLink;
+              final bool isImage = msg[MESSAGE_TYPE] == 'image';
+              final String textMessage = msg[MESSAGE_TEXT];
+              final String? imageLink = msg[MESSAGE_IMG_LINK];
+              final String timeAgo = timeago.format(
+                msg[TIMESTAMP]?.toDate() ?? DateTime.now(),
+              );
 
-                  /// Check user id to get info
-                  if (msg[USER_ID] == UserModel().user.userId) {
-                    isUserSender = true;
-                    userPhotoLink = UserModel().user.userProfilePhoto;
-                  } else {
-                    isUserSender = false;
-                    userPhotoLink = widget.user.userProfilePhoto;
-                  }
-                  // Show chat bubble
-                  return ChatMessage(
-                    isUserSender: isUserSender,
-                    isImage: isImage,
-                    userPhotoLink: userPhotoLink,
-                    textMessage: textMessage,
-                    imageLink: imageLink,
-                    timeAgo: timeAgo,
-                  );
-                });
-          }
-        });
+              /// Check user id to get info
+              if (msg[USER_ID] == UserModel().user.userId) {
+                isUserSender = true;
+                userPhotoLink = UserModel().user.userProfilePhoto;
+              } else {
+                isUserSender = false;
+                userPhotoLink = widget.user.userProfilePhoto;
+              }
+              // Show chat bubble
+              return ChatMessage(
+                isUserSender: isUserSender,
+                isImage: isImage,
+                userPhotoLink: userPhotoLink,
+                textMessage: textMessage,
+                imageLink: imageLink,
+                timeAgo: timeAgo,
+              );
+            },
+          );
+        }
+      },
+    );
   }
 }

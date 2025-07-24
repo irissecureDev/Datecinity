@@ -1,7 +1,7 @@
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/plugins/swipe_stack/swipe_stack.dart';
-import 'package:dating_app/screens/chat_screen.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/plugins/swipe_stack/swipe_stack.dart';
+import 'package:soulmate/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 
 class ItsMatchDialog extends StatelessWidget {
@@ -10,11 +10,12 @@ class ItsMatchDialog extends StatelessWidget {
   final User matchedUser;
   final bool showSwipeButton;
 
-  const ItsMatchDialog(
-      {super.key,
-      required this.matchedUser,
-      this.swipeKey,
-      this.showSwipeButton = true});
+  const ItsMatchDialog({
+    super.key,
+    required this.matchedUser,
+    this.swipeKey,
+    this.showSwipeButton = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,61 +37,77 @@ class ItsMatchDialog extends StatelessWidget {
               const SizedBox(height: 10),
 
               /// Matched User first name
-              Text(matchedUser.userFullname.split(" ")[0],
-                  style: const TextStyle(
-                      fontSize: 22,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-
-              Text(i18n.translate("likes_you_too"),
-                  style: const TextStyle(
-                      fontSize: 25,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                matchedUser.userFullname.split(" ")[0],
+                style: const TextStyle(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 10),
 
               Text(
-                  "${i18n.translate("you_and")} "
-                  "${matchedUser.userFullname.split(" ")[0]} "
-                  "${i18n.translate("liked_each_other")}",
-                  style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                i18n.translate("likes_you_too"),
+                style: const TextStyle(
+                  fontSize: 25,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              Text(
+                "${i18n.translate("you_and")} "
+                "${matchedUser.userFullname.split(" ")[0]} "
+                "${i18n.translate("liked_each_other")}",
+                style: const TextStyle(fontSize: 18, color: Colors.grey),
+              ),
               const SizedBox(height: 10),
 
               /// Send a message button
               SizedBox(
-                  height: 47,
-                  width: double.maxFinite,
-                  child: ElevatedButton(
-                      child: Text(i18n.translate("send_a_message"),
-                          style: const TextStyle(
-                              fontSize: 18, color: Colors.white)),
-                      onPressed: () {
-                        /// Close it's match dialog  first
-                        Future(() => Navigator.of(context).pop());
+                height: 47,
+                width: double.maxFinite,
+                child: ElevatedButton(
+                  child: Text(
+                    i18n.translate("send_a_message"),
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  onPressed: () {
+                    /// Close it's match dialog  first
+                    Future(() => Navigator.of(context).pop());
 
-                        /// Go to chat screen
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) =>
-                                ChatScreen(user: matchedUser)));
-                      })),
+                    /// Go to chat screen
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(user: matchedUser),
+                      ),
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: 20),
 
               /// Keep swiping button
               if (showSwipeButton)
                 SizedBox(
-                    height: 45,
-                    width: double.maxFinite,
-                    child: ElevatedButton(
-                        child: Text(i18n.translate("keep_passing"),
-                            style: const TextStyle(fontSize: 18)),
-                        onPressed: () {
-                          /// Close it's match dialog
-                          Future(() => Navigator.of(context).pop());
+                  height: 45,
+                  width: double.maxFinite,
+                  child: ElevatedButton(
+                    child: Text(
+                      i18n.translate("keep_passing"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    onPressed: () {
+                      /// Close it's match dialog
+                      Future(() => Navigator.of(context).pop());
 
-                          /// Swipe right
-                          swipeKey!.currentState!.swipeRight();
-                        })),
+                      /// Swipe right
+                      swipeKey!.currentState!.swipeRight();
+                    },
+                  ),
+                ),
             ],
           ),
         ),

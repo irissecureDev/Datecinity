@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/api/matches_api.dart';
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/chat_screen.dart';
-import 'package:dating_app/widgets/build_title.dart';
-import 'package:dating_app/widgets/loading_card.dart';
-import 'package:dating_app/widgets/no_data.dart';
-import 'package:dating_app/widgets/processing.dart';
-import 'package:dating_app/widgets/profile_card.dart';
-import 'package:dating_app/widgets/users_grid.dart';
+import 'package:soulmate/api/matches_api.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/chat_screen.dart';
+import 'package:soulmate/widgets/build_title.dart';
+import 'package:soulmate/widgets/loading_card.dart';
+import 'package:soulmate/widgets/no_data.dart';
+import 'package:soulmate/widgets/processing.dart';
+import 'package:soulmate/widgets/profile_card.dart';
+import 'package:soulmate/widgets/users_grid.dart';
 import 'package:flutter/material.dart';
 
 class MatchesTab extends StatefulWidget {
@@ -72,23 +72,28 @@ class MatchesTabState extends State<MatchesTab> {
 
           /// Load profile
           return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              future: UserModel().getUser(match.id),
-              builder: (context, snapshot) {
-                /// Check result
-                if (!snapshot.hasData) return const LoadingCard();
+            future: UserModel().getUser(match.id),
+            builder: (context, snapshot) {
+              /// Check result
+              if (!snapshot.hasData) return const LoadingCard();
 
-                /// Get user object
-                final User user = User.fromDocument(snapshot.data!.data()!);
+              /// Get user object
+              final User user = User.fromDocument(snapshot.data!.data()!);
 
-                /// Show user card
-                return GestureDetector(
-                    child: ProfileCard(user: user, page: 'matches'),
-                    onTap: () {
-                      /// Go to chat screen
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ChatScreen(user: user)));
-                    });
-              });
+              /// Show user card
+              return GestureDetector(
+                child: ProfileCard(user: user, page: 'matches'),
+                onTap: () {
+                  /// Go to chat screen
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(user: user),
+                    ),
+                  );
+                },
+              );
+            },
+          );
         },
       );
     }

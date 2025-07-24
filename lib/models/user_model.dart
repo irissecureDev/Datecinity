@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/models/app_model.dart';
-import 'package:dating_app/plugins/geoflutterfire/geoflutterfire.dart';
-import 'package:dating_app/plugins/locationpicker/place_picker.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/models/app_model.dart';
+import 'package:soulmate/plugins/geoflutterfire/geoflutterfire.dart';
+import 'package:soulmate/plugins/locationpicker/place_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -266,11 +266,11 @@ class UserModel extends Model {
 
     await _firebaseAuth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
-      verificationCompleted:
-          (authCredential) => verificationComplete(authCredential),
+      verificationCompleted: (authCredential) =>
+          verificationComplete(authCredential),
       verificationFailed: (authException) => verificationFailed(authException),
-      codeAutoRetrievalTimeout:
-          (verificationId) => codeAutoRetrievalTimeout(verificationId),
+      codeAutoRetrievalTimeout: (verificationId) =>
+          codeAutoRetrievalTimeout(verificationId),
       // called when the SMS code is sent
       codeSent: (verificationId, [code]) => smsCodeSent(verificationId, [code]),
     );
@@ -285,11 +285,11 @@ class UserModel extends Model {
     required VoidCallback onError,
   }) async {
     /// Get AuthCredential
-    final fire_auth.AuthCredential credential = fire_auth
-        .PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: otp,
-    );
+    final fire_auth.AuthCredential credential =
+        fire_auth.PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: otp,
+        );
 
     /// Try to sign in with provided credential
     await _firebaseAuth
@@ -543,8 +543,8 @@ class UserModel extends Model {
   Future<void> checkUserMaxDistance() async {
     //
     // Get current user max distance
-    final double userMaxDistance =
-        user.userSettings![USER_MAX_DISTANCE].toDouble();
+    final double userMaxDistance = user.userSettings![USER_MAX_DISTANCE]
+        .toDouble();
 
     // Hold the allowed max distance
     double allowedMaxDistance = 0.0;

@@ -1,5 +1,5 @@
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/widgets/default_card_border.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 
 /// Success Dialog
@@ -13,14 +13,17 @@ void successDialog(
   String? positiveText,
   VoidCallback? positiveAction,
 }) {
-  _buildDialog(context, "success",
-      message: message,
-      icon: icon,
-      title: title,
-      negativeText: negativeText,
-      negativeAction: negativeAction,
-      positiveText: positiveText,
-      positiveAction: positiveAction);
+  _buildDialog(
+    context,
+    "success",
+    message: message,
+    icon: icon,
+    title: title,
+    negativeText: negativeText,
+    negativeAction: negativeAction,
+    positiveText: positiveText,
+    positiveAction: positiveAction,
+  );
 }
 
 /// Error Dialog
@@ -34,14 +37,17 @@ void errorDialog(
   String? positiveText,
   VoidCallback? positiveAction,
 }) {
-  _buildDialog(context, "error",
-      message: message,
-      icon: icon,
-      title: title,
-      negativeText: negativeText,
-      negativeAction: negativeAction,
-      positiveText: positiveText,
-      positiveAction: positiveAction);
+  _buildDialog(
+    context,
+    "error",
+    message: message,
+    icon: icon,
+    title: title,
+    negativeText: negativeText,
+    negativeAction: negativeAction,
+    positiveText: positiveText,
+    positiveAction: positiveAction,
+  );
 }
 
 /// Confirm Dialog
@@ -55,14 +61,17 @@ void confirmDialog(
   String? positiveText,
   VoidCallback? positiveAction,
 }) {
-  _buildDialog(context, "confirm",
-      icon: icon,
-      title: title,
-      message: message,
-      negativeText: negativeText,
-      negativeAction: negativeAction,
-      positiveText: positiveText,
-      positiveAction: positiveAction);
+  _buildDialog(
+    context,
+    "confirm",
+    icon: icon,
+    title: title,
+    message: message,
+    negativeText: negativeText,
+    negativeAction: negativeAction,
+    positiveText: positiveText,
+    positiveAction: positiveAction,
+  );
 }
 
 /// Confirm Dialog
@@ -76,14 +85,17 @@ void infoDialog(
   String? positiveText,
   VoidCallback? positiveAction,
 }) {
-  _buildDialog(context, "info",
-      icon: icon,
-      title: title,
-      message: message,
-      negativeText: negativeText,
-      negativeAction: negativeAction,
-      positiveText: positiveText,
-      positiveAction: positiveAction);
+  _buildDialog(
+    context,
+    "info",
+    icon: icon,
+    title: title,
+    message: message,
+    negativeText: negativeText,
+    negativeAction: negativeAction,
+    positiveText: positiveText,
+    positiveAction: positiveAction,
+  );
 }
 
 /// Build dialog
@@ -100,15 +112,18 @@ void _buildDialog(
 }) {
   // Variables
   final i18n = AppLocalizations.of(context);
-  final textStyle =
-      TextStyle(fontSize: 18, color: Theme.of(context).primaryColor);
+  final textStyle = TextStyle(
+    fontSize: 18,
+    color: Theme.of(context).primaryColor,
+  );
   late Widget icon0;
   late String title0;
 
   // Control type
   switch (type) {
     case "success":
-      icon0 = icon ??
+      icon0 =
+          icon ??
           const CircleAvatar(
             backgroundColor: Colors.green,
             child: Icon(Icons.check, color: Colors.white),
@@ -116,7 +131,8 @@ void _buildDialog(
       title0 = title ?? i18n.translate("success");
       break;
     case "error":
-      icon0 = icon ??
+      icon0 =
+          icon ??
           const CircleAvatar(
             backgroundColor: Colors.red,
             child: Icon(Icons.close, color: Colors.white),
@@ -124,7 +140,8 @@ void _buildDialog(
       title0 = title ?? i18n.translate("error");
       break;
     case "confirm":
-      icon0 = icon ??
+      icon0 =
+          icon ??
           const CircleAvatar(
             backgroundColor: Colors.amber,
             child: Icon(Icons.help_outline, color: Colors.white),
@@ -133,7 +150,8 @@ void _buildDialog(
       break;
 
     case "info":
-      icon0 = icon ??
+      icon0 =
+          icon ??
           const CircleAvatar(
             backgroundColor: Colors.blue,
             child: Icon(Icons.info_outline, color: Colors.white),
@@ -143,39 +161,38 @@ void _buildDialog(
   }
 
   showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape: defaultCardBorder(),
-          title: Row(
-            children: [
-              icon0,
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text(title0, style: const TextStyle(fontSize: 22)))
-            ],
-          ),
-          content: Text(
-            message,
-            style: const TextStyle(fontSize: 18),
-          ),
-          actions: [
-            /// Negative button
-            negativeAction == null
-                ? const SizedBox(width: 0, height: 0)
-                : TextButton(
-                    onPressed: negativeAction,
-                    child: Text(negativeText ?? i18n.translate("CANCEL"),
-                        style:
-                            const TextStyle(fontSize: 18, color: Colors.grey))),
-
-            /// Positive button
-            TextButton(
-                onPressed: positiveAction ?? () => Navigator.of(context).pop(),
-                child: Text(positiveText ?? i18n.translate("OK"),
-                    style: textStyle)),
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        shape: defaultCardBorder(),
+        title: Row(
+          children: [
+            icon0,
+            const SizedBox(width: 10),
+            Expanded(child: Text(title0, style: const TextStyle(fontSize: 22))),
           ],
-        );
-      });
+        ),
+        content: Text(message, style: const TextStyle(fontSize: 18)),
+        actions: [
+          /// Negative button
+          negativeAction == null
+              ? const SizedBox(width: 0, height: 0)
+              : TextButton(
+                  onPressed: negativeAction,
+                  child: Text(
+                    negativeText ?? i18n.translate("CANCEL"),
+                    style: const TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                ),
+
+          /// Positive button
+          TextButton(
+            onPressed: positiveAction ?? () => Navigator.of(context).pop(),
+            child: Text(positiveText ?? i18n.translate("OK"), style: textStyle),
+          ),
+        ],
+      );
+    },
+  );
 }

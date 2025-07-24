@@ -1,12 +1,12 @@
-import 'package:dating_app/dialogs/common_dialogs.dart';
-import 'package:dating_app/dialogs/progress_dialog.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/plugins/otp_screen/otp_screen.dart';
-import 'package:dating_app/screens/home_screen.dart';
-import 'package:dating_app/screens/sign_up_screen.dart';
-import 'package:dating_app/screens/update_location_sceen.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/dialogs/common_dialogs.dart';
+import 'package:soulmate/dialogs/progress_dialog.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/plugins/otp_screen/otp_screen.dart';
+import 'package:soulmate/screens/home_screen.dart';
+import 'package:soulmate/screens/sign_up_screen.dart';
+import 'package:soulmate/screens/update_location_sceen.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class VerificationCodeScreen extends StatefulWidget {
@@ -14,10 +14,7 @@ class VerificationCodeScreen extends StatefulWidget {
   final String verificationId;
 
   // Constructor
-  const VerificationCodeScreen({
-    super.key,
-    required this.verificationId,
-  });
+  const VerificationCodeScreen({super.key, required this.verificationId});
 
   @override
   VerificationCodeScreenState createState() => VerificationCodeScreenState();
@@ -33,7 +30,9 @@ class VerificationCodeScreenState extends State<VerificationCodeScreen> {
     // Go to next page route
     Future(() {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => screen), (route) => false);
+        MaterialPageRoute(builder: (context) => screen),
+        (route) => false,
+      );
     });
   }
 
@@ -45,24 +44,28 @@ class VerificationCodeScreenState extends State<VerificationCodeScreen> {
     _pr.show(_i18n.translate("processing"));
 
     await UserModel().signInWithOTP(
-        verificationId: widget.verificationId,
-        otp: otp,
-        checkUserAccount: () {
-          /// Auth user account
-          UserModel().authUserAccount(
-              updateLocationScreen: () =>
-                  _nextScreen(const UpdateLocationScreen()),
-              homeScreen: () => _nextScreen(const HomeScreen()),
-              signUpScreen: () => _nextScreen(const SignUpScreen()));
-        },
-        onError: () async {
-          // Hide dialog
-          await _pr.hide();
-          // Show error message to user
-          Future(() => errorDialog(context,
-              message:
-                  _i18n.translate("we_were_unable_to_verify_your_number")));
-        });
+      verificationId: widget.verificationId,
+      otp: otp,
+      checkUserAccount: () {
+        /// Auth user account
+        UserModel().authUserAccount(
+          updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
+          homeScreen: () => _nextScreen(const HomeScreen()),
+          signUpScreen: () => _nextScreen(const SignUpScreen()),
+        );
+      },
+      onError: () async {
+        // Hide dialog
+        await _pr.hide();
+        // Show error message to user
+        Future(
+          () => errorDialog(
+            context,
+            message: _i18n.translate("we_were_unable_to_verify_your_number"),
+          ),
+        );
+      },
+    );
 
     // Hide progress dialog
     await _pr.hide();
@@ -85,8 +88,12 @@ class VerificationCodeScreenState extends State<VerificationCodeScreen> {
       icon: CircleAvatar(
         radius: 50,
         backgroundColor: Colors.white,
-        child: SvgIcon("assets/icons/phone_icon.svg",
-            width: 40, height: 40, color: Theme.of(context).primaryColor),
+        child: SvgIcon(
+          "assets/icons/phone_icon.svg",
+          width: 40,
+          height: 40,
+          color: Theme.of(context).primaryColor,
+        ),
       ),
       title: _i18n.translate("verification_code"),
       subTitle: _i18n.translate("please_enter_the_sms_code_sent"),

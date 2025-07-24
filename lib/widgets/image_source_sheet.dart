@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,23 +22,24 @@ class ImageSourceSheet extends StatelessWidget {
     // Check file
     if (image != null) {
       CroppedFile? croppedFile = await ImageCropper().cropImage(
-          sourcePath: image.path,
-          maxWidth: 400,
-          maxHeight: 400,
-          uiSettings: [
-            AndroidUiSettings(
-              toolbarTitle: i18n.translate("edit_crop_image"),
-              toolbarColor: Theme.of(context).primaryColor,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false,
-              aspectRatioPresets: [CropAspectRatioPreset.square],
-            ),
-            IOSUiSettings(
-              title: i18n.translate("edit_crop_image"),
-              aspectRatioPresets: [CropAspectRatioPreset.square],
-            ),
-          ]);
+        sourcePath: image.path,
+        maxWidth: 400,
+        maxHeight: 400,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: i18n.translate("edit_crop_image"),
+            toolbarColor: Theme.of(context).primaryColor,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+            aspectRatioPresets: [CropAspectRatioPreset.square],
+          ),
+          IOSUiSettings(
+            title: i18n.translate("edit_crop_image"),
+            aspectRatioPresets: [CropAspectRatioPreset.square],
+          ),
+        ],
+      );
       // Hold the file
       File? imageFile;
       // Check
@@ -83,8 +84,9 @@ class ImageSourceSheet extends StatelessWidget {
                 ),
               ),
               IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close, color: Colors.grey))
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, color: Colors.grey),
+              ),
             ],
           ),
 
@@ -94,10 +96,15 @@ class ImageSourceSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: TextButton.icon(
-              icon:
-                  const Icon(Icons.photo_library, color: Colors.grey, size: 27),
-              label: Text(i18n.translate("gallery"),
-                  style: const TextStyle(fontSize: 16)),
+              icon: const Icon(
+                Icons.photo_library,
+                color: Colors.grey,
+                size: 27,
+              ),
+              label: Text(
+                i18n.translate("gallery"),
+                style: const TextStyle(fontSize: 16),
+              ),
               onPressed: () async {
                 // Get image from device gallery
                 final pickedFile = await picker.pickImage(
@@ -113,10 +120,15 @@ class ImageSourceSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: TextButton.icon(
-              icon: const SvgIcon("assets/icons/camera_icon.svg",
-                  width: 20, height: 20),
-              label: Text(i18n.translate("camera"),
-                  style: const TextStyle(fontSize: 16)),
+              icon: const SvgIcon(
+                "assets/icons/camera_icon.svg",
+                width: 20,
+                height: 20,
+              ),
+              label: Text(
+                i18n.translate("camera"),
+                style: const TextStyle(fontSize: 16),
+              ),
               onPressed: () async {
                 // Capture image from camera
                 final pickedFile = await picker.pickImage(

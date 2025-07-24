@@ -1,5 +1,5 @@
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class TermsOfServiceRow extends StatelessWidget {
@@ -22,10 +22,11 @@ class TermsOfServiceRow extends StatelessWidget {
           child: Text(
             i18n.translate("terms_of_service"),
             style: TextStyle(
-                color: color,
-                fontSize: 17,
-                decoration: TextDecoration.underline,
-                fontWeight: FontWeight.bold),
+              color: color,
+              fontSize: 17,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           onTap: () {
             // Open terms of service page in browser
@@ -35,16 +36,20 @@ class TermsOfServiceRow extends StatelessWidget {
         Text(
           ' | ',
           style: TextStyle(
-              color: color, fontSize: 17, fontWeight: FontWeight.bold),
+            color: color,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         GestureDetector(
           child: Text(
             i18n.translate("privacy_policy"),
             style: TextStyle(
-                color: color,
-                fontSize: 17,
-                decoration: TextDecoration.underline,
-                fontWeight: FontWeight.bold),
+              color: color,
+              fontSize: 17,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           onTap: () {
             // Open privacy policy page in browser

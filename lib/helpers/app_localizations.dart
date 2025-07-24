@@ -1,12 +1,10 @@
-
 import 'dart:convert';
 
-import 'package:dating_app/constants/constants.dart';
+import 'package:soulmate/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppLocalizations {
-
   final Locale locale;
 
   // Constructor
@@ -14,44 +12,42 @@ class AppLocalizations {
 
   // Helper method to keep the code in widgets concise
   // Localizations are accessed using an InheritedWidget "of syntax"
- static AppLocalizations of(BuildContext context) {
-   return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
- }
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
 
+  // Localized strings map
+  late Map<String, String> _localizedStrings;
 
- // Localized strings map
- late Map<String, String> _localizedStrings;
+  // Load the json language file from the "lang folder"
+  Future<bool> load() async {
+    final String jsonLang = await rootBundle.loadString(
+      'assets/lang/${locale.languageCode}.json',
+    );
+    // Decode string result
+    final Map<String, dynamic> langMap = json.decode(jsonLang);
+    _localizedStrings = langMap.map(
+      (key, value) => MapEntry(key, value.toString()),
+    );
 
- // Load the json language file from the "lang folder"
- Future<bool> load() async {
-   final String jsonLang =
-   await rootBundle.loadString('assets/lang/${locale.languageCode}.json');
-   // Decode string result
-   final Map<String, dynamic> langMap = json.decode(jsonLang);
-   _localizedStrings =
-       langMap.map((key, value) => MapEntry(key, value.toString()));
+    return true;
+  }
 
-   return true;
- }
+  // Translate method - will be called from every widget which needs a localized text
+  String translate(String key) {
+    return _localizedStrings[key] ?? '';
+  }
 
- // Translate method - will be called from every widget which needs a localized text
- String translate(String key) {
-   return _localizedStrings[key] ?? '';
- }
-
-
- // Static member to have a simple access to the delegate from the MaterialApp
- static const LocalizationsDelegate<AppLocalizations> delegate =
-     _AppLocalizationsDelegate();
+  // Static member to have a simple access to the delegate from the MaterialApp
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 }
-
-
 
 // LocalizationsDelegate is a factory for a set of localized resources
 // In this case, the localized strings will be gotten in an AppLocalizations
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
-
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   // This delegate will never change (it doesn't even have fields)
   const _AppLocalizationsDelegate();
 
@@ -70,5 +66,4 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 
   @override
   bool shouldReload(LocalizationsDelegate<AppLocalizations> old) => false;
-
 }

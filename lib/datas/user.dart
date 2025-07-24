@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/constants/constants.dart';
+import 'package:soulmate/constants/constants.dart';
 
 class User {
   /// User info

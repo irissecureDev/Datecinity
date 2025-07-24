@@ -1,9 +1,9 @@
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/screens/phone_number_screen.dart';
-import 'package:dating_app/widgets/app_logo.dart';
-import 'package:dating_app/widgets/default_button.dart';
-import 'package:dating_app/widgets/terms_of_service_row.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/screens/phone_number_screen.dart';
+import 'package:soulmate/widgets/app_logo.dart';
+import 'package:soulmate/widgets/default_button.dart';
+import 'package:soulmate/widgets/terms_of_service_row.dart';
 import 'package:flutter/material.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -35,10 +35,14 @@ class SignInScreenState extends State<SignInScreen> {
         ),
         child: Container(
           decoration: BoxDecoration(
-              gradient: LinearGradient(begin: Alignment.bottomRight, colors: [
-            Theme.of(context).primaryColor,
-            Colors.black.withValues(alpha: .4)
-          ])),
+            gradient: LinearGradient(
+              begin: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).primaryColor,
+                Colors.black.withValues(alpha: .4),
+              ],
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -47,23 +51,30 @@ class SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 10),
 
               /// App name
-              const Text(APP_NAME,
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+              const Text(
+                APP_NAME,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
 
               const SizedBox(height: 10),
 
-              Text(_i18n.translate("welcome_back"),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18, color: Colors.white)),
+              Text(
+                _i18n.translate("welcome_back"),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
 
               const SizedBox(height: 10),
 
-              Text(_i18n.translate("app_short_description"),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18, color: Colors.white)),
+              Text(
+                _i18n.translate("app_short_description"),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
 
               const SizedBox(height: 50),
 
@@ -73,12 +84,17 @@ class SignInScreenState extends State<SignInScreen> {
                 child: SizedBox(
                   width: double.maxFinite,
                   child: DefaultButton(
-                    child: Text(_i18n.translate("sign_in_with_phone_number"),
-                        style: const TextStyle(fontSize: 18)),
+                    child: Text(
+                      _i18n.translate("sign_in_with_phone_number"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
                     onPressed: () {
                       /// Go to phone number screen
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const PhoneNumberScreen()));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const PhoneNumberScreen(),
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -89,12 +105,12 @@ class SignInScreenState extends State<SignInScreen> {
               Text(
                 _i18n.translate("by_tapping_log_in_you_agree_with_our"),
                 style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(
-                height: 7,
-              ),
+              const SizedBox(height: 7),
               TermsOfServiceRow(),
 
               const SizedBox(height: 15),

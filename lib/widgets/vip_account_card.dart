@@ -1,6 +1,6 @@
-import 'package:dating_app/dialogs/vip_dialog.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/widgets/default_card_border.dart';
+import 'package:soulmate/dialogs/vip_dialog.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 
 class VipAccountCard extends StatelessWidget {
@@ -16,15 +16,19 @@ class VipAccountCard extends StatelessWidget {
       elevation: 4.0,
       shape: defaultCardBorder(),
       child: ListTile(
-        leading: Image.asset("assets/images/crow_badge_small.png",
-            width: 35, height: 35),
-        title: Text(i18n.translate("vip_account"),
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        leading: Image.asset(
+          "assets/images/crow_badge_small.png",
+          width: 35,
+          height: 35,
+        ),
+        title: Text(
+          i18n.translate("vip_account"),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         trailing: const Icon(Icons.arrow_forward),
         onTap: () {
           /// Show VIP dialog
-          showDialog(context: context, 
-            builder: (context) => const VipDialog());
+          showDialog(context: context, builder: (context) => const VipDialog());
         },
       ),
     );

@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:dating_app/dialogs/common_dialogs.dart';
-import 'package:dating_app/dialogs/progress_dialog.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/home_screen.dart';
-import 'package:dating_app/widgets/default_button.dart';
+import 'package:soulmate/dialogs/common_dialogs.dart';
+import 'package:soulmate/dialogs/progress_dialog.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/home_screen.dart';
+import 'package:soulmate/widgets/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -33,7 +33,9 @@ class UpdateLocationScreenState extends State<UpdateLocationScreen> {
     // Go to next page route
     Future(() {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => screen), (route) => false);
+        MaterialPageRoute(builder: (context) => screen),
+        (route) => false,
+      );
     });
   }
 
@@ -65,78 +67,103 @@ class UpdateLocationScreenState extends State<UpdateLocationScreen> {
     _pr.show(_i18n.translate('processing'));
 
     /// Check location permission
-    await _appHelper.checkLocationPermission(onGpsDisabled: () async {
-      // Hide progress dialog
-      await _pr.hide();
-      // Show error message
-      Future(() => errorDialog(context,
-          message: _i18n.translate(
-              "we_were_unable_to_get_your_current_location_please_enable_gps_to_continue")));
-    }, onDenied: () async {
-      // Hide progress dialog
-      await _pr.hide();
-      // Show error message
-      Future(() => errorDialog(context,
-          message: _i18n.translate("location_permissions_are_denied")));
-    }, onGranted: () async {
-      //
-      // Get User current location
-      //
-      await _appHelper.getUserCurrentLocation(
-          onSuccess: (Position position) async {
-        // Debug
-        debugPrint("User Position result: $position");
-        // Get user readable address
-        final Placemark place = await _appHelper.getUserAddress(
-            position.latitude, position.longitude);
-
-        // Debug placemark address
-        debugPrint("User Address result: $place");
-
-        // Get locality
-        String? locality;
-        // Check locality
-        if (place.locality == '') {
-          locality = place.administrativeArea;
-        } else {
-          locality = place.locality;
-        }
-
-        // Update User location
-        await _appHelper.updateUserLocation(
-            userId: UserModel().getFirebaseUser!.uid, // widget.userId
-            latitude: position.latitude,
-            longitude: position.longitude,
-            country: place.country.toString(),
-            locality: locality.toString());
-
+    await _appHelper.checkLocationPermission(
+      onGpsDisabled: () async {
         // Hide progress dialog
         await _pr.hide();
+        // Show error message
+        Future(
+          () => errorDialog(
+            context,
+            message: _i18n.translate(
+              "we_were_unable_to_get_your_current_location_please_enable_gps_to_continue",
+            ),
+          ),
+        );
+      },
+      onDenied: () async {
+        // Hide progress dialog
+        await _pr.hide();
+        // Show error message
+        Future(
+          () => errorDialog(
+            context,
+            message: _i18n.translate("location_permissions_are_denied"),
+          ),
+        );
+      },
+      onGranted: () async {
+        //
+        // Get User current location
+        //
+        await _appHelper.getUserCurrentLocation(
+          onSuccess: (Position position) async {
+            // Debug
+            debugPrint("User Position result: $position");
+            // Get user readable address
+            final Placemark place = await _appHelper.getUserAddress(
+              position.latitude,
+              position.longitude,
+            );
 
-        // Show success message
-        Future(() => successDialog(context,
-            message: '${_i18n.translate("location_updated_successfully")}\n\n'
-                '${place.country}, $locality', positiveAction: () {
-          // Check
-          if (widget.isSignUpProcess) {
-            // Go to home screen
-            _nextScreen(const HomeScreen());
-          } else {
-            // Close dialog
-            Future(() => Navigator.of(context).pop());
-            // Close current screen
-            Future(() => Navigator.of(context).pop());
-          }
-        }));
-      }, onTimeoutException: (exception) async {
-        // Show timeout error message
-        _showTimeoutErrorMessage(context);
-      }, onFail: (error) {
-        // Show fail error message
-        _showFailErrorMessage(context);
-      });
-      // End
-    });
+            // Debug placemark address
+            debugPrint("User Address result: $place");
+
+            // Get locality
+            String? locality;
+            // Check locality
+            if (place.locality == '') {
+              locality = place.administrativeArea;
+            } else {
+              locality = place.locality;
+            }
+
+            // Update User location
+            await _appHelper.updateUserLocation(
+              userId: UserModel().getFirebaseUser!.uid, // widget.userId
+              latitude: position.latitude,
+              longitude: position.longitude,
+              country: place.country.toString(),
+              locality: locality.toString(),
+            );
+
+            // Hide progress dialog
+            await _pr.hide();
+
+            // Show success message
+            Future(
+              () => successDialog(
+                context,
+                message:
+                    '${_i18n.translate("location_updated_successfully")}\n\n'
+                    '${place.country}, $locality',
+                positiveAction: () {
+                  // Check
+                  if (widget.isSignUpProcess) {
+                    // Go to home screen
+                    _nextScreen(const HomeScreen());
+                  } else {
+                    // Close dialog
+                    Future(() => Navigator.of(context).pop());
+                    // Close current screen
+                    Future(() => Navigator.of(context).pop());
+                  }
+                },
+              ),
+            );
+          },
+          onTimeoutException: (exception) async {
+            // Show timeout error message
+            _showTimeoutErrorMessage(context);
+          },
+          onFail: (error) {
+            // Show fail error message
+            _showFailErrorMessage(context);
+          },
+        );
+        // End
+      },
+    );
   }
 
   @override
@@ -176,30 +203,44 @@ class UpdateLocationScreenState extends State<UpdateLocationScreen> {
           child: Column(
             children: [
               // Location icon
-              Icon(Icons.location_on,
-                  size: 100, color: Theme.of(context).primaryColor),
+              Icon(
+                Icons.location_on,
+                size: 100,
+                color: Theme.of(context).primaryColor,
+              ),
               const SizedBox(height: 5),
               // Title description
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
                 child: Text(
-                    _i18n.translate(
-                        'the_app_needs_your_permission_to_access_your_device_current_location'),
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.center),
+                  _i18n.translate(
+                    'the_app_needs_your_permission_to_access_your_device_current_location',
+                  ),
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 20),
               // Get current location button
               DefaultButton(
-                  child: Text(_i18n.translate('GET_LOCATION'),
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                  onPressed: () async {
-                    // Get location permission
-                    _getLocationPermission(context);
-                  })
+                child: Text(
+                  _i18n.translate('GET_LOCATION'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onPressed: () async {
+                  // Get location permission
+                  _getLocationPermission(context);
+                },
+              ),
             ],
           ),
         ),

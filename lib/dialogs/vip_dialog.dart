@@ -1,9 +1,9 @@
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/models/app_model.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/widgets/store_products.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/models/app_model.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/widgets/store_products.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -17,8 +17,9 @@ class VipDialog extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
       child: Card(
         clipBehavior: Clip.antiAlias,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
         child: Column(
           children: <Widget>[
             Stack(
@@ -29,48 +30,60 @@ class VipDialog extends StatelessWidget {
                     children: <Widget>[
                       /// User image
                       Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: Image.asset('assets/images/crow_badge.png'),
-                          )),
+                        padding: const EdgeInsets.all(10),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: Image.asset('assets/images/crow_badge.png'),
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(5),
-                        child: Text(i18n.translate("vip_account"),
-                            style: const TextStyle(
-                                fontSize: 25,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
+                        child: Text(
+                          i18n.translate("vip_account"),
+                          style: const TextStyle(
+                            fontSize: 25,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       ListTile(
                         leading: CircleAvatar(
                           radius: 25,
                           backgroundColor: Theme.of(context).primaryColor,
-                          backgroundImage:
-                              NetworkImage(UserModel().user.userProfilePhoto),
+                          backgroundImage: NetworkImage(
+                            UserModel().user.userProfilePhoto,
+                          ),
                         ),
                         title: Text(
-                            '${i18n.translate("hello")} ${UserModel().user.userFullname.split(' ')[0]}, '
-                            '${i18n.translate("become_a_vip_member_and_enjoy_the_benefits_below")}',
-                            style: const TextStyle(
-                                fontSize: 18, color: Colors.white),
-                            textAlign: TextAlign.center),
+                          '${i18n.translate("hello")} ${UserModel().user.userFullname.split(' ')[0]}, '
+                          '${i18n.translate("become_a_vip_member_and_enjoy_the_benefits_below")}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      const SizedBox(height: 8)
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
                 Positioned(
                   right: 0,
                   child: IconButton(
-                      icon: const Icon(Icons.cancel,
-                          color: Colors.white, size: 35),
-                      onPressed: () {
-                        /// Close Dialog
-                        Future(() => Navigator.of(context).pop());
-                      }),
-                )
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: Colors.white,
+                      size: 35,
+                    ),
+                    onPressed: () {
+                      /// Close Dialog
+                      Future(() => Navigator.of(context).pop());
+                    },
+                  ),
+                ),
               ],
             ),
 
@@ -82,17 +95,24 @@ class VipDialog extends StatelessWidget {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(i18n.translate("vip_subscriptions"),
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      i18n.translate("vip_subscriptions"),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
                   /// VIP Subscriptions
                   StoreProducts(
                     priceColor: Colors.green,
-                    icon: Image.asset('assets/images/crow_badge.png',
-                        width: 50, height: 50),
+                    icon: Image.asset(
+                      'assets/images/crow_badge.png',
+                      width: 50,
+                      height: 50,
+                    ),
                   ),
                   const Divider(thickness: 1, height: 30),
 
@@ -102,10 +122,12 @@ class VipDialog extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                            i18n.translate(
-                                'have_you_already_purchased_a_VIP_account'),
-                            style: const TextStyle(fontSize: 16),
-                            textAlign: TextAlign.center),
+                          i18n.translate(
+                            'have_you_already_purchased_a_VIP_account',
+                          ),
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(height: 10),
                         // Restore subscription button
                         TextButton.icon(
@@ -146,9 +168,13 @@ class VipDialog extends StatelessWidget {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8),
-                    child: Text(i18n.translate("benefits"),
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      i18n.translate("benefits"),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
@@ -159,10 +185,15 @@ class VipDialog extends StatelessWidget {
                       backgroundColor: Theme.of(context).primaryColor,
                       child: const Icon(Icons.flight, color: Colors.white),
                     ),
-                    title: Text(i18n.translate("passport"),
-                        style: const TextStyle(fontSize: 18)),
-                    subtitle: Text(i18n.translate(
-                        "travel_to_any_country_or_city_and_match_with_people_there")),
+                    title: Text(
+                      i18n.translate("passport"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      i18n.translate(
+                        "travel_to_any_country_or_city_and_match_with_people_there",
+                      ),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
@@ -171,14 +202,20 @@ class VipDialog extends StatelessWidget {
                     leading: const CircleAvatar(
                       radius: 18,
                       backgroundColor: Colors.purple,
-                      child:
-                          Icon(Icons.location_on_outlined, color: Colors.white),
+                      child: Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.white,
+                      ),
                     ),
-                    title: Text(i18n.translate("discover_more_people"),
-                        style: const TextStyle(fontSize: 18)),
-                    subtitle: Text("${i18n.translate('get')} "
-                        "${AppModel().appInfo.vipAccountMaxDistance} km "
-                        "${i18n.translate('radius_away')}"),
+                    title: Text(
+                      i18n.translate("discover_more_people"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      "${i18n.translate('get')} "
+                      "${AppModel().appInfo.vipAccountMaxDistance} km "
+                      "${i18n.translate('radius_away')}",
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
@@ -190,11 +227,16 @@ class VipDialog extends StatelessWidget {
                       child: Icon(Icons.camera_alt, color: Colors.white),
                     ),
                     title: Text(
-                        i18n.translate(
-                            "add_more_pictures_on_your_profile_gallery"),
-                        style: const TextStyle(fontSize: 18)),
-                    subtitle: Text(i18n.translate(
-                        "make_your_profile_attractive_by_adding_more_photos")),
+                      i18n.translate(
+                        "add_more_pictures_on_your_profile_gallery",
+                      ),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      i18n.translate(
+                        "make_your_profile_attractive_by_adding_more_photos",
+                      ),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
@@ -205,10 +247,15 @@ class VipDialog extends StatelessWidget {
                       backgroundColor: Colors.pinkAccent,
                       child: Icon(Icons.favorite, color: Colors.white),
                     ),
-                    title: Text(i18n.translate("see_people_who_liked_you"),
-                        style: const TextStyle(fontSize: 18)),
-                    subtitle: Text(i18n.translate(
-                        "unravel_the_mystery_and_find_out_who_liked_you")),
+                    title: Text(
+                      i18n.translate("see_people_who_liked_you"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      i18n.translate(
+                        "unravel_the_mystery_and_find_out_who_liked_you",
+                      ),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
@@ -220,10 +267,14 @@ class VipDialog extends StatelessWidget {
                       child: Icon(Icons.remove_red_eye, color: Colors.white),
                     ),
                     title: Text(
-                        i18n.translate("see_people_who_visited_your_profile"),
-                        style: const TextStyle(fontSize: 18)),
-                    subtitle: Text(i18n.translate(
-                        "unravel_the_mystery_and_find_out_who_visited_your_profile")),
+                      i18n.translate("see_people_who_visited_your_profile"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      i18n.translate(
+                        "unravel_the_mystery_and_find_out_who_visited_your_profile",
+                      ),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
@@ -234,21 +285,32 @@ class VipDialog extends StatelessWidget {
                       backgroundColor: Theme.of(context).primaryColor,
                       child: const Icon(Icons.close, color: Colors.white),
                     ),
-                    title: Text(i18n.translate("see_people_you_have_rejected"),
-                        style: const TextStyle(fontSize: 18)),
+                    title: Text(
+                      i18n.translate("see_people_you_have_rejected"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
                     subtitle: Text(
-                        i18n.translate("retrieve_and_review_all_profiles")),
+                      i18n.translate("retrieve_and_review_all_profiles"),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
                   /// Verified account badge
                   ListTile(
-                    leading: Image.asset('assets/images/verified_badge.png',
-                        width: 40, height: 40),
-                    title: Text(i18n.translate("verified_account_badge"),
-                        style: const TextStyle(fontSize: 18)),
-                    subtitle: Text(i18n.translate(
-                        "let_other_users_know_that_you_are_a_real_person")),
+                    leading: Image.asset(
+                      'assets/images/verified_badge.png',
+                      width: 40,
+                      height: 40,
+                    ),
+                    title: Text(
+                      i18n.translate("verified_account_badge"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      i18n.translate(
+                        "let_other_users_know_that_you_are_a_real_person",
+                      ),
+                    ),
                   ),
                   const Divider(height: 10, thickness: 1),
 
@@ -259,15 +321,17 @@ class VipDialog extends StatelessWidget {
                       backgroundColor: Colors.red,
                       child: Icon(Icons.block, color: Colors.white),
                     ),
-                    title: Text(i18n.translate("no_ads"),
-                        style: const TextStyle(fontSize: 18)),
+                    title: Text(
+                      i18n.translate("no_ads"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
                     subtitle: Text(i18n.translate("have_a_unique_experience")),
                   ),
                   const Divider(height: 10, thickness: 1),
-                  const SizedBox(height: 15)
+                  const SizedBox(height: 15),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

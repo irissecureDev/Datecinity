@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:dating_app/helpers/app_helper.dart';
-import 'package:dating_app/helpers/app_localizations.dart';
-import 'package:dating_app/screens/about_us_screen.dart';
-import 'package:dating_app/widgets/default_card_border.dart';
-import 'package:dating_app/widgets/svg_icon.dart';
+import 'package:soulmate/helpers/app_helper.dart';
+import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:soulmate/screens/about_us_screen.dart';
+import 'package:soulmate/widgets/default_card_border.dart';
+import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class AppSectionCard extends StatelessWidget {
@@ -32,24 +32,29 @@ class AppSectionCard extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(i18n.translate("application"),
-                style: const TextStyle(fontSize: 20, color: Colors.grey),
-                textAlign: TextAlign.left),
+            child: Text(
+              i18n.translate("application"),
+              style: const TextStyle(fontSize: 20, color: Colors.grey),
+              textAlign: TextAlign.left,
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.info_outline, color: Colors.grey),
             title: Text(i18n.translate("about_us"), style: _textStyle),
             onTap: () {
               /// Go to About us screen
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => const AboutScreen()));
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const AboutScreen()),
+              );
             },
           ),
           const Divider(height: 0),
           ListTile(
             leading: const Icon(Icons.share, color: Colors.grey),
-            title:
-                Text(i18n.translate("share_with_friends"), style: _textStyle),
+            title: Text(
+              i18n.translate("share_with_friends"),
+              style: _textStyle,
+            ),
             onTap: () async {
               /// Share app
               _appHelper.shareApp();
@@ -57,13 +62,17 @@ class AppSectionCard extends StatelessWidget {
           ),
           const Divider(height: 0),
           ListTile(
-            leading:
-                const SvgIcon("assets/icons/star_icon.svg", width: 22, height: 22),
+            leading: const SvgIcon(
+              "assets/icons/star_icon.svg",
+              width: 22,
+              height: 22,
+            ),
             title: Text(
-                i18n.translate(Platform.isAndroid
-                    ? "rate_on_play_store"
-                    : "rate_on_app_store"),
-                style: _textStyle),
+              i18n.translate(
+                Platform.isAndroid ? "rate_on_play_store" : "rate_on_app_store",
+              ),
+              style: _textStyle,
+            ),
             onTap: () async {
               /// Rate app
               _appHelper.reviewApp();
@@ -71,8 +80,11 @@ class AppSectionCard extends StatelessWidget {
           ),
           const Divider(height: 0),
           ListTile(
-            leading:
-                const SvgIcon("assets/icons/lock_icon.svg", width: 22, height: 22),
+            leading: const SvgIcon(
+              "assets/icons/lock_icon.svg",
+              width: 22,
+              height: 22,
+            ),
             title: Text(i18n.translate("privacy_policy"), style: _textStyle),
             onTap: () async {
               /// Go to privacy policy

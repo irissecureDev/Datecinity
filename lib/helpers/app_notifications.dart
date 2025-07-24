@@ -1,10 +1,9 @@
-
-import 'package:dating_app/datas/user.dart';
-import 'package:dating_app/dialogs/common_dialogs.dart';
-import 'package:dating_app/models/user_model.dart';
-import 'package:dating_app/screens/profile_likes_screen.dart';
-import 'package:dating_app/screens/profile_screen.dart';
-import 'package:dating_app/screens/profile_visits_screen.dart';
+import 'package:soulmate/datas/user.dart';
+import 'package:soulmate/dialogs/common_dialogs.dart';
+import 'package:soulmate/models/user_model.dart';
+import 'package:soulmate/screens/profile_likes_screen.dart';
+import 'package:soulmate/screens/profile_screen.dart';
+import 'package:soulmate/screens/profile_visits_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppNotifications {
@@ -29,7 +28,8 @@ class AppNotifications {
         } else {
           /// Go Profile Likes Screen
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const ProfileLikesScreen()));
+            MaterialPageRoute(builder: (context) => const ProfileLikesScreen()),
+          );
         }
         break;
       case 'visit':
@@ -41,7 +41,10 @@ class AppNotifications {
         } else {
           /// Go Profile Visits Screen
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const ProfileVisitsScreen()));
+            MaterialPageRoute(
+              builder: (context) => const ProfileVisitsScreen(),
+            ),
+          );
         }
         break;
 
@@ -62,7 +65,10 @@ class AppNotifications {
     final User user = await UserModel().getUserObject(userSenderId);
 
     /// Go direct to profile
-    Future(() => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => ProfileScreen(user: user))));
+    Future(
+      () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => ProfileScreen(user: user)),
+      ),
+    );
   }
 }

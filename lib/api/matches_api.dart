@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/constants/constants.dart';
-import 'package:dating_app/models/user_model.dart';
+import 'package:soulmate/constants/constants.dart';
+import 'package:soulmate/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class MatchesApi {
@@ -51,36 +51,39 @@ class MatchesApi {
   }
 
   /// Check if It's Match - when onother user already liked current one
-  Future<void> checkMatch(
-      {required String userId, required Function(bool) onMatchResult}) async {
+  Future<void> checkMatch({
+    required String userId,
+    required Function(bool) onMatchResult,
+  }) async {
     _firestore
         .collection(C_LIKES)
         .where(LIKED_USER_ID, isEqualTo: UserModel().user.userId)
         .where(LIKED_BY_USER_ID, isEqualTo: userId)
         .get()
         .then((QuerySnapshot<Map<String, dynamic>> snapshot) async {
-      if (snapshot.docs.isNotEmpty) {
-        /// It's Match - show dialog
-        onMatchResult(true);
+          if (snapshot.docs.isNotEmpty) {
+            /// It's Match - show dialog
+            onMatchResult(true);
 
-        /// Save match for current user
-        await _saveMatch(
-          docUserId: UserModel().user.userId,
-          matchedWithUserId: userId,
-        );
+            /// Save match for current user
+            await _saveMatch(
+              docUserId: UserModel().user.userId,
+              matchedWithUserId: userId,
+            );
 
-        /// Save match copy for matched user
-        await _saveMatch(
-          docUserId: userId,
-          matchedWithUserId: UserModel().user.userId,
-        );
-        debugPrint('checkMatch() -> true');
-      } else {
-        onMatchResult(false);
-        debugPrint('checkMatch() -> false');
-      }
-    }).catchError((e) {
-      debugPrint('checkMatch() -> error: $e');
-    });
+            /// Save match copy for matched user
+            await _saveMatch(
+              docUserId: userId,
+              matchedWithUserId: UserModel().user.userId,
+            );
+            debugPrint('checkMatch() -> true');
+          } else {
+            onMatchResult(false);
+            debugPrint('checkMatch() -> false');
+          }
+        })
+        .catchError((e) {
+          debugPrint('checkMatch() -> error: $e');
+        });
   }
 }

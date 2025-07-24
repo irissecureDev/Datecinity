@@ -1,4 +1,4 @@
-import 'package:dating_app/plugins/swipe_stack/swipe_stack.dart';
+import 'package:soulmate/plugins/swipe_stack/swipe_stack.dart';
 import 'package:flutter/material.dart';
 
 class ShowLikeOrDislike extends StatelessWidget {
@@ -19,11 +19,14 @@ class ShowLikeOrDislike extends StatelessWidget {
             border: Border.all(color: Colors.green, width: 4),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Text('LIKE',
-              style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold)),
+          child: const Text(
+            'LIKE',
+            style: TextStyle(
+              fontSize: 50,
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
@@ -41,11 +44,14 @@ class ShowLikeOrDislike extends StatelessWidget {
             border: Border.all(color: Colors.red, width: 4),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Text('DISLIKE',
-              style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold)),
+          child: const Text(
+            'DISLIKE',
+            style: TextStyle(
+              fontSize: 50,
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
