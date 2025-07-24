@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.company.appname">
+    package="com.soulmate.app">
 
     <!-- For Network connection -->
     <uses-permission android:name="android.permission.INTERNET"/>
