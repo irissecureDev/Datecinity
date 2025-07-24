@@ -1,4 +1,4 @@
-package com.soulmate.app
+package co.soulmate.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD9GF3oWC9JNXlq0NuFKlwWmUJCkEta2XI',
-    appId: '1:703710872133:android:312bbfdf601661cbf3d92c',
+    appId: '1:703710872133:android:62cd0a6c70c5a03cf3d92c',
     messagingSenderId: '703710872133',
     projectId: 'soulmate-46367',
     storageBucket: 'soulmate-46367.firebasestorage.app',
@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDbJmYQYlkGbV7cQUMkgpxhBUyWLMqkXXY',
-    appId: '1:703710872133:ios:57871debfdf00f24f3d92c',
+    appId: '1:703710872133:ios:0c5dff5d452dda0ff3d92c',
     messagingSenderId: '703710872133',
     projectId: 'soulmate-46367',
     storageBucket: 'soulmate-46367.firebasestorage.app',
-    iosBundleId: 'com.soulmate.app',
+    iosBundleId: 'co.soulmate.app',
   );
 
 }

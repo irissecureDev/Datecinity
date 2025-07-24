@@ -3,7 +3,7 @@ import Flutter
 import Firebase
 import GoogleMaps
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
     _ application: UIApplication,
@@ -27,7 +27,7 @@ import GoogleMaps
     application.registerForRemoteNotifications()
     FirebaseApp.configure()
     // Passport feature config: Add your iOS API KEY for Google MAPS 
-    GMSServices.provideAPIKey("YOUR iOS API KEY")
+    GMSServices.provideAPIKey("AIzaSyD8eHcPGKWn_d_zVu0_ooDtuBq_3rWx_S0")
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

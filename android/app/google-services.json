@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:703710872133:android:62cd0a6c70c5a03cf3d92c",
+        "android_client_info": {
+          "package_name": "co.soulmate.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9GF3oWC9JNXlq0NuFKlwWmUJCkEta2XI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:703710872133:android:b3be26597a22b90bf3d92c",
         "android_client_info": {
           "package_name": "com.company.appname"
