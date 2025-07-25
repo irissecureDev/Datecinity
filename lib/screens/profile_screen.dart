@@ -228,18 +228,100 @@ class ProfileScreenState extends State<ProfileScreen> {
                           const Divider(),
 
                           /// Profile bio
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              _i18n.translate("bio"),
-                              style: TextStyle(
-                                fontSize: 22,
-                                color: Theme.of(context).primaryColor,
-                              ),
+                          Text(
+                            _i18n.translate("bio"),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
                           Text(
                             widget.user.userBio,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20.0),
+
+                          Text(
+                            _i18n.translate("religion"),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Text(
+                            widget.user.religion,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20.0),
+
+                          Text(
+                            _i18n.translate("education"),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Text(
+                            widget.user.education,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20.0),
+
+                          Text(
+                            _i18n.translate("languages"),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Text(
+                            widget.user.languages.join(", "),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20.0),
+
+                          Text(
+                            _i18n.translate("hobbies"),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Text(
+                            widget.user.hobbies.join(", "),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20.0),
+
+                          Text(
+                            _i18n.translate("pets"),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Text(
+                            widget.user.pets.join(", "),
                             style: const TextStyle(
                               fontSize: 18,
                               color: Colors.grey,
