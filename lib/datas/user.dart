@@ -10,8 +10,11 @@ class User {
   final int userBirthDay;
   final int userBirthMonth;
   final int userBirthYear;
-  final String userSchool;
-  final String userJobTitle;
+  final String education;
+  final String religion;
+  final List<String> hobbies;
+  final List<String> pets;
+  final List<String> languages;
   final String userBio;
   final String userPhoneNumber;
   final String userEmail;
@@ -39,8 +42,6 @@ class User {
     required this.userBirthDay,
     required this.userBirthMonth,
     required this.userBirthYear,
-    required this.userSchool,
-    required this.userJobTitle,
     required this.userBio,
     required this.userPhoneNumber,
     required this.userEmail,
@@ -58,6 +59,11 @@ class User {
     required this.userTotalLikes,
     required this.userTotalVisits,
     required this.userTotalDisliked,
+    required this.education,
+    required this.religion,
+    required this.hobbies,
+    required this.languages,
+    required this.pets,
   });
 
   /// factory user object
@@ -70,8 +76,6 @@ class User {
       userBirthDay: doc[USER_BIRTH_DAY],
       userBirthMonth: doc[USER_BIRTH_MONTH],
       userBirthYear: doc[USER_BIRTH_YEAR],
-      userSchool: doc[USER_SCHOOL] ?? '',
-      userJobTitle: doc[USER_JOB_TITLE] ?? '',
       userBio: doc[USER_BIO] ?? '',
       userPhoneNumber: doc[USER_PHONE_NUMBER] ?? '',
       userEmail: doc[USER_EMAIL] ?? '',
@@ -89,6 +93,31 @@ class User {
       userTotalLikes: doc[USER_TOTAL_LIKES] ?? 0,
       userTotalVisits: doc[USER_TOTAL_VISITS] ?? 0,
       userTotalDisliked: doc[USER_TOTAL_DISLIKED] ?? 0,
+      education: doc[USER_EDUCATION] ?? "",
+      religion: doc[USER_RELIGION] ?? '',
+      pets: List<String>.from(doc[USER_PETS] ?? []),
+      hobbies: List<String>.from(doc[USER_HOBBIES] ?? []),
+      languages: List<String>.from(doc[USER_LANGUAGES] ?? []),
     );
   }
 }
+
+List<String> educationLevels = [
+  "High School",
+  "Bachelor",
+  "Master",
+  "Doctorate",
+  "None",
+  "Other",
+];
+
+List<String> religions = [
+  "Christianity",
+  "Islam",
+  "Buddhism",
+  "Judaism",
+  "Hinduism",
+  "Spiritual",
+  "None",
+  "Other",
+];

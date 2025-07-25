@@ -49,14 +49,12 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // TODO: uncomment the line below if you want to display the Ads
     // Note: before make sure to add your Interstial AD ID
     // AppAdHelper().showInterstitialAd();
   }
 
   @override
   void dispose() {
-    // TODO: uncomment the line below to dispose it.
     // AppAdHelper().disposeInterstitialAd();
     super.dispose();
   }
@@ -177,30 +175,29 @@ class ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 5),
 
                           /// Job title
-                          _rowProfileInfo(
-                            context,
-                            icon: SvgIcon(
-                              "assets/icons/job_bag_icon.svg",
-                              color: Theme.of(context).primaryColor,
-                              width: 27,
-                              height: 27,
-                            ),
-                            title: widget.user.userJobTitle,
-                          ),
-
+                          // _rowProfileInfo(
+                          //   context,
+                          //   icon: SvgIcon(
+                          //     "assets/icons/job_bag_icon.svg",
+                          //     color: Theme.of(context).primaryColor,
+                          //     width: 27,
+                          //     height: 27,
+                          //   ),
+                          //   title: widget.user.userJobTitle,
+                          // ),
                           const SizedBox(height: 5),
 
                           /// Education
-                          _rowProfileInfo(
-                            context,
-                            icon: SvgIcon(
-                              "assets/icons/university_icon.svg",
-                              color: Theme.of(context).primaryColor,
-                              width: 34,
-                              height: 34,
-                            ),
-                            title: widget.user.userSchool,
-                          ),
+                          // _rowProfileInfo(
+                          //   context,
+                          //   icon: SvgIcon(
+                          //     "assets/icons/university_icon.svg",
+                          //     color: Theme.of(context).primaryColor,
+                          //     width: 34,
+                          //     height: 34,
+                          //   ),
+                          //   title: widget.user.userSchool,
+                          // ),
 
                           /// Birthday
                           _rowProfileInfo(

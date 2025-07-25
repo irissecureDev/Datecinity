@@ -314,8 +314,13 @@ class UserModel extends Model {
     required int userBirthDay,
     required int userBirthMonth,
     required int userBirthYear,
-    required String userSchool,
-    required String userJobTitle,
+    required String educationLevel,
+    required String religion,
+    required List<String> pets,
+    required List<String> hobbies,
+    required List<String> languages,
+    // required String userSchool,
+    // required String userJobTitle,
     required String userBio,
     // Callback functions
     required VoidCallback onSuccess,
@@ -350,8 +355,8 @@ class UserModel extends Model {
           USER_BIRTH_DAY: userBirthDay,
           USER_BIRTH_MONTH: userBirthMonth,
           USER_BIRTH_YEAR: userBirthYear,
-          USER_SCHOOL: userSchool,
-          USER_JOB_TITLE: userJobTitle,
+          // USER_SCHOOL: userSchool,
+          // USER_JOB_TITLE: userJobTitle,
           USER_BIO: userBio,
           USER_PHONE_NUMBER: getFirebaseUser!.phoneNumber ?? '',
           USER_EMAIL: getFirebaseUser!.email ?? '',
@@ -373,6 +378,11 @@ class UserModel extends Model {
             USER_MAX_DISTANCE:
                 AppModel().appInfo.freeAccountMaxDistance, // double
           },
+          USER_EDUCATION: educationLevel,
+          USER_RELIGION: religion,
+          USER_PETS: pets,
+          USER_LANGUAGES: languages,
+          USER_HOBBIES: hobbies,
         })
         .then((_) async {
           /// Get current user in database
@@ -402,8 +412,8 @@ class UserModel extends Model {
 
   /// Update current user profile
   Future<void> updateProfile({
-    required String userSchool,
-    required String userJobTitle,
+    // required String userSchool,
+    // required String userJobTitle,
     required String userBio,
     // Callback functions
     required VoidCallback onSuccess,
@@ -413,8 +423,8 @@ class UserModel extends Model {
     updateUserData(
           userId: user.userId,
           data: {
-            USER_SCHOOL: userSchool,
-            USER_JOB_TITLE: userJobTitle,
+            // USER_SCHOOL: userSchool,
+            // USER_JOB_TITLE: userJobTitle,
             USER_BIO: userBio,
           },
         )

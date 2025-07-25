@@ -97,6 +97,11 @@ const String USER_DEVICE_TOKEN = "user_device_token";
 const String USER_TOTAL_LIKES = "user_total_likes";
 const String USER_TOTAL_VISITS = "user_total_visits";
 const String USER_TOTAL_DISLIKED = "user_total_disliked";
+const String USER_EDUCATION = "user_education";
+const String USER_RELIGION = "user_religion";
+const String USER_HOBBIES = "user_hobbies";
+const String USER_LANGUAGES = "user_languages";
+const String USER_PETS = "user_pets";
 // User Setting map - fields
 const String USER_MIN_AGE = "user_min_age";
 const String USER_MAX_AGE = "user_max_age";

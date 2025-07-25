@@ -262,5 +262,16 @@
   "this_profile_will_be_removed_from_the_blocked_users_list": "This profile will be removed from the blocked users list.",
   "oops_your_profile_has_been_blocked_by_this_user_so_you_can_send_a_message": "Oops, your profile has been blocked by this user, so you can't send a message!",
   "_New_Version_1.0.8": "*** New version 1.0.8 Translations ***",
-  "you_canceled_the_purchase_please_try_again": "You canceled the purchase, please try again!"
+  "you_canceled_the_purchase_please_try_again": "You canceled the purchase, please try again!",
+  "education": "Education",
+  "choose_your_education_level": "Choose your education level",
+  "religion": "Religion",
+  "choose_your_religion": "Chose your religion",
+  "hobbies": "Hobbies",
+  "add_hobby": "Add hobby",
+  "add": "Add",
+  "pets": "Pets",
+  "app_pet": "Add pet",
+  "languages": "Languages",
+  "add_language": "Add language"
 }

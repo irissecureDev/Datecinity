@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:soulmate/datas/user.dart';
 import 'package:soulmate/dialogs/common_dialogs.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:soulmate/models/user_model.dart';
@@ -27,9 +28,15 @@ class SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _nameController = TextEditingController();
-  final _schoolController = TextEditingController();
-  final _jobController = TextEditingController();
   final _bioController = TextEditingController();
+  String? _selectedEducation;
+  String? _selectedReligion;
+  final List<String> _hobbies = [];
+  final List<String> _pets = [];
+  final List<String> _languages = [];
+  final _hobbyController = TextEditingController();
+  final _petController = TextEditingController();
+  final _languagesController = TextEditingController();
 
   /// User Birthday info
   int _userBirthDay = 0;
@@ -43,6 +50,28 @@ class SignUpScreenState extends State<SignUpScreen> {
   String? _selectedGender;
   final List<String> _genders = ['Male', 'Female'];
   late AppLocalizations _i18n;
+
+  /// Add item to a list
+  void _addToList(
+    String value,
+    List<String> list,
+    TextEditingController controller,
+  ) {
+    if (value.trim().isEmpty) return;
+    if (!list.contains(value.trim())) {
+      setState(() {
+        list.add(value.trim());
+      });
+    }
+    controller.clear();
+  }
+
+  /// Remove item from a list
+  void _removeFromList(String value, List<String> list) {
+    setState(() {
+      list.remove(value);
+    });
+  }
 
   /// Set terms
   void _setAgreeTerms(bool value) {
@@ -170,212 +199,394 @@ class SignUpScreenState extends State<SignUpScreen> {
           ),
         ],
       ),
-      body: ScopedModelDescendant<UserModel>(
-        builder: (context, child, userModel) {
-          /// Check loading status
-          if (userModel.isLoading) return const Processing();
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  _i18n.translate("create_account"),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: ScopedModelDescendant<UserModel>(
+          builder: (context, child, userModel) {
+            /// Check loading status
+            if (userModel.isLoading) return const Processing();
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    _i18n.translate("create_account"),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                /// Profile photo
-                GestureDetector(
-                  child: Center(
-                    child: _imageFile == null
-                        ? CircleAvatar(
-                            radius: 60,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: const SvgIcon(
-                              "assets/icons/camera_icon.svg",
-                              width: 40,
-                              height: 40,
-                              color: Colors.white,
+                  /// Profile photo
+                  GestureDetector(
+                    child: Center(
+                      child: _imageFile == null
+                          ? CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Theme.of(context).primaryColor,
+                              child: const SvgIcon(
+                                "assets/icons/camera_icon.svg",
+                                width: 40,
+                                height: 40,
+                                color: Colors.white,
+                              ),
+                            )
+                          : CircleAvatar(
+                              radius: 60,
+                              backgroundImage: FileImage(_imageFile!),
                             ),
-                          )
-                        : CircleAvatar(
-                            radius: 60,
-                            backgroundImage: FileImage(_imageFile!),
-                          ),
+                    ),
+                    onTap: () {
+                      /// Get profile image
+                      _getImage(context);
+                    },
                   ),
-                  onTap: () {
-                    /// Get profile image
-                    _getImage(context);
-                  },
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  _i18n.translate("profile_photo"),
-                  textAlign: TextAlign.center,
-                ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _i18n.translate("profile_photo"),
+                    textAlign: TextAlign.center,
+                  ),
 
-                const SizedBox(height: 22),
+                  const SizedBox(height: 22),
 
-                /// Form
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      /// FullName field
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: _i18n.translate("fullname"),
-                          hintText: _i18n.translate("enter_your_fullname"),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: SvgIcon("assets/icons/user_icon.svg"),
+                  /// Form
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        /// FullName field
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: _i18n.translate("fullname"),
+                            hintText: _i18n.translate("enter_your_fullname"),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: SvgIcon("assets/icons/user_icon.svg"),
+                            ),
                           ),
+                          validator: (name) {
+                            // Basic validation
+                            if (name?.isEmpty ?? false) {
+                              return _i18n.translate(
+                                "please_enter_your_fullname",
+                              );
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (name) {
-                          // Basic validation
-                          if (name?.isEmpty ?? false) {
-                            return _i18n.translate(
-                              "please_enter_your_fullname",
+                        const SizedBox(height: 20),
+
+                        /// User gender
+                        DropdownButtonFormField<String>(
+                          items: _genders.map((gender) {
+                            return DropdownMenuItem(
+                              value: gender,
+                              child: _i18n.translate("lang") != 'en'
+                                  ? Text(
+                                      '${gender.toString()} - ${_i18n.translate(gender.toString().toLowerCase())}',
+                                    )
+                                  : Text(gender.toString()),
                             );
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
+                          }).toList(),
+                          hint: Text(_i18n.translate("select_gender")),
+                          onChanged: (gender) {
+                            setState(() {
+                              _selectedGender = gender;
+                            });
+                          },
+                          validator: (String? value) {
+                            if (value == null) {
+                              return _i18n.translate(
+                                "please_select_your_gender",
+                              );
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
 
-                      /// User gender
-                      DropdownButtonFormField<String>(
-                        items: _genders.map((gender) {
-                          return DropdownMenuItem(
-                            value: gender,
-                            child: _i18n.translate("lang") != 'en'
-                                ? Text(
-                                    '${gender.toString()} - ${_i18n.translate(gender.toString().toLowerCase())}',
+                        /// Birthday card
+                        Card(
+                          clipBehavior: Clip.antiAlias,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                            side: BorderSide(color: Colors.grey[350] as Color),
+                          ),
+                          child: ListTile(
+                            leading: const SvgIcon(
+                              "assets/icons/calendar_icon.svg",
+                            ),
+                            title: Text(
+                              _birthday!,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                            trailing: const Icon(Icons.arrow_drop_down),
+                            onTap: () {
+                              /// Select birthday
+                              _showDatePicker();
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        /// School field
+                        DropdownButtonFormField<String>(
+                          value: _selectedEducation,
+                          decoration: InputDecoration(
+                            labelText: _i18n.translate("education"),
+                            hintText: _i18n.translate(
+                              "choose_your_education_level",
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.all(9.0),
+                              child: SvgIcon(
+                                "assets/icons/university_icon.svg",
+                              ),
+                            ),
+                          ),
+                          items: educationLevels
+                              .map(
+                                (level) => DropdownMenuItem(
+                                  value: level,
+                                  child: Text(level),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => _selectedEducation = value),
+                        ),
+                        const SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          value: _selectedReligion,
+                          decoration: InputDecoration(
+                            labelText: _i18n.translate("religion"),
+                            hintText: _i18n.translate("choose_your_religion"),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.all(9.0),
+                              child: const Icon(
+                                Icons.list,
+                                color: Colors.black38,
+                              ),
+                            ),
+                          ),
+                          items: religions
+                              .map(
+                                (level) => DropdownMenuItem(
+                                  value: level,
+                                  child: Text(level),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => _selectedReligion = value),
+                        ),
+
+                        const SizedBox(height: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _hobbyController,
+                                    decoration: InputDecoration(
+                                      hintText: _i18n.translate("add_hobby"),
+                                      labelText: _i18n.translate("hobbies"),
+                                    ),
+                                    onSubmitted: (value) => _addToList(
+                                      value,
+                                      _hobbies,
+                                      _hobbyController,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton(
+                                  onPressed: () => _addToList(
+                                    _hobbyController.text,
+                                    _hobbies,
+                                    _hobbyController,
+                                  ),
+                                  child: Text(_i18n.translate("add")),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              children: _hobbies
+                                  .map(
+                                    (hobby) => Chip(
+                                      label: Text(
+                                        hobby,
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      onDeleted: () =>
+                                          _removeFromList(hobby, _hobbies),
+                                    ),
                                   )
-                                : Text(gender.toString()),
-                          );
-                        }).toList(),
-                        hint: Text(_i18n.translate("select_gender")),
-                        onChanged: (gender) {
-                          setState(() {
-                            _selectedGender = gender;
-                          });
-                        },
-                        validator: (String? value) {
-                          if (value == null) {
-                            return _i18n.translate("please_select_your_gender");
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      /// Birthday card
-                      Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
-                          side: BorderSide(color: Colors.grey[350] as Color),
+                                  .toList(),
+                            ),
+                          ],
                         ),
-                        child: ListTile(
-                          leading: const SvgIcon(
-                            "assets/icons/calendar_icon.svg",
+
+                        const SizedBox(height: 20),
+
+                        // Pets (free input)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _petController,
+                                    decoration: InputDecoration(
+                                      hintText: _i18n.translate("app_pet"),
+                                      labelText: _i18n.translate("pets"),
+                                    ),
+                                    onSubmitted: (value) => _addToList(
+                                      value,
+                                      _pets,
+                                      _petController,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton(
+                                  onPressed: () => _addToList(
+                                    _petController.text,
+                                    _pets,
+                                    _petController,
+                                  ),
+                                  child: Text(_i18n.translate("add")),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              children: _pets
+                                  .map(
+                                    (pet) => Chip(
+                                      label: Text(
+                                        pet,
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      onDeleted: () =>
+                                          _removeFromList(pet, _pets),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20.0),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _languagesController,
+                                    decoration: InputDecoration(
+                                      hintText: _i18n.translate("add_language"),
+                                      labelText: _i18n.translate("languages"),
+                                    ),
+                                    onSubmitted: (value) => _addToList(
+                                      value,
+                                      _languages,
+                                      _languagesController,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton(
+                                  onPressed: () => _addToList(
+                                    _languagesController.text,
+                                    _languages,
+                                    _languagesController,
+                                  ),
+                                  child: Text(_i18n.translate("add")),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              children: _languages
+                                  .map(
+                                    (pet) => Chip(
+                                      label: Text(
+                                        pet,
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      onDeleted: () =>
+                                          _removeFromList(pet, _pets),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20.0),
+
+                        /// Bio field
+                        TextFormField(
+                          controller: _bioController,
+                          maxLines: 4,
+                          decoration: InputDecoration(
+                            labelText: _i18n.translate("bio"),
+                            hintText: _i18n.translate("please_write_your_bio"),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: SvgIcon("assets/icons/info_icon.svg"),
+                            ),
                           ),
-                          title: Text(
-                            _birthday!,
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                          trailing: const Icon(Icons.arrow_drop_down),
-                          onTap: () {
-                            /// Select birthday
-                            _showDatePicker();
+                          validator: (bio) {
+                            if (bio?.isEmpty ?? false) {
+                              return _i18n.translate("please_write_your_bio");
+                            }
+                            return null;
                           },
                         ),
-                      ),
-                      const SizedBox(height: 20),
 
-                      /// School field
-                      TextFormField(
-                        controller: _schoolController,
-                        decoration: InputDecoration(
-                          labelText: _i18n.translate("school"),
-                          hintText: _i18n.translate("enter_your_school_name"),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.all(9.0),
-                            child: SvgIcon("assets/icons/university_icon.svg"),
+                        /// Agree terms
+                        const SizedBox(height: 5),
+                        _agreePrivacy(),
+                        const SizedBox(height: 20),
+
+                        /// Sign Up button
+                        SizedBox(
+                          width: double.maxFinite,
+                          child: DefaultButton(
+                            child: Text(
+                              _i18n.translate("CREATE_ACCOUNT"),
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                            onPressed: () {
+                              /// Sign up
+                              _createAccount();
+                            },
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      /// Job title field
-                      TextFormField(
-                        controller: _jobController,
-                        decoration: InputDecoration(
-                          labelText: _i18n.translate("job_title"),
-                          hintText: _i18n.translate("enter_your_job_title"),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: SvgIcon("assets/icons/job_bag_icon.svg"),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      /// Bio field
-                      TextFormField(
-                        controller: _bioController,
-                        maxLines: 4,
-                        decoration: InputDecoration(
-                          labelText: _i18n.translate("bio"),
-                          hintText: _i18n.translate("please_write_your_bio"),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: SvgIcon("assets/icons/info_icon.svg"),
-                          ),
-                        ),
-                        validator: (bio) {
-                          if (bio?.isEmpty ?? false) {
-                            return _i18n.translate("please_write_your_bio");
-                          }
-                          return null;
-                        },
-                      ),
-
-                      /// Agree terms
-                      const SizedBox(height: 5),
-                      _agreePrivacy(),
-                      const SizedBox(height: 20),
-
-                      /// Sign Up button
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: DefaultButton(
-                          child: Text(
-                            _i18n.translate("CREATE_ACCOUNT"),
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                          onPressed: () {
-                            /// Sign up
-                            _createAccount();
-                          },
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -423,9 +634,12 @@ class SignUpScreenState extends State<SignUpScreen> {
         userBirthDay: _userBirthDay,
         userBirthMonth: _userBirthMonth,
         userBirthYear: _userBirthYear,
-        userSchool: _schoolController.text.trim(),
-        userJobTitle: _jobController.text.trim(),
+        hobbies: _hobbies,
+        pets: _pets,
+        languages: _languages,
         userBio: _bioController.text.trim(),
+        religion: _selectedReligion ?? '',
+        educationLevel: _selectedEducation ?? '',
         onSuccess: () async {
           // Show success message
           successDialog(
