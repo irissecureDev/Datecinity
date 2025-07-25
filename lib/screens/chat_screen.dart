@@ -445,72 +445,74 @@ class ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          /// how message list
-          Expanded(child: _showMessages()),
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            /// how message list
+            Expanded(child: _showMessages()),
 
-          /// Text Composer
-          Container(
-            color: Colors.grey.withAlpha(50),
-            child: ListTile(
-              leading: IconButton(
-                icon: const SvgIcon(
-                  "assets/icons/camera_icon.svg",
-                  width: 20,
-                  height: 20,
+            /// Text Composer
+            Container(
+              color: Colors.grey.withAlpha(50),
+              child: ListTile(
+                leading: IconButton(
+                  icon: const SvgIcon(
+                    "assets/icons/camera_icon.svg",
+                    width: 20,
+                    height: 20,
+                  ),
+                  onPressed: () async {
+                    /// Send image file
+                    await _getImage();
+
+                    /// Update scroll
+                    _scrollMessageList();
+                  },
                 ),
-                onPressed: () async {
-                  /// Send image file
-                  await _getImage();
-
-                  /// Update scroll
-                  _scrollMessageList();
-                },
-              ),
-              title: TextField(
-                controller: _textController,
-                minLines: 1,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: _i18n.translate("type_a_message"),
-                  border: InputBorder.none,
+                title: TextField(
+                  controller: _textController,
+                  minLines: 1,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: _i18n.translate("type_a_message"),
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (text) {
+                    setState(() {
+                      _isComposing = text.isNotEmpty;
+                    });
+                  },
                 ),
-                onChanged: (text) {
-                  setState(() {
-                    _isComposing = text.isNotEmpty;
-                  });
-                },
-              ),
-              trailing: IconButton(
-                icon: Icon(
-                  Icons.send,
-                  color: _isComposing
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey,
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.send,
+                    color: _isComposing
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey,
+                  ),
+                  onPressed: _isComposing
+                      ? () async {
+                          /// Get text
+                          final text = _textController.text.trim();
+
+                          /// clear input text
+                          _textController.clear();
+                          setState(() {
+                            _isComposing = false;
+                          });
+
+                          /// Send text message
+                          await _sendMessage(type: 'text', text: text);
+
+                          /// Update scroll
+                          _scrollMessageList();
+                        }
+                      : null,
                 ),
-                onPressed: _isComposing
-                    ? () async {
-                        /// Get text
-                        final text = _textController.text.trim();
-
-                        /// clear input text
-                        _textController.clear();
-                        setState(() {
-                          _isComposing = false;
-                        });
-
-                        /// Send text message
-                        await _sendMessage(type: 'text', text: text);
-
-                        /// Update scroll
-                        _scrollMessageList();
-                      }
-                    : null,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

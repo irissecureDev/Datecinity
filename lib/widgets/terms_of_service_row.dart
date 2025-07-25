@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:soulmate/helpers/app_helper.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -15,48 +16,44 @@ class TermsOfServiceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final i18n = AppLocalizations.of(context);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        GestureDetector(
-          child: Text(
-            i18n.translate("terms_of_service"),
+    return Text.rich(
+      TextSpan(
+        text: "",
+        children: [
+          TextSpan(
+            text: i18n.translate("terms_of_service"),
             style: TextStyle(
               color: color,
-              fontSize: 17,
+              fontSize: 17.0,
               decoration: TextDecoration.underline,
               fontWeight: FontWeight.bold,
+              decorationColor: color,
             ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _appHelper.openTermsPage();
+              },
           ),
-          onTap: () {
-            // Open terms of service page in browser
-            _appHelper.openTermsPage();
-          },
-        ),
-        Text(
-          ' | ',
-          style: TextStyle(
-            color: color,
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
+          TextSpan(
+            text: "   |   ",
+            style: TextStyle(color: color),
           ),
-        ),
-        GestureDetector(
-          child: Text(
-            i18n.translate("privacy_policy"),
+          TextSpan(
+            text: i18n.translate("privacy_policy"),
             style: TextStyle(
               color: color,
-              fontSize: 17,
+              fontSize: 17.0,
               decoration: TextDecoration.underline,
               fontWeight: FontWeight.bold,
+              decorationColor: color,
             ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _appHelper.openPrivacyPage();
+              },
           ),
-          onTap: () {
-            // Open privacy policy page in browser
-            _appHelper.openPrivacyPage();
-          },
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

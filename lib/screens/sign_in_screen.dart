@@ -1,4 +1,3 @@
-import 'package:soulmate/constants/constants.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:soulmate/screens/phone_number_screen.dart';
 import 'package:soulmate/widgets/app_logo.dart';
@@ -48,27 +47,8 @@ class SignInScreenState extends State<SignInScreen> {
             children: <Widget>[
               /// App logo
               const AppLogo(),
-              const SizedBox(height: 10),
 
-              /// App name
-              const Text(
-                APP_NAME,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Text(
-                _i18n.translate("welcome_back"),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18, color: Colors.white),
-              ),
-
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
 
               Text(
                 _i18n.translate("app_short_description"),
@@ -76,7 +56,7 @@ class SignInScreenState extends State<SignInScreen> {
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 100),
 
               /// Sign in with Phone Number
               Padding(
