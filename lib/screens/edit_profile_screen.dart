@@ -1,8 +1,8 @@
+import 'package:soulmate/datas/user.dart';
 import 'package:soulmate/dialogs/common_dialogs.dart';
 import 'package:soulmate/dialogs/progress_dialog.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/profile_screen.dart';
 import 'package:soulmate/widgets/image_source_sheet.dart';
 import 'package:soulmate/widgets/svg_icon.dart';
 import 'package:soulmate/widgets/user_gallery.dart';
@@ -20,6 +20,18 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   // Variables
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  String? _selectedEducation = educationLevels.firstWhere(
+    (e) => e == UserModel().user.education,
+  );
+  String? _selectedReligion = religions.firstWhere(
+    (r) => r == UserModel().user.religion,
+  );
+  final List<String> _hobbies = UserModel().user.hobbies;
+  final List<String> _pets = UserModel().user.pets;
+  final List<String> _languages = UserModel().user.languages;
+  final _hobbyController = TextEditingController();
+  final _petController = TextEditingController();
+  final _languagesController = TextEditingController();
   // final _schoolController = TextEditingController(
   //   text: UserModel().user.userSchool,
   // );
@@ -29,6 +41,28 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   final _bioController = TextEditingController(text: UserModel().user.userBio);
   late AppLocalizations _i18n;
   late ProgressDialog _pr;
+
+  /// Add item to a list
+  void _addToList(
+    String value,
+    List<String> list,
+    TextEditingController controller,
+  ) {
+    if (value.trim().isEmpty) return;
+    if (!list.contains(value.trim())) {
+      setState(() {
+        list.add(value.trim());
+      });
+    }
+    controller.clear();
+  }
+
+  /// Remove item from a list
+  void _removeFromList(String value, List<String> list) {
+    setState(() {
+      list.remove(value);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,140 +90,294 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(15),
-        child: Form(
-          key: _formKey,
-          child: ScopedModelDescendant<UserModel>(
-            builder: (context, child, userModel) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// Profile photo
-                  GestureDetector(
-                    child: Center(
-                      child: Stack(
-                        children: <Widget>[
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              userModel.user.userProfilePhoto,
-                            ),
-                            radius: 80,
-                            backgroundColor: Theme.of(context).primaryColor,
-                          ),
-
-                          /// Edit icon
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: CircleAvatar(
-                              radius: 18,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(15),
+          child: Form(
+            key: _formKey,
+            child: ScopedModelDescendant<UserModel>(
+              builder: (context, child, userModel) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Profile photo
+                    GestureDetector(
+                      child: Center(
+                        child: Stack(
+                          children: <Widget>[
+                            CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                userModel.user.userProfilePhoto,
+                              ),
+                              radius: 80,
                               backgroundColor: Theme.of(context).primaryColor,
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.white,
+                            ),
+
+                            /// Edit icon
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: Theme.of(context).primaryColor,
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                      onTap: () async {
+                        /// Update profile image
+                        _selectImage(
+                          imageUrl: userModel.user.userProfilePhoto,
+                          path: 'profile',
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        _i18n.translate("profile_photo"),
+                        style: const TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    onTap: () async {
-                      /// Update profile image
-                      _selectImage(
-                        imageUrl: userModel.user.userProfilePhoto,
-                        path: 'profile',
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: Text(
-                      _i18n.translate("profile_photo"),
-                      style: const TextStyle(fontSize: 18),
-                      textAlign: TextAlign.center,
+
+                    /// Profile gallery
+                    Text(
+                      _i18n.translate("gallery"),
+                      style: const TextStyle(fontSize: 18, color: Colors.grey),
+                      textAlign: TextAlign.left,
                     ),
-                  ),
+                    const SizedBox(height: 5),
 
-                  /// Profile gallery
-                  Text(
-                    _i18n.translate("gallery"),
-                    style: const TextStyle(fontSize: 18, color: Colors.grey),
-                    textAlign: TextAlign.left,
-                  ),
-                  const SizedBox(height: 5),
+                    /// Show gallery
+                    const UserGallery(),
 
-                  /// Show gallery
-                  const UserGallery(),
+                    const SizedBox(height: 20),
 
-                  const SizedBox(height: 20),
-
-                  /// Bio field
-                  TextFormField(
-                    controller: _bioController,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      labelText: _i18n.translate("bio"),
-                      hintText: _i18n.translate("write_about_you"),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: SvgIcon("assets/icons/info_icon.svg"),
+                    /// Bio field
+                    TextFormField(
+                      controller: _bioController,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: _i18n.translate("bio"),
+                        hintText: _i18n.translate("write_about_you"),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: SvgIcon("assets/icons/info_icon.svg"),
+                        ),
                       ),
+                      validator: (bio) {
+                        if (bio == null) {
+                          return _i18n.translate("please_write_your_bio");
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (bio) {
-                      if (bio == null) {
-                        return _i18n.translate("please_write_your_bio");
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      value: _selectedEducation,
+                      decoration: InputDecoration(
+                        labelText: _i18n.translate("education"),
+                        hintText: _i18n.translate(
+                          "choose_your_education_level",
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.all(9.0),
+                          child: SvgIcon("assets/icons/university_icon.svg"),
+                        ),
+                      ),
+                      items: educationLevels
+                          .map(
+                            (level) => DropdownMenuItem(
+                              value: level,
+                              child: Text(level),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) =>
+                          setState(() => _selectedEducation = value),
+                    ),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      value: _selectedReligion,
+                      decoration: InputDecoration(
+                        labelText: _i18n.translate("religion"),
+                        hintText: _i18n.translate("choose_your_religion"),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.all(9.0),
+                          child: const Icon(Icons.list, color: Colors.black38),
+                        ),
+                      ),
+                      items: religions
+                          .map(
+                            (level) => DropdownMenuItem(
+                              value: level,
+                              child: Text(level),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) =>
+                          setState(() => _selectedReligion = value),
+                    ),
 
-                  /// School field
-                  // TextFormField(
-                  //   controller: _schoolController,
-                  //   decoration: InputDecoration(
-                  //     labelText: _i18n.translate("school"),
-                  //     hintText: _i18n.translate("enter_your_school_name"),
-                  //     floatingLabelBehavior: FloatingLabelBehavior.always,
-                  //     prefixIcon: const Padding(
-                  //       padding: EdgeInsets.all(9.0),
-                  //       child: SvgIcon("assets/icons/university_icon.svg"),
-                  //     ),
-                  //   ),
-                  //   validator: (school) {
-                  //     if (school == null) {
-                  //       return _i18n.translate("please_enter_your_school_name");
-                  //     }
-                  //     return null;
-                  //   },
-                  // ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _hobbyController,
+                                decoration: InputDecoration(
+                                  hintText: _i18n.translate("add_hobby"),
+                                  labelText: _i18n.translate("hobbies"),
+                                ),
+                                onSubmitted: (value) => _addToList(
+                                  value,
+                                  _hobbies,
+                                  _hobbyController,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () => _addToList(
+                                _hobbyController.text,
+                                _hobbies,
+                                _hobbyController,
+                              ),
+                              child: Text(_i18n.translate("add")),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          children: _hobbies
+                              .map(
+                                (hobby) => Chip(
+                                  label: Text(
+                                    hobby,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onDeleted: () =>
+                                      _removeFromList(hobby, _hobbies),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ),
 
-                  /// Job title field
-                  // TextFormField(
-                  //   controller: _jobController,
-                  //   decoration: InputDecoration(
-                  //     labelText: _i18n.translate("job_title"),
-                  //     hintText: _i18n.translate("enter_your_job_title"),
-                  //     floatingLabelBehavior: FloatingLabelBehavior.always,
-                  //     prefixIcon: const Padding(
-                  //       padding: EdgeInsets.all(12.0),
-                  //       child: SvgIcon("assets/icons/job_bag_icon.svg"),
-                  //     ),
-                  //   ),
-                  //   validator: (job) {
-                  //     if (job == null) {
-                  //       return _i18n.translate("please_enter_your_job_title");
-                  //     }
-                  //     return null;
-                  //   },
-                  // ),
-                  const SizedBox(height: 20),
-                ],
-              );
-            },
+                    const SizedBox(height: 20),
+
+                    // Pets (free input)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _petController,
+                                decoration: InputDecoration(
+                                  hintText: _i18n.translate("app_pet"),
+                                  labelText: _i18n.translate("pets"),
+                                ),
+                                onSubmitted: (value) =>
+                                    _addToList(value, _pets, _petController),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () => _addToList(
+                                _petController.text,
+                                _pets,
+                                _petController,
+                              ),
+                              child: Text(_i18n.translate("add")),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          children: _pets
+                              .map(
+                                (pet) => Chip(
+                                  label: Text(
+                                    pet,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onDeleted: () => _removeFromList(pet, _pets),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _languagesController,
+                                decoration: InputDecoration(
+                                  hintText: _i18n.translate("add_language"),
+                                  labelText: _i18n.translate("languages"),
+                                ),
+                                onSubmitted: (value) => _addToList(
+                                  value,
+                                  _languages,
+                                  _languagesController,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () => _addToList(
+                                _languagesController.text,
+                                _languages,
+                                _languagesController,
+                              ),
+                              child: Text(_i18n.translate("add")),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          children: _languages
+                              .map(
+                                (pet) => Chip(
+                                  label: Text(
+                                    pet,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onDeleted: () => _removeFromList(pet, _pets),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -230,6 +418,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       // userSchool: _schoolController.text.trim(),
       // userJobTitle: _jobController.text.trim(),
       userBio: _bioController.text.trim(),
+      educationLevel: _selectedEducation ?? '',
+      religion: _selectedReligion ?? '',
+      pets: _pets,
+      hobbies: _hobbies,
+      languages: _languages,
       onSuccess: () {
         /// Show success message
         successDialog(
@@ -238,14 +431,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           positiveAction: () {
             /// Close dialog
             Future(() => Navigator.of(context).pop());
-
-            /// Go to profilescreen
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) =>
-                    ProfileScreen(user: UserModel().user, showButtons: false),
-              ),
-            );
           },
         );
       },

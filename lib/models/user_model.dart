@@ -418,6 +418,11 @@ class UserModel extends Model {
     // Callback functions
     required VoidCallback onSuccess,
     required Function(String) onFail,
+    required String educationLevel,
+    required String religion,
+    required List<String> pets,
+    required List<String> hobbies,
+    required List<String> languages,
   }) async {
     /// Update user profile
     updateUserData(
@@ -426,6 +431,11 @@ class UserModel extends Model {
             // USER_SCHOOL: userSchool,
             // USER_JOB_TITLE: userJobTitle,
             USER_BIO: userBio,
+            USER_PETS: pets,
+            USER_RELIGION: religion,
+            USER_HOBBIES: hobbies,
+            USER_LANGUAGES: languages,
+            USER_EDUCATION: educationLevel,
           },
         )
         .then((_) {
