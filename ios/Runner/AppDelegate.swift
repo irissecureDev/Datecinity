@@ -27,7 +27,7 @@ import GoogleMaps
     application.registerForRemoteNotifications()
     FirebaseApp.configure()
     // Passport feature config: Add your iOS API KEY for Google MAPS 
-    GMSServices.provideAPIKey("AIzaSyD8eHcPGKWn_d_zVu0_ooDtuBq_3rWx_S0")
+    GMSServices.provideAPIKey("AIzaSyChRNxb69txX0gBgle_kzBecVDuFrm_5Y4")
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

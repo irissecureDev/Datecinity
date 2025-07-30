@@ -11,8 +11,8 @@ const int IOS_APP_VERSION_NUMBER = 1; // App Store Version Number
 //
 // Add Google Maps - API KEY required for Passport feature
 //
-const String ANDROID_MAPS_API_KEY = "AIzaSyD8eHcPGKWn_d_zVu0_ooDtuBq_3rWx_S0";
-const String IOS_MAPS_API_KEY = "AIzaSyD8eHcPGKWn_d_zVu0_ooDtuBq_3rWx_S0";
+const String ANDROID_MAPS_API_KEY = "AIzaSyChRNxb69txX0gBgle_kzBecVDuFrm_5Y4";
+const String IOS_MAPS_API_KEY = "AIzaSyChRNxb69txX0gBgle_kzBecVDuFrm_5Y4";
 //
 // GOOGLE ADMOB INTERSTITIAL IDS
 //

@@ -82,7 +82,7 @@
 
           Add your Androd API key here -->
     <meta-data android:name="com.google.android.geo.API_KEY"
-      android:value="AIzaSyD8eHcPGKWn_d_zVu0_ooDtuBq_3rWx_S0" />
+      android:value="AIzaSyChRNxb69txX0gBgle_kzBecVDuFrm_5Y4" />
 
     <!-- Config for firebase_messaging plugin
           Set your App Icon with white color for Incoming Push Notifications Icon. -->
