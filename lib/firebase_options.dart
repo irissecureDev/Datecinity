@@ -50,20 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD9GF3oWC9JNXlq0NuFKlwWmUJCkEta2XI',
-    appId: '1:703710872133:android:62cd0a6c70c5a03cf3d92c',
-    messagingSenderId: '703710872133',
-    projectId: 'soulmate-46367',
-    storageBucket: 'soulmate-46367.firebasestorage.app',
+    apiKey: 'AIzaSyBtDB6YwSeGC3Hca82miq_41_0PxMcAQD0',
+    appId: '1:984474280325:android:50b877601e076da98664ec',
+    messagingSenderId: '984474280325',
+    projectId: 'soulemate-e3cc5',
+    storageBucket: 'soulemate-e3cc5.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDbJmYQYlkGbV7cQUMkgpxhBUyWLMqkXXY',
-    appId: '1:703710872133:ios:0c5dff5d452dda0ff3d92c',
-    messagingSenderId: '703710872133',
-    projectId: 'soulmate-46367',
-    storageBucket: 'soulmate-46367.firebasestorage.app',
+    apiKey: 'AIzaSyDP5y0I6tCJI2n7ZR2kR0dGpydn3URKqmg',
+    appId: '1:984474280325:ios:ce828d90b3bde9918664ec',
+    messagingSenderId: '984474280325',
+    projectId: 'soulemate-e3cc5',
+    storageBucket: 'soulemate-e3cc5.firebasestorage.app',
     iosBundleId: 'co.soulmate.app',
   );
-
 }

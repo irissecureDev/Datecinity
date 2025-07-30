@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "703710872133",
-    "project_id": "soulmate-46367",
-    "storage_bucket": "soulmate-46367.firebasestorage.app"
+    "project_number": "984474280325",
+    "project_id": "soulemate-e3cc5",
+    "storage_bucket": "soulemate-e3cc5.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:703710872133:android:62cd0a6c70c5a03cf3d92c",
+        "mobilesdk_app_id": "1:984474280325:android:50b877601e076da98664ec",
         "android_client_info": {
           "package_name": "co.soulmate.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD9GF3oWC9JNXlq0NuFKlwWmUJCkEta2XI"
+          "current_key": "AIzaSyBtDB6YwSeGC3Hca82miq_41_0PxMcAQD0"
         }
       ],
       "services": {
@@ -26,15 +26,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:703710872133:android:b3be26597a22b90bf3d92c",
+        "mobilesdk_app_id": "1:984474280325:android:e806bb9e345838838664ec",
         "android_client_info": {
-          "package_name": "com.company.appname"
+          "package_name": "com.irisecure.soulemate"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD9GF3oWC9JNXlq0NuFKlwWmUJCkEta2XI"
+          "current_key": "AIzaSyBtDB6YwSeGC3Hca82miq_41_0PxMcAQD0"
         }
       ],
       "services": {
@@ -45,15 +45,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:703710872133:android:312bbfdf601661cbf3d92c",
+        "mobilesdk_app_id": "1:984474280325:android:7bac239b7c9574bc8664ec",
         "android_client_info": {
-          "package_name": "com.soulmate.app"
+          "package_name": "com.irissecure.soulemate"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD9GF3oWC9JNXlq0NuFKlwWmUJCkEta2XI"
+          "current_key": "AIzaSyBtDB6YwSeGC3Hca82miq_41_0PxMcAQD0"
         }
       ],
       "services": {
