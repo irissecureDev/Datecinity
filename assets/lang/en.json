@@ -187,6 +187,7 @@
   "DELETE": "DELETE",
   "no_user": "No User",
   "no_match": "No Match",
+  "no_matches_in_your_area": "No matches in your area yet",
   "no_conversation": "No Conversation",
   "no_notification": "No Notification",
   "no_like": "No Like",

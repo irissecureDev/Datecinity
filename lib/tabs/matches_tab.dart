@@ -8,7 +8,6 @@ import 'package:soulmate/api/matches_api.dart';
 import 'package:soulmate/datas/user.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/no_data.dart';
 import 'package:soulmate/widgets/processing.dart';
 
 class MatchesTab extends StatefulWidget {
@@ -81,27 +80,35 @@ class MatchesTabState extends State<MatchesTab> {
         _currentLocation = LatLng(position.latitude, position.longitude);
       });
 
-      // Créer un marqueur personnalisé pour votre position actuelle
+      final matches = await _matchesApi.getMatches();
+      if (!mounted) return;
+
+      setState(() {
+        _matches = matches;
+      });
+
+      // Mettre à jour le marqueur de position actuelle avec le bon message
+      String locationSnippet;
+      if (matches.isEmpty) {
+        locationSnippet = _i18n.translate("no_matches_in_your_area");
+      } else {
+        locationSnippet = _i18n.translate("current_position");
+      }
+
       _currentLocationMarker = Marker(
         markerId: const MarkerId('current_location'),
         position: _currentLocation!,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         infoWindow: InfoWindow(
           title: _i18n.translate("your_location"),
-          snippet: _i18n.translate("current_position"),
+          snippet: locationSnippet,
         ),
       );
 
       // Ajouter le marqueur de position actuelle
       setState(() {
+        _markers.clear(); // Effacer les anciens marqueurs
         _markers.add(_currentLocationMarker!);
-      });
-
-      final matches = await _matchesApi.getMatches();
-      if (!mounted) return;
-
-      setState(() {
-        _matches = matches;
       });
 
       // Charger les marqueurs des matches
@@ -170,10 +177,8 @@ class MatchesTabState extends State<MatchesTab> {
       return Processing(text: _i18n.translate("loading"));
     }
 
-    if (_matches!.isEmpty) {
-      return NoData(svgName: 'heart_icon', text: _i18n.translate("no_match"));
-    }
-
+    // Toujours afficher la carte avec au moins la position actuelle
+    // même s'il n'y a pas de matches
     return GoogleMap(
       initialCameraPosition: CameraPosition(
         target: _currentLocation!,
