@@ -8,7 +8,6 @@ import 'package:soulmate/api/matches_api.dart';
 import 'package:soulmate/datas/user.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/chat_screen.dart';
 import 'package:soulmate/widgets/no_data.dart';
 import 'package:soulmate/widgets/processing.dart';
 
@@ -27,6 +26,9 @@ class MatchesTabState extends State<MatchesTab> {
 
   final Set<Marker> _markers = {};
   final Completer<GoogleMapController> _mapController = Completer();
+
+  // Ajout d'un marqueur pour la position actuelle
+  Marker? _currentLocationMarker;
 
   @override
   void initState() {
@@ -58,13 +60,13 @@ class MatchesTabState extends State<MatchesTab> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           debugPrint('Location permission denied');
+          _showLocationDeniedDialog();
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
         debugPrint('Location permission denied forever');
-        // Affiche un message à l'utilisateur ou redirige-le vers les paramètres
         _showLocationDeniedDialog();
         return;
       }
@@ -79,6 +81,22 @@ class MatchesTabState extends State<MatchesTab> {
         _currentLocation = LatLng(position.latitude, position.longitude);
       });
 
+      // Créer un marqueur personnalisé pour votre position actuelle
+      _currentLocationMarker = Marker(
+        markerId: const MarkerId('current_location'),
+        position: _currentLocation!,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        infoWindow: InfoWindow(
+          title: _i18n.translate("your_location"),
+          snippet: _i18n.translate("current_position"),
+        ),
+      );
+
+      // Ajouter le marqueur de position actuelle
+      setState(() {
+        _markers.add(_currentLocationMarker!);
+      });
+
       final matches = await _matchesApi.getMatches();
       if (!mounted) return;
 
@@ -86,31 +104,53 @@ class MatchesTabState extends State<MatchesTab> {
         _matches = matches;
       });
 
+      // Charger les marqueurs des matches
       for (var match in matches) {
         final userSnapshot = await UserModel().getUser(match.id);
         if (userSnapshot.exists) {
           final data = userSnapshot.data();
           final User user = User.fromDocument(data!);
           final geo = user.userGeoPoint;
-          final icon = await user.getMarkerFromUrl();
+
+          // Créer un marqueur personnalisé pour chaque match
+          BitmapDescriptor icon;
+          try {
+            icon = await user.getMarkerFromUrl();
+          } catch (e) {
+            // Fallback vers un marqueur par défaut si l'image échoue
+            icon = BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
+            );
+          }
 
           final marker = Marker(
             markerId: MarkerId(match.id),
             position: LatLng(geo.latitude, geo.longitude),
             icon: icon,
+            infoWindow: InfoWindow(
+              title: user.userFullname,
+              snippet: '${user.userLocality}, ${user.userCountry}',
+            ),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ChatScreen(user: user)),
-              );
+              _showMatchDialog(user);
             },
           );
 
-          setState(() => _markers.add(marker));
+          if (mounted) {
+            setState(() => _markers.add(marker));
+          }
         }
       }
     } catch (e) {
       debugPrint("Error loading matches or location: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_i18n.translate("error_loading_matches")),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -143,6 +183,98 @@ class MatchesTabState extends State<MatchesTab> {
       myLocationEnabled: true,
       myLocationButtonEnabled: true,
       onMapCreated: (controller) => _mapController.complete(controller),
+    );
+  }
+
+  /// Affiche un dialog avec les détails du match
+  void _showMatchDialog(User user) {
+    // Calculer l'âge à partir de l'année de naissance
+    int currentYear = DateTime.now().year;
+    int age = currentYear - user.userBirthYear;
+
+    // Obtenir les photos depuis la galerie
+    List<String> photos = [];
+    if (user.userGallery != null) {
+      user.userGallery!.forEach((key, value) {
+        if (value is String && value.isNotEmpty) {
+          photos.add(value);
+        }
+      });
+    }
+    // Ajouter la photo de profil si disponible
+    if (user.userProfilePhoto.isNotEmpty &&
+        !photos.contains(user.userProfilePhoto)) {
+      photos.insert(0, user.userProfilePhoto);
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Photo de profil
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: photos.isNotEmpty
+                    ? NetworkImage(photos.first)
+                    : null,
+                child: photos.isEmpty
+                    ? const Icon(Icons.person, size: 50)
+                    : null,
+              ),
+              const SizedBox(height: 16),
+
+              // Nom et âge
+              Text(
+                '${user.userFullname}, $age ans',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Localisation
+              Text(
+                '${user.userLocality}, ${user.userCountry}',
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 16),
+
+              // Bio (si disponible)
+              if (user.userBio.isNotEmpty) ...[
+                Text(
+                  user.userBio,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(_i18n.translate("close")),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Vous pouvez ajouter ici la navigation vers le chat ou le profil complet
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(user: user)));
+              },
+              child: Text(_i18n.translate("view_profile")),
+            ),
+          ],
+        );
+      },
     );
   }
 }
