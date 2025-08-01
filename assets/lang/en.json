@@ -273,5 +273,8 @@
   "pets": "Pets",
   "app_pet": "Add pet",
   "languages": "Languages",
-  "add_language": "Add language"
+  "add_language": "Add language",
+  "location_permission_denied": "Location permission denied",
+  "enable_location_permission": "Please enable location permission in your device settings to see your matches on the map.",
+  "ok": "OK"
 }

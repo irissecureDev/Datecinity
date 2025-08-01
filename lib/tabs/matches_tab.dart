@@ -34,11 +34,47 @@ class MatchesTabState extends State<MatchesTab> {
     _loadMatchesAndLocation();
   }
 
+  void _showLocationDeniedDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(_i18n.translate("location_permission_denied")),
+        content: Text(_i18n.translate("enable_location_permission")),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(_i18n.translate("ok")),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _loadMatchesAndLocation() async {
     try {
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          debugPrint('Location permission denied');
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        debugPrint('Location permission denied forever');
+        // Affiche un message à l'utilisateur ou redirige-le vers les paramètres
+        _showLocationDeniedDialog();
+        return;
+      }
+
       final Position position = await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
+
       setState(() {
         _currentLocation = LatLng(position.latitude, position.longitude);
       });
@@ -50,7 +86,6 @@ class MatchesTabState extends State<MatchesTab> {
         _matches = matches;
       });
 
-      // Load marker data
       for (var match in matches) {
         final userSnapshot = await UserModel().getUser(match.id);
         if (userSnapshot.exists) {
@@ -70,6 +105,7 @@ class MatchesTabState extends State<MatchesTab> {
               );
             },
           );
+
           setState(() => _markers.add(marker));
         }
       }
