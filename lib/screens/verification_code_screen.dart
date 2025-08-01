@@ -3,6 +3,7 @@ import 'package:soulmate/dialogs/progress_dialog.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:soulmate/models/user_model.dart';
 import 'package:soulmate/plugins/otp_screen/otp_screen.dart';
+import 'package:soulmate/screens/complete_profile_screen.dart';
 import 'package:soulmate/screens/home_screen.dart';
 import 'package:soulmate/screens/sign_up_screen.dart';
 import 'package:soulmate/screens/update_location_sceen.dart';
@@ -52,6 +53,8 @@ class VerificationCodeScreenState extends State<VerificationCodeScreen> {
           updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
           signUpScreen: () => _nextScreen(const SignUpScreen()),
+          completePreferencesScreen: () =>
+              _nextScreen(const CompleteProfileScreen()),
         );
       },
       onError: () async {

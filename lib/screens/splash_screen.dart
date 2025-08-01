@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:soulmate/screens/blocked_account_screen.dart';
+import 'package:soulmate/screens/complete_profile_screen.dart';
+import 'package:soulmate/screens/home_screen.dart';
 import 'package:soulmate/screens/update_location_sceen.dart';
 import 'package:flutter/material.dart';
 import 'package:soulmate/constants/constants.dart';
@@ -10,7 +12,6 @@ import 'package:soulmate/screens/update_app_screen.dart';
 import 'package:soulmate/widgets/app_logo.dart';
 import 'package:soulmate/widgets/my_circular_progress.dart';
 import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/home_screen.dart';
 import 'package:soulmate/screens/sign_up_screen.dart';
 import 'package:soulmate/screens/sign_in_screen.dart';
 
@@ -67,6 +68,8 @@ class SplashScreenState extends State<SplashScreen> {
           signUpScreen: () => _nextScreen(const SignUpScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
           blockedScreen: () => _nextScreen(const BlockedAccountScreen()),
+          completePreferencesScreen: () =>
+              _nextScreen(const CompleteProfileScreen()),
         );
       }
     });
