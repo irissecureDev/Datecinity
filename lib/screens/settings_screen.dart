@@ -24,7 +24,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   late RangeValues _selectedAgeRange;
   late RangeLabels _selectedAgeRangeLabels;
   late double _selectedMaxDistance;
-  bool _hideProfile = false;
+  // bool _hideProfile = false; // Not used since hide profile section is commented
   late AppLocalizations _i18n;
 
   /// Initialize user settings
@@ -45,9 +45,9 @@ class SettingsScreenState extends State<SettingsScreen> {
       _selectedAgeRangeLabels = RangeLabels('$minAge', '$maxAge');
 
       // Check profile status
-      if (UserModel().user.userStatus == 'hidden') {
-        _hideProfile = true;
-      }
+      // if (UserModel().user.userStatus == 'hidden') {
+      //   _hideProfile = true;
+      // }
     });
   }
 
@@ -412,64 +412,63 @@ class SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 15),
 
                 /// Hide user profile setting
-                Card(
-                  child: ListTile(
-                    leading: _hideProfile
-                        ? Icon(
-                            Icons.visibility_off,
-                            color: Theme.of(context).primaryColor,
-                            size: 30,
-                          )
-                        : Icon(
-                            Icons.visibility,
-                            color: Theme.of(context).primaryColor,
-                            size: 30,
-                          ),
-                    title: Text(
-                      _i18n.translate('hide_profile'),
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    subtitle: _hideProfile
-                        ? Text(
-                            _i18n.translate(
-                              'your_profile_is_hidden_on_discover_tab',
-                            ),
-                            style: const TextStyle(color: Colors.red),
-                          )
-                        : Text(
-                            _i18n.translate(
-                              'your_profile_is_visible_on_discover_tab',
-                            ),
-                            style: const TextStyle(color: Colors.green),
-                          ),
-                    trailing: Switch(
-                      activeColor: Theme.of(context).primaryColor,
-                      value: _hideProfile,
-                      onChanged: (newValue) {
-                        // Update UI
-                        setState(() {
-                          _hideProfile = newValue;
-                        });
-                        // User status
-                        String userStatus = 'active';
-                        // Check status
-                        if (newValue) {
-                          userStatus = 'hidden';
-                        }
+                // Card(
+                //   child: ListTile(
+                //     leading: _hideProfile
+                //         ? Icon(
+                //             Icons.visibility_off,
+                //             color: Theme.of(context).primaryColor,
+                //             size: 30,
+                //           )
+                //         : Icon(
+                //             Icons.visibility,
+                //             color: Theme.of(context).primaryColor,
+                //             size: 30,
+                //           ),
+                //     title: Text(
+                //       _i18n.translate('hide_profile'),
+                //       style: const TextStyle(fontSize: 18),
+                //     ),
+                //     subtitle: _hideProfile
+                //         ? Text(
+                //             _i18n.translate(
+                //               'your_profile_is_hidden_on_discover_tab',
+                //             ),
+                //             style: const TextStyle(color: Colors.red),
+                //           )
+                //         : Text(
+                //             _i18n.translate(
+                //               'your_profile_is_visible_on_discover_tab',
+                //             ),
+                //             style: const TextStyle(color: Colors.green),
+                //           ),
+                //     trailing: Switch(
+                //       activeColor: Theme.of(context).primaryColor,
+                //       value: _hideProfile,
+                //       onChanged: (newValue) {
+                //         // Update UI
+                //         setState(() {
+                //           _hideProfile = newValue;
+                //         });
+                //         // User status
+                //         String userStatus = 'active';
+                //         // Check status
+                //         if (newValue) {
+                //           userStatus = 'hidden';
+                //         }
 
-                        // Update profile status
-                        UserModel()
-                            .updateUserData(
-                              userId: UserModel().user.userId,
-                              data: {USER_STATUS: userStatus},
-                            )
-                            .then((_) {
-                              debugPrint('Profile hidden: $newValue');
-                            });
-                      },
-                    ),
-                  ),
-                ),
+                //         // Update profile status
+                //         UserModel()
+                //             .updateUserData(
+                //               userId: UserModel().user.userId,
+                //               data: {USER_STATUS: userStatus},
+                //             )
+                //             .then((_) {
+                //               debugPrint('Profile hidden: $newValue');
+                //             });
+                //       },
+                //     ),
+                // ),
               ],
             );
           },

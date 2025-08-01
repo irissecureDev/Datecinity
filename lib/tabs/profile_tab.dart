@@ -1,5 +1,4 @@
 import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/app_section_card.dart';
 import 'package:soulmate/widgets/profile_basic_info_card.dart';
 import 'package:soulmate/widgets/profile_statistics_card.dart';
 import 'package:soulmate/widgets/delete_account_button.dart';
@@ -37,8 +36,7 @@ class ProfileTab extends StatelessWidget {
               const SizedBox(height: 10),
 
               /// App Section Card
-              AppSectionCard(),
-
+              // AppSectionCard(),
               const SizedBox(height: 20),
 
               /// Sign out button card
