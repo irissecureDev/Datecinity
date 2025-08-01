@@ -95,6 +95,35 @@ class UsersApi {
       return userRegDateA.compareTo(userRegDateB);
     });
 
+    // Remove users that don't have preferences
+    allUsers.removeWhere((user) {
+      return !user.data()!.containsKey(USER_PREFERENCES);
+    });
+
+    final UserModel currentUser = UserModel();
+    final Map<String, dynamic> currentUserPreferences =
+        currentUser.user.preferences ?? {};
+
+    // Sort by preferences matches
+    allUsers.sort((a, b) {
+      final aPrefs = a.data()![USER_PREFERENCES] as Map<String, dynamic>;
+      final bPrefs = b.data()![USER_PREFERENCES] as Map<String, dynamic>;
+
+      int aMatches = 0;
+      int bMatches = 0;
+
+      currentUserPreferences.forEach((key, value) {
+        if (aPrefs.containsKey(key) && aPrefs[key] == value) {
+          aMatches++;
+        }
+        if (bPrefs.containsKey(key) && bPrefs[key] == value) {
+          bMatches++;
+        }
+      });
+
+      return bMatches.compareTo(aMatches);
+    });
+
     final int minAge = settings[USER_MIN_AGE];
     final int maxAge = settings[USER_MAX_AGE];
 
