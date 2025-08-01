@@ -37,6 +37,7 @@ class User {
   final int userTotalDisliked;
   final Map<String, dynamic>? userGallery;
   final Map<String, dynamic>? userSettings;
+  final Map<String, dynamic>? preferences;
 
   // Constructor
   User({
@@ -69,6 +70,7 @@ class User {
     required this.hobbies,
     required this.languages,
     required this.pets,
+    this.preferences,
   });
 
   /// factory user object
@@ -103,6 +105,7 @@ class User {
       pets: List<String>.from(doc[USER_PETS] ?? []),
       hobbies: List<String>.from(doc[USER_HOBBIES] ?? []),
       languages: List<String>.from(doc[USER_LANGUAGES] ?? []),
+      preferences: doc[USER_PREFERENCES],
     );
   }
 

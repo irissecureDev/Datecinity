@@ -102,6 +102,7 @@ const String USER_RELIGION = "user_religion";
 const String USER_HOBBIES = "user_hobbies";
 const String USER_LANGUAGES = "user_languages";
 const String USER_PETS = "user_pets";
+const String USER_PREFERENCES = "user_preferences";
 // User Setting map - fields
 const String USER_MIN_AGE = "user_min_age";
 const String USER_MAX_AGE = "user_max_age";
@@ -156,3 +157,5 @@ const String BLOCKED_BY_USER_ID = 'blocked_by_user_id';
 /// DATABASE SHARED FIELDS FOR COLLECTION
 ///
 const String TIMESTAMP = "timestamp";
+
+const String PREFERENCES_QUESTIONS = "PreferencesQuestions";

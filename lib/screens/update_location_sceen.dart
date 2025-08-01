@@ -5,7 +5,7 @@ import 'package:soulmate/dialogs/progress_dialog.dart';
 import 'package:soulmate/helpers/app_helper.dart';
 import 'package:soulmate/helpers/app_localizations.dart';
 import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/home_screen.dart';
+import 'package:soulmate/screens/complete_profile_screen.dart';
 import 'package:soulmate/widgets/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -141,7 +141,7 @@ class UpdateLocationScreenState extends State<UpdateLocationScreen> {
                   // Check
                   if (widget.isSignUpProcess) {
                     // Go to home screen
-                    _nextScreen(const HomeScreen());
+                    _nextScreen(const CompleteProfileScreen());
                   } else {
                     // Close dialog
                     Future(() => Navigator.of(context).pop());

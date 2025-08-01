@@ -160,6 +160,7 @@ class UserModel extends Model {
     required VoidCallback homeScreen,
     required VoidCallback signUpScreen,
     required VoidCallback updateLocationScreen,
+    required VoidCallback completePreferencesScreen,
     // Optional functions called on app start
     VoidCallback? signInScreen,
     VoidCallback? blockedScreen,
@@ -192,6 +193,11 @@ class UserModel extends Model {
             if (latitude == 0.0 && longitude == 0.0) {
               // Show Update your current location message
               updateLocationScreen();
+              return;
+            }
+
+            if (!userDoc.data()!.containsKey(USER_PREFERENCES)) {
+              completePreferencesScreen();
               return;
             }
 
@@ -405,6 +411,28 @@ class UserModel extends Model {
           isLoading = false;
           notifyListeners();
           debugPrint('signUp() -> error');
+          // Callback function
+          onError(onError);
+        });
+  }
+
+  Future<void> updatePreferences({
+    required Map<String, dynamic> preferences,
+    required VoidCallback onSuccess,
+    required Function(String) onFail,
+  }) async {
+    updateUserData(userId: user.userId, data: {USER_PREFERENCES: preferences})
+        .then((_) {
+          isLoading = false;
+          notifyListeners();
+          debugPrint('updateProfile() -> success');
+          // Callback function
+          onSuccess();
+        })
+        .catchError((onError) {
+          isLoading = false;
+          notifyListeners();
+          debugPrint('updateProfile() -> error');
           // Callback function
           onError(onError);
         });
