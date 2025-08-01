@@ -1,3 +1,8 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:soulmate/constants/constants.dart';
 
@@ -99,6 +104,60 @@ class User {
       hobbies: List<String>.from(doc[USER_HOBBIES] ?? []),
       languages: List<String>.from(doc[USER_LANGUAGES] ?? []),
     );
+  }
+
+  Future<BitmapDescriptor> getMarkerFromUrl({int size = 100}) async {
+    try {
+      final http.Response response = await http.get(
+        Uri.parse(userProfilePhoto),
+      );
+      if (response.statusCode != 200) throw Exception("Failed to load image");
+
+      final Uint8List imageData = response.bodyBytes;
+      final ui.Codec codec = await ui.instantiateImageCodec(
+        imageData,
+        targetWidth: size,
+        targetHeight: size,
+      );
+      final ui.FrameInfo fi = await codec.getNextFrame();
+      final ui.Image image = fi.image;
+
+      final ui.PictureRecorder recorder = ui.PictureRecorder();
+      final Canvas canvas = Canvas(recorder);
+
+      final Paint paint = Paint()..isAntiAlias = true;
+      final Rect rect = Rect.fromLTWH(
+        0.0,
+        0.0,
+        size.toDouble(),
+        size.toDouble(),
+      );
+      final RRect rrect = RRect.fromRectAndRadius(
+        rect,
+        Radius.circular(size / 2),
+      );
+      canvas.clipRRect(rrect);
+      canvas.drawImageRect(
+        image,
+        Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+        rect,
+        paint,
+      );
+
+      final ui.Image markerAsImage = await recorder.endRecording().toImage(
+        size,
+        size,
+      );
+      final ByteData? byteData = await markerAsImage.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+
+      // ignore: deprecated_member_use
+      return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+    } catch (e) {
+      debugPrint("Error creating marker icon: $e");
+      return BitmapDescriptor.defaultMarker;
+    }
   }
 }
 
