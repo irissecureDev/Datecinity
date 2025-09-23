@@ -1,9 +1,9 @@
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/profile_likes_screen.dart';
-import 'package:soulmate/screens/profile_screen.dart';
-import 'package:soulmate/screens/profile_visits_screen.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/profile_likes_screen.dart';
+import 'package:cheers/screens/profile_screen.dart';
+import 'package:cheers/screens/profile_visits_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppNotifications {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:soulmate/api/preferences_questions_api.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/datas/preferences_question.dart';
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/home_screen.dart';
-import 'package:soulmate/widgets/processing.dart';
+import 'package:cheers/api/preferences_questions_api.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/datas/preferences_question.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/home_screen.dart';
+import 'package:cheers/widgets/processing.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({super.key});
@@ -80,7 +80,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     _pr.show(_i18n.translate("processing"));
     UserModel().updatePreferences(
       preferences: _selectedAnswersById,
-      onSuccess: () {
+      onSuccess: () async {
+        // Mark user as having seen welcome screen
+        await UserModel().updateUserData(
+          userId: UserModel().user.userId,
+          data: {USER_HAS_SEEN_WELCOME: true},
+        );
+
         _pr.hide();
 
         /// Show success message

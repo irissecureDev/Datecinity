@@ -1,13 +1,13 @@
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/dialogs/show_me_dialog.dart';
-// import 'package:soulmate/dialogs/vip_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/app_model.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/plugins/locationpicker/place_picker.dart';
-// import 'package:soulmate/screens/passport_screen.dart';
-import 'package:soulmate/widgets/show_scaffold_msg.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/dialogs/show_me_dialog.dart';
+// import 'package:cheers/dialogs/vip_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/app_model.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/plugins/locationpicker/place_picker.dart';
+// import 'package:cheers/screens/passport_screen.dart';
+import 'package:cheers/widgets/show_scaffold_msg.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 

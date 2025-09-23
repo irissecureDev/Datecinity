@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';

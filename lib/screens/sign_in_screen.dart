@@ -1,8 +1,8 @@
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/screens/phone_number_screen.dart';
-import 'package:soulmate/widgets/app_logo.dart';
-import 'package:soulmate/widgets/default_button.dart';
-import 'package:soulmate/widgets/terms_of_service_row.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/screens/phone_number_screen.dart';
+import 'package:cheers/widgets/app_logo.dart';
+import 'package:cheers/widgets/default_button.dart';
+import 'package:cheers/widgets/terms_of_service_row.dart';
 import 'package:flutter/material.dart';
 
 class SignInScreen extends StatefulWidget {

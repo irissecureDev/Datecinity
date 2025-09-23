@@ -1,4 +1,4 @@
-import 'package:soulmate/constants/constants.dart';
+import 'package:cheers/constants/constants.dart';
 
 class AppInfo {
   /// Variables

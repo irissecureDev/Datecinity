@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/models/app_model.dart';
-import 'package:soulmate/plugins/geoflutterfire/geoflutterfire.dart';
-import 'package:soulmate/plugins/locationpicker/place_picker.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/models/app_model.dart';
+import 'package:cheers/plugins/geoflutterfire/geoflutterfire.dart';
+import 'package:cheers/plugins/locationpicker/place_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -196,7 +196,10 @@ class UserModel extends Model {
               return;
             }
 
-            if (!userDoc.data()!.containsKey(USER_PREFERENCES)) {
+            // Check if user has seen welcome screen or has no preferences
+            if (!userDoc.data()!.containsKey(USER_PREFERENCES) ||
+                !userDoc.data()!.containsKey(USER_HAS_SEEN_WELCOME) ||
+                userDoc.data()![USER_HAS_SEEN_WELCOME] != true) {
               completePreferencesScreen();
               return;
             }

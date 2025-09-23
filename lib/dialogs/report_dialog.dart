@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:soulmate/api/blocked_users_api.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/dialogs/flag_user_dialog.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/main.dart';
-import 'package:soulmate/widgets/show_scaffold_msg.dart';
+import 'package:cheers/api/blocked_users_api.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/dialogs/flag_user_dialog.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/main.dart';
+import 'package:cheers/widgets/show_scaffold_msg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

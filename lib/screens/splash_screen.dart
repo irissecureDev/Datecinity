@@ -1,19 +1,19 @@
 import 'dart:io';
 
-import 'package:soulmate/screens/blocked_account_screen.dart';
-import 'package:soulmate/screens/complete_profile_screen.dart';
-import 'package:soulmate/screens/home_screen.dart';
-import 'package:soulmate/screens/update_location_sceen.dart';
+import 'package:cheers/screens/blocked_account_screen.dart';
+import 'package:cheers/screens/welcome_screen.dart';
+import 'package:cheers/screens/home_screen.dart';
+import 'package:cheers/screens/update_location_sceen.dart';
 import 'package:flutter/material.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/screens/update_app_screen.dart';
-import 'package:soulmate/widgets/app_logo.dart';
-import 'package:soulmate/widgets/my_circular_progress.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/sign_up_screen.dart';
-import 'package:soulmate/screens/sign_in_screen.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/screens/update_app_screen.dart';
+import 'package:cheers/widgets/app_logo.dart';
+import 'package:cheers/widgets/my_circular_progress.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/sign_up_screen.dart';
+import 'package:cheers/screens/sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -68,8 +68,7 @@ class SplashScreenState extends State<SplashScreen> {
           signUpScreen: () => _nextScreen(const SignUpScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
           blockedScreen: () => _nextScreen(const BlockedAccountScreen()),
-          completePreferencesScreen: () =>
-              _nextScreen(const CompleteProfileScreen()),
+          completePreferencesScreen: () => _nextScreen(const WelcomeScreen()),
         );
       }
     });

@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '984474280325',
     projectId: 'soulemate-e3cc5',
     storageBucket: 'soulemate-e3cc5.firebasestorage.app',
-    iosBundleId: 'co.soulmate.app',
+    iosBundleId: 'com.cheers.app',
   );
 }

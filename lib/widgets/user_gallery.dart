@@ -1,5 +1,5 @@
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/gallery_image_card.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/widgets/gallery_image_card.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 

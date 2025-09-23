@@ -1,8 +1,8 @@
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/widgets/app_logo.dart';
-import 'package:soulmate/models/app_model.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/widgets/app_logo.dart';
+import 'package:cheers/models/app_model.dart';
 import 'package:flutter/material.dart';
 
 class AboutScreen extends StatelessWidget {

@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/complete_profile_screen.dart';
-import 'package:soulmate/widgets/default_button.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/welcome_screen.dart';
+import 'package:cheers/widgets/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -130,7 +130,16 @@ class UpdateLocationScreenState extends State<UpdateLocationScreen> {
             // Hide progress dialog
             await _pr.hide();
 
-            // Show success message
+            // Check if this is signup process - go directly to welcome screen
+            if (widget.isSignUpProcess) {
+              debugPrint(
+                'UpdateLocationScreen: Signup process - going directly to WelcomeScreen',
+              );
+              _nextScreen(const WelcomeScreen());
+              return;
+            }
+
+            // Show success message for regular location updates
             Future(
               () => successDialog(
                 context,
@@ -138,11 +147,20 @@ class UpdateLocationScreenState extends State<UpdateLocationScreen> {
                     '${_i18n.translate("location_updated_successfully")}\n\n'
                     '${place.country}, $locality',
                 positiveAction: () {
+                  // Debug message
+                  debugPrint(
+                    'UpdateLocationScreen: isSignUpProcess = ${widget.isSignUpProcess}',
+                  );
+
                   // Check
                   if (widget.isSignUpProcess) {
-                    // Go to home screen
-                    _nextScreen(const CompleteProfileScreen());
+                    // Go to welcome screen
+                    debugPrint('UpdateLocationScreen: Going to WelcomeScreen');
+                    _nextScreen(const WelcomeScreen());
                   } else {
+                    debugPrint(
+                      'UpdateLocationScreen: Going back to previous screen',
+                    );
                     // Close dialog
                     Future(() => Navigator.of(context).pop());
                     // Close current screen

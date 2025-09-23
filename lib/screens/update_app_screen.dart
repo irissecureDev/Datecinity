@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/widgets/app_logo.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/widgets/app_logo.dart';
 
 class UpdateAppScreen extends StatelessWidget {
   // Variables

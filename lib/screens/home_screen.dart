@@ -2,22 +2,22 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soulmate/api/conversations_api.dart';
-import 'package:soulmate/api/notifications_api.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/helpers/app_notifications.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/notifications_screen.dart';
-import 'package:soulmate/tabs/conversations_tab.dart';
-import 'package:soulmate/tabs/discover_tab.dart';
-import 'package:soulmate/tabs/matches_tab.dart';
-import 'package:soulmate/tabs/profile_tab.dart';
-import 'package:soulmate/widgets/notification_counter.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/api/conversations_api.dart';
+import 'package:cheers/api/notifications_api.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/helpers/app_notifications.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/notifications_screen.dart';
+import 'package:cheers/tabs/conversations_tab.dart';
+import 'package:cheers/tabs/discover_tab.dart';
+import 'package:cheers/tabs/matches_tab.dart';
+import 'package:cheers/tabs/profile_tab.dart';
+import 'package:cheers/widgets/notification_counter.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:soulmate/constants/constants.dart';
+import 'package:cheers/constants/constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -43,10 +43,10 @@ class HomeScreenState extends State<HomeScreen> {
   /// Tab navigation
   Widget _showCurrentNavBar() {
     List<Widget> options = <Widget>[
+      const ProfileTab(),
       const DiscoverTab(),
       const MatchesTab(),
       const ConversationsTab(),
-      const ProfileTab(),
     ];
 
     return options.elementAt(_selectedIndex);
@@ -282,13 +282,26 @@ class HomeScreenState extends State<HomeScreen> {
         currentIndex: _selectedIndex,
         onTap: _onTappedNavBar,
         items: [
+          /// Profile Tab
+          BottomNavigationBarItem(
+            icon: SvgIcon(
+              _selectedIndex == 0
+                  ? "assets/icons/user_2_icon.svg"
+                  : "assets/icons/user_icon.svg",
+              color: _selectedIndex == 0
+                  ? Theme.of(context).primaryColor
+                  : null,
+            ),
+            label: _i18n.translate("profile"),
+          ),
+
           /// Discover Tab
           BottomNavigationBarItem(
             icon: SvgIcon(
               "assets/icons/search_icon.svg",
               width: 27,
               height: 27,
-              color: _selectedIndex == 0
+              color: _selectedIndex == 1
                   ? Theme.of(context).primaryColor
                   : null,
             ),
@@ -298,10 +311,10 @@ class HomeScreenState extends State<HomeScreen> {
           /// Matches Tab
           BottomNavigationBarItem(
             icon: SvgIcon(
-              _selectedIndex == 1
+              _selectedIndex == 2
                   ? "assets/icons/heart_2_icon.svg"
                   : "assets/icons/heart_icon.svg",
-              color: _selectedIndex == 1
+              color: _selectedIndex == 2
                   ? Theme.of(context).primaryColor
                   : null,
             ),
@@ -312,19 +325,6 @@ class HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: _getConversationCounter(),
             label: _i18n.translate("chats"),
-          ),
-
-          /// Profile Tab
-          BottomNavigationBarItem(
-            icon: SvgIcon(
-              _selectedIndex == 3
-                  ? "assets/icons/user_2_icon.svg"
-                  : "assets/icons/user_icon.svg",
-              color: _selectedIndex == 3
-                  ? Theme.of(context).primaryColor
-                  : null,
-            ),
-            label: _i18n.translate("profile"),
           ),
         ],
       ),
@@ -361,12 +361,12 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _getConversationCounter() {
     // Set icon
     final icon = SvgIcon(
-      _selectedIndex == 2
+      _selectedIndex == 3
           ? "assets/icons/message_2_icon.svg"
           : "assets/icons/message_icon.svg",
       width: 30,
       height: 30,
-      color: _selectedIndex == 2 ? Theme.of(context).primaryColor : null,
+      color: _selectedIndex == 3 ? Theme.of(context).primaryColor : null,
     );
 
     /// Handle stream

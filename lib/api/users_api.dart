@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soulmate/api/blocked_users_api.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/plugins/geoflutterfire/geoflutterfire.dart';
+import 'package:cheers/api/blocked_users_api.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/plugins/geoflutterfire/geoflutterfire.dart';
 import 'package:flutter/material.dart';
 
 class UsersApi {

@@ -1,13 +1,13 @@
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/plugins/otp_screen/otp_screen.dart';
-import 'package:soulmate/screens/complete_profile_screen.dart';
-import 'package:soulmate/screens/home_screen.dart';
-import 'package:soulmate/screens/sign_up_screen.dart';
-import 'package:soulmate/screens/update_location_sceen.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/plugins/otp_screen/otp_screen.dart';
+import 'package:cheers/screens/welcome_screen.dart';
+import 'package:cheers/screens/home_screen.dart';
+import 'package:cheers/screens/sign_up_screen.dart';
+import 'package:cheers/screens/update_location_sceen.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class VerificationCodeScreen extends StatefulWidget {
@@ -53,8 +53,7 @@ class VerificationCodeScreenState extends State<VerificationCodeScreen> {
           updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
           signUpScreen: () => _nextScreen(const SignUpScreen()),
-          completePreferencesScreen: () =>
-              _nextScreen(const CompleteProfileScreen()),
+          completePreferencesScreen: () => _nextScreen(const WelcomeScreen()),
         );
       },
       onError: () async {

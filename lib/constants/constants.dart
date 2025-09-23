@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// APP SETINGS INFO CONSTANTS - SECTION ///
 ///
-const String APP_NAME = "Soulmate";
+const String APP_NAME = "Cheers";
 const Color APP_PRIMARY_COLOR = Color(0xFF7F3BBF);
 const Color APP_ACCENT_COLOR = Color.fromARGB(255, 157, 113, 197);
 const String APP_VERSION_NAME = "Android v1.0.0 & iOS v1.0.0";
@@ -103,6 +103,7 @@ const String USER_HOBBIES = "user_hobbies";
 const String USER_LANGUAGES = "user_languages";
 const String USER_PETS = "user_pets";
 const String USER_PREFERENCES = "user_preferences";
+const String USER_HAS_SEEN_WELCOME = "user_has_seen_welcome";
 // User Setting map - fields
 const String USER_MIN_AGE = "user_min_age";
 const String USER_MAX_AGE = "user_max_age";

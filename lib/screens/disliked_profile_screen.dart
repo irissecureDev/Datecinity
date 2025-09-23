@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soulmate/api/dislikes_api.dart';
-import 'package:soulmate/api/visits_api.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/dialogs/vip_dialog.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/profile_screen.dart';
-import 'package:soulmate/widgets/build_title.dart';
-import 'package:soulmate/widgets/loading_card.dart';
-import 'package:soulmate/widgets/no_data.dart';
-import 'package:soulmate/widgets/processing.dart';
-import 'package:soulmate/widgets/profile_card.dart';
-import 'package:soulmate/widgets/users_grid.dart';
+import 'package:cheers/api/dislikes_api.dart';
+import 'package:cheers/api/visits_api.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/dialogs/vip_dialog.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/profile_screen.dart';
+import 'package:cheers/widgets/build_title.dart';
+import 'package:cheers/widgets/loading_card.dart';
+import 'package:cheers/widgets/no_data.dart';
+import 'package:cheers/widgets/processing.dart';
+import 'package:cheers/widgets/profile_card.dart';
+import 'package:cheers/widgets/users_grid.dart';
 import 'package:flutter/material.dart';
 
 class DislikedProfilesScreen extends StatefulWidget {

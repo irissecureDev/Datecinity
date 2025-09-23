@@ -1,9 +1,9 @@
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/app_model.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/store_products.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/app_model.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/widgets/store_products.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 

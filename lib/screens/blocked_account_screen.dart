@@ -1,5 +1,5 @@
-import 'package:soulmate/models/app_model.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
+import 'package:cheers/models/app_model.dart';
+import 'package:cheers/helpers/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BlockedAccountScreen extends StatelessWidget {

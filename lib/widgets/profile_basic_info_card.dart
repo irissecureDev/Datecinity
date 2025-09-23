@@ -1,12 +1,12 @@
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/edit_profile_screen.dart';
-import 'package:soulmate/screens/profile_screen.dart';
-import 'package:soulmate/screens/settings_screen.dart';
-import 'package:soulmate/widgets/cicle_button.dart';
-import 'package:soulmate/widgets/default_card_border.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/edit_profile_screen.dart';
+import 'package:cheers/screens/profile_screen.dart';
+import 'package:cheers/screens/settings_screen.dart';
+import 'package:cheers/widgets/cicle_button.dart';
+import 'package:cheers/widgets/default_card_border.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class ProfileBasicInfoCard extends StatelessWidget {

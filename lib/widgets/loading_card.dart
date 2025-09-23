@@ -1,5 +1,5 @@
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/widgets/default_card_border.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

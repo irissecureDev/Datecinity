@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/plugins/locationpicker/entities/localization_item.dart';
-import 'package:soulmate/plugins/locationpicker/place_picker.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/plugins/locationpicker/entities/localization_item.dart';
+import 'package:cheers/plugins/locationpicker/place_picker.dart';
 import 'package:flutter/material.dart';
 
 class PassportScreen extends StatelessWidget {

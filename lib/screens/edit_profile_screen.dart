@@ -1,11 +1,11 @@
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/image_source_sheet.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
-import 'package:soulmate/widgets/user_gallery.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/widgets/image_source_sheet.dart';
+import 'package:cheers/widgets/svg_icon.dart';
+import 'package:cheers/widgets/user_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 

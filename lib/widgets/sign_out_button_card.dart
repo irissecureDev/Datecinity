@@ -1,7 +1,7 @@
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/sign_in_screen.dart';
-import 'package:soulmate/widgets/default_card_border.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/sign_in_screen.dart';
+import 'package:cheers/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 
 class SignOutButtonCard extends StatelessWidget {

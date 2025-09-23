@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/models/user_model.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 

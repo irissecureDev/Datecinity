@@ -1,6 +1,6 @@
-import 'package:soulmate/dialogs/vip_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/widgets/default_card_border.dart';
+import 'package:cheers/dialogs/vip_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 
 class VipAccountCard extends StatelessWidget {

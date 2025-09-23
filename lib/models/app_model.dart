@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:soulmate/datas/app_info.dart';
+import 'package:cheers/datas/app_info.dart';
 
 class AppModel extends Model {
   // Variables

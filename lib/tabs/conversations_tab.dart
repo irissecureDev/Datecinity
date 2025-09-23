@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soulmate/api/conversations_api.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/chat_screen.dart';
-import 'package:soulmate/widgets/custom_badge.dart';
-import 'package:soulmate/widgets/build_title.dart';
-import 'package:soulmate/widgets/no_data.dart';
-import 'package:soulmate/widgets/processing.dart';
+import 'package:cheers/api/conversations_api.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/chat_screen.dart';
+import 'package:cheers/widgets/custom_badge.dart';
+import 'package:cheers/widgets/build_title.dart';
+import 'package:cheers/widgets/no_data.dart';
+import 'package:cheers/widgets/processing.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

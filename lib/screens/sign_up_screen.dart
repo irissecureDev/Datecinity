@@ -1,18 +1,18 @@
 import 'dart:io';
 
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/sign_in_screen.dart';
-import 'package:soulmate/screens/update_location_sceen.dart';
-import 'package:soulmate/widgets/image_source_sheet.dart';
-import 'package:soulmate/widgets/processing.dart';
-import 'package:soulmate/widgets/show_scaffold_msg.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
-import 'package:soulmate/widgets/terms_of_service_row.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/sign_in_screen.dart';
+import 'package:cheers/screens/update_location_sceen.dart';
+import 'package:cheers/widgets/image_source_sheet.dart';
+import 'package:cheers/widgets/processing.dart';
+import 'package:cheers/widgets/show_scaffold_msg.dart';
+import 'package:cheers/widgets/svg_icon.dart';
+import 'package:cheers/widgets/terms_of_service_row.dart';
 import 'package:flutter/material.dart';
-import 'package:soulmate/widgets/default_button.dart';
+import 'package:cheers/widgets/default_button.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
 

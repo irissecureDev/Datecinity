@@ -33,7 +33,7 @@
   </queries>
 
   <application
-    android:label="Soulmate"
+    android:label="Cheers"
     android:name="${applicationName}"
     android:icon="@mipmap/launcher_icon">
     <activity

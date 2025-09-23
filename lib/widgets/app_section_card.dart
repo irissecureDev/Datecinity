@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:soulmate/helpers/app_helper.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/screens/about_us_screen.dart';
-import 'package:soulmate/widgets/default_card_border.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/helpers/app_helper.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/screens/about_us_screen.dart';
+import 'package:cheers/widgets/default_card_border.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class AppSectionCard extends StatelessWidget {

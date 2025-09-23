@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/models/user_model.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class NotificationsApi {

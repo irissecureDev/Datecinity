@@ -1,10 +1,10 @@
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/default_card_border.dart';
-import 'package:soulmate/widgets/image_source_sheet.dart';
-import 'package:soulmate/dialogs/vip_dialog.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/widgets/default_card_border.dart';
+import 'package:cheers/widgets/image_source_sheet.dart';
+import 'package:cheers/dialogs/vip_dialog.dart';
 import 'package:flutter/material.dart';
 
 class GalleryImageCard extends StatelessWidget {

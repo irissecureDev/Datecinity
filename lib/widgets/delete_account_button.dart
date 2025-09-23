@@ -1,7 +1,7 @@
-import 'package:soulmate/dialogs/common_dialogs.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/screens/delete_account_screen.dart';
-import 'package:soulmate/widgets/default_button.dart';
+import 'package:cheers/dialogs/common_dialogs.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/screens/delete_account_screen.dart';
+import 'package:cheers/widgets/default_button.dart';
 import 'package:flutter/material.dart';
 
 class DeleteAccountButton extends StatelessWidget {

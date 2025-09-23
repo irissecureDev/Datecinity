@@ -1,7 +1,5 @@
-import UIKit
 import Flutter
-import Firebase
-import GoogleMaps
+import UIKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -9,25 +7,6 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Firebase Messaging Config
-    if #available(iOS 10.0, *) {
-      // For iOS 10 display notification (sent via APNS)
-      UNUserNotificationCenter.current().delegate = self
-
-      let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-      UNUserNotificationCenter.current().requestAuthorization(
-        options: authOptions,
-        completionHandler: {_, _ in })
-    } else {
-      let settings: UIUserNotificationSettings =
-      UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
-      application.registerUserNotificationSettings(settings)
-    }
-
-    application.registerForRemoteNotifications()
-    FirebaseApp.configure()
-    // Passport feature config: Add your iOS API KEY for Google MAPS 
-    GMSServices.provideAPIKey("AIzaSyChRNxb69txX0gBgle_kzBecVDuFrm_5Y4")
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

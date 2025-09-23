@@ -1,9 +1,9 @@
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/profile_basic_info_card.dart';
-import 'package:soulmate/widgets/profile_statistics_card.dart';
-import 'package:soulmate/widgets/delete_account_button.dart';
-import 'package:soulmate/widgets/sign_out_button_card.dart';
-// import 'package:soulmate/widgets/vip_account_card.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/widgets/profile_basic_info_card.dart';
+import 'package:cheers/widgets/profile_statistics_card.dart';
+import 'package:cheers/widgets/delete_account_button.dart';
+import 'package:cheers/widgets/sign_out_button_card.dart';
+// import 'package:cheers/widgets/vip_account_card.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 

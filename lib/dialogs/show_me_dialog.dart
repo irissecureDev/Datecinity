@@ -1,6 +1,6 @@
-import 'package:soulmate/constants/constants.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ShowMeDialog extends StatefulWidget {

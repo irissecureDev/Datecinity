@@ -1,4 +1,4 @@
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class NoData extends StatelessWidget {

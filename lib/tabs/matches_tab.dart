@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:soulmate/api/matches_api.dart';
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/widgets/processing.dart';
+import 'package:cheers/api/matches_api.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/widgets/processing.dart';
 
 class MatchesTab extends StatefulWidget {
   const MatchesTab({super.key});

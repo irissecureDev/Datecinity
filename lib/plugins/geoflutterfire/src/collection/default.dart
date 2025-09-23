@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soulmate/plugins/geoflutterfire/src/models/distance_doc_snapshot.dart';
-import 'package:soulmate/plugins/geoflutterfire/src/models/point.dart';
+import 'package:cheers/plugins/geoflutterfire/src/models/distance_doc_snapshot.dart';
+import 'package:cheers/plugins/geoflutterfire/src/models/point.dart';
 import 'package:flutter/material.dart';
 
 import 'base.dart';

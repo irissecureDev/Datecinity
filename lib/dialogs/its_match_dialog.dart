@@ -1,7 +1,7 @@
-import 'package:soulmate/datas/user.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/plugins/swipe_stack/swipe_stack.dart';
-import 'package:soulmate/screens/chat_screen.dart';
+import 'package:cheers/datas/user.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/plugins/swipe_stack/swipe_stack.dart';
+import 'package:cheers/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 
 class ItsMatchDialog extends StatelessWidget {

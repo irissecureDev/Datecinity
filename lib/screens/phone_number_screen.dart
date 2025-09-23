@@ -1,16 +1,16 @@
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:soulmate/dialogs/progress_dialog.dart';
-import 'package:soulmate/helpers/app_localizations.dart';
-import 'package:soulmate/models/user_model.dart';
-import 'package:soulmate/screens/blocked_account_screen.dart';
-import 'package:soulmate/screens/complete_profile_screen.dart';
-import 'package:soulmate/screens/home_screen.dart';
-import 'package:soulmate/screens/sign_up_screen.dart';
-import 'package:soulmate/screens/update_location_sceen.dart';
-import 'package:soulmate/screens/verification_code_screen.dart';
-import 'package:soulmate/widgets/default_button.dart';
-import 'package:soulmate/widgets/show_scaffold_msg.dart';
-import 'package:soulmate/widgets/svg_icon.dart';
+import 'package:cheers/dialogs/progress_dialog.dart';
+import 'package:cheers/helpers/app_localizations.dart';
+import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/blocked_account_screen.dart';
+import 'package:cheers/screens/welcome_screen.dart';
+import 'package:cheers/screens/home_screen.dart';
+import 'package:cheers/screens/sign_up_screen.dart';
+import 'package:cheers/screens/update_location_sceen.dart';
+import 'package:cheers/screens/verification_code_screen.dart';
+import 'package:cheers/widgets/default_button.dart';
+import 'package:cheers/widgets/show_scaffold_msg.dart';
+import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -164,8 +164,7 @@ class PhoneNumberScreenState extends State<PhoneNumberScreen> {
           signUpScreen: () => _nextScreen(const SignUpScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
           blockedScreen: () => _nextScreen(const BlockedAccountScreen()),
-          completePreferencesScreen: () =>
-              _nextScreen(const CompleteProfileScreen()),
+          completePreferencesScreen: () => _nextScreen(const WelcomeScreen()),
         );
         // END
       },

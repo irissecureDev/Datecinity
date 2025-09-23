@@ -278,5 +278,8 @@
   "location_permission_denied": "Location permission denied",
   "enable_location_permission": "Please enable location permission in your device settings to see your matches on the map.",
   "ok": "OK",
-  "setup_preferences": "Setup preferences"
+  "setup_preferences": "Compatibility Quiz",
+  "welcome_to_cheers_dating_app": "Welcome to Cheers Dating App",
+  "welcome_description": "To connect you with profiles that perfectly match your needs, we invite you to complete this quick questionnaire.",
+  "fill_compatibility_quiz": "Fill the Compatibility Quiz"
 }
