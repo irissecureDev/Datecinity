@@ -76,7 +76,9 @@ class ItsMatchDialog extends StatelessWidget {
                   ),
                   onPressed: () {
                     /// Close it's match dialog  first
-                    Future(() => Navigator.of(context).pop());
+                    // Future(() => Navigator.of(context).pop());
+
+                    Navigator.pop(context);
 
                     /// Go to chat screen
                     Navigator.of(context).push(
