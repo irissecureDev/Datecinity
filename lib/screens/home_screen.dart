@@ -44,8 +44,8 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _showCurrentNavBar() {
     List<Widget> options = <Widget>[
       const ProfileTab(),
-      const DiscoverTab(),
-      const MatchesTab(),
+      const MatchesTab(), // Index 1: Discover affiche le contenu Matches
+      const DiscoverTab(), // Index 2: Matches affiche le contenu Discover
       const ConversationsTab(),
     ];
 
@@ -295,10 +295,10 @@ class HomeScreenState extends State<HomeScreen> {
             label: _i18n.translate("profile"),
           ),
 
-          /// Discover Tab
+          /// Discover Tab (index 1 - mais affiche le contenu Matches)
           BottomNavigationBarItem(
             icon: SvgIcon(
-              "assets/icons/search_icon.svg",
+              "assets/icons/discover_icon.svg",
               width: 27,
               height: 27,
               color: _selectedIndex == 1
@@ -308,7 +308,7 @@ class HomeScreenState extends State<HomeScreen> {
             label: _i18n.translate("discover"),
           ),
 
-          /// Matches Tab
+          /// Matches Tab (index 2 - mais affiche le contenu Discover)
           BottomNavigationBarItem(
             icon: SvgIcon(
               _selectedIndex == 2

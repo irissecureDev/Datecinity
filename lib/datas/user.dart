@@ -76,27 +76,30 @@ class User {
   /// factory user object
   factory User.fromDocument(Map<String, dynamic> doc) {
     return User(
-      userId: doc[USER_ID],
-      userProfilePhoto: doc[USER_PROFILE_PHOTO],
-      userFullname: doc[USER_FULLNAME],
-      userGender: doc[USER_GENDER],
-      userBirthDay: doc[USER_BIRTH_DAY],
-      userBirthMonth: doc[USER_BIRTH_MONTH],
-      userBirthYear: doc[USER_BIRTH_YEAR],
+      userId: doc[USER_ID] ?? '',
+      userProfilePhoto: doc[USER_PROFILE_PHOTO] ?? '',
+      userFullname: doc[USER_FULLNAME] ?? '',
+      userGender: doc[USER_GENDER] ?? '',
+      userBirthDay: doc[USER_BIRTH_DAY] ?? 1,
+      userBirthMonth: doc[USER_BIRTH_MONTH] ?? 1,
+      userBirthYear: doc[USER_BIRTH_YEAR] ?? 1990,
       userBio: doc[USER_BIO] ?? '',
       userPhoneNumber: doc[USER_PHONE_NUMBER] ?? '',
       userEmail: doc[USER_EMAIL] ?? '',
       userGallery: doc[USER_GALLERY],
       userCountry: doc[USER_COUNTRY] ?? '',
       userLocality: doc[USER_LOCALITY] ?? '',
-      userGeoPoint: doc[USER_GEO_POINT]['geopoint'],
+      userGeoPoint: doc[USER_GEO_POINT]?['geopoint'] ?? GeoPoint(0.0, 0.0),
       userSettings: doc[USER_SETTINGS],
-      userStatus: doc[USER_STATUS],
+      userStatus: doc[USER_STATUS] ?? 'active',
       userIsVerified: doc[USER_IS_VERIFIED] ?? false,
-      userLevel: doc[USER_LEVEL],
-      userRegDate: doc[USER_REG_DATE].toDate(), // Firestore Timestamp
-      userLastLogin: doc[USER_LAST_LOGIN].toDate(), // Firestore Timestamp
-      userDeviceToken: doc[USER_DEVICE_TOKEN],
+      userLevel: doc[USER_LEVEL] ?? 'user',
+      userRegDate:
+          doc[USER_REG_DATE]?.toDate() ?? DateTime.now(), // Firestore Timestamp
+      userLastLogin:
+          doc[USER_LAST_LOGIN]?.toDate() ??
+          DateTime.now(), // Firestore Timestamp
+      userDeviceToken: doc[USER_DEVICE_TOKEN] ?? '',
       userTotalLikes: doc[USER_TOTAL_LIKES] ?? 0,
       userTotalVisits: doc[USER_TOTAL_VISITS] ?? 0,
       userTotalDisliked: doc[USER_TOTAL_DISLIKED] ?? 0,

@@ -1,65 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>Cheers</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>Cheers</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Cheers a besoin d'accéder à votre appareil photo pour que vous puissiez prendre des photos de profil.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Cheers a besoin d'accéder au microphone pour les appels vidéo et vocaux avec vos correspondances.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Cheers a besoin d'accéder à votre galerie photo pour que vous puissiez sélectionner des photos de profil.</string>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UIStatusBarStyle</key>
-	<string></string>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-</dict>
+	<dict>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleDisplayName</key>
+		<string>Cheers</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>Cheers</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>NSCameraUsageDescription</key>
+		<string>Cheers a besoin d'accéder à votre appareil photo pour que vous puissiez prendre des photos de profil.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Cheers a besoin d'accéder au microphone pour les appels vidéo et vocaux avec vos correspondances.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Cheers a besoin d'accéder à votre galerie photo pour que vous puissiez sélectionner des photos de profil.</string>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UIStatusBarStyle</key>
+		<string></string>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UIStatusBarHidden</key>
+		<false/>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+		</array>
+		<key>GADApplicationIdentifier</key>
+		<string>ca-app-pub-3940256099942544~1458002511</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLName</key>
+				<string>firebase-auth</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.984474280325-t9j4j2r4r1r2r2r2r2r2r2r2r2r2r2</string>
+					<string>app-1-984474280325-ios-ce828d90b3bde9918664ec</string>
+				</array>
+			</dict>
+		</array>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<true/>
+	</dict>
 </plist>

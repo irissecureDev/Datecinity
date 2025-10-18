@@ -97,11 +97,50 @@ class UserModel extends Model {
   /// Update user device token and
   /// subscribe user to firebase messaging topic for push notifications
   Future<void> updateUserDeviceToken() async {
-    /// Get device token
-    final userDeviceToken = await _fcm.getToken();
+    /// Get device token with error handling
+    String? userDeviceToken;
+    try {
+      // For iOS, ensure permissions are granted and APNS token is available
+      if (Platform.isIOS) {
+        await _fcm.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true,
+        );
+
+        // Get APNS token first (required for iOS)
+        try {
+          final apnsToken = await _fcm.getAPNSToken();
+          if (apnsToken != null) {
+            debugPrint('APNS Token available for updateUserDeviceToken');
+            userDeviceToken = await _fcm.getToken();
+          } else {
+            debugPrint('APNS Token not available in updateUserDeviceToken');
+            return; // Exit early if APNS token not available
+          }
+        } catch (e) {
+          debugPrint('Error getting APNS token in updateUserDeviceToken: $e');
+          return;
+        }
+      } else {
+        // For Android
+        userDeviceToken = await _fcm.getToken();
+      }
+    } catch (e) {
+      debugPrint('Error getting FCM token in updateUserDeviceToken: $e');
+      return; // Exit early if token not available
+    }
 
     /// Subscribe user to receive push notifications
-    await _fcm.subscribeToTopic(NOTIFY_USERS);
+    try {
+      await _fcm.subscribeToTopic(NOTIFY_USERS);
+    } catch (e) {
+      debugPrint('Error subscribing to topic: $e');
+    }
 
     /// Update user device token
     /// Check token result
@@ -342,8 +381,50 @@ class UserModel extends Model {
     /// Set Geolocation point
     final GeoFirePoint geoPoint = _geo.point(latitude: 0.0, longitude: 0.0);
 
-    /// Get user device token for push notifications
-    final userDeviceToken = await _fcm.getToken();
+    /// Get user device token for push notifications with error handling
+    String? userDeviceToken;
+    try {
+      // For iOS, we need to request permission and get APNS token first
+      if (Platform.isIOS) {
+        await _fcm.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true,
+        );
+
+        // Get APNS token first (required for iOS)
+        try {
+          final apnsToken = await _fcm.getAPNSToken();
+          if (apnsToken != null) {
+            debugPrint(
+              'APNS Token available: ${apnsToken.substring(0, 10)}...',
+            );
+            // Now we can safely get FCM token
+            userDeviceToken = await _fcm.getToken();
+            debugPrint('FCM Token obtained successfully');
+          } else {
+            debugPrint(
+              'APNS Token not available yet, continuing without FCM token',
+            );
+            userDeviceToken = null;
+          }
+        } catch (e) {
+          debugPrint('Error getting APNS token: $e');
+          userDeviceToken = null;
+        }
+      } else {
+        // For Android, directly get FCM token
+        userDeviceToken = await _fcm.getToken();
+        debugPrint('FCM Token obtained successfully (Android)');
+      }
+    } catch (e) {
+      debugPrint('Error getting FCM token: $e');
+      userDeviceToken = null; // Continue with null token, can be updated later
+    }
 
     /// Upload user profile image
     final String imageProfileUrl = await uploadFile(
@@ -410,12 +491,12 @@ class UserModel extends Model {
           /// Callback function
           onSuccess();
         })
-        .catchError((onError) {
+        .catchError((error) {
           isLoading = false;
           notifyListeners();
-          debugPrint('signUp() -> error');
+          debugPrint('signUp() -> error: $error');
           // Callback function
-          onError(onError);
+          onFail(error.toString());
         });
   }
 
@@ -428,16 +509,16 @@ class UserModel extends Model {
         .then((_) {
           isLoading = false;
           notifyListeners();
-          debugPrint('updateProfile() -> success');
+          debugPrint('updatePreferences() -> success');
           // Callback function
           onSuccess();
         })
-        .catchError((onError) {
+        .catchError((error) {
           isLoading = false;
           notifyListeners();
-          debugPrint('updateProfile() -> error');
+          debugPrint('updatePreferences() -> error: $error');
           // Callback function
-          onError(onError);
+          onFail(error.toString());
         });
   }
 
@@ -476,12 +557,12 @@ class UserModel extends Model {
           // Callback function
           onSuccess();
         })
-        .catchError((onError) {
+        .catchError((error) {
           isLoading = false;
           notifyListeners();
-          debugPrint('updateProfile() -> error');
+          debugPrint('updateProfile() -> error: $error');
           // Callback function
-          onError(onError);
+          onFail(error.toString());
         });
   }
 

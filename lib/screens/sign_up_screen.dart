@@ -523,13 +523,13 @@ class SignUpScreenState extends State<SignUpScreen> {
                               spacing: 8,
                               children: _languages
                                   .map(
-                                    (pet) => Chip(
+                                    (language) => Chip(
                                       label: Text(
-                                        pet,
+                                        language,
                                         style: TextStyle(color: Colors.white),
                                       ),
                                       onDeleted: () =>
-                                          _removeFromList(pet, _pets),
+                                          _removeFromList(language, _languages),
                                     ),
                                   )
                                   .toList(),

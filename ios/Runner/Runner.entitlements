@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Enable push notifications -->
+	<key>aps-environment</key>
+	<string>development</string>
+	
+	<!-- Enable Associated Domains for Firebase Dynamic Links -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:soulemate-e3cc5.firebaseapp.com</string>
+		<string>applinks:soulemate-e3cc5.page.link</string>
+	</array>
+	
+	<!-- Enable App Groups if needed -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.irissecure.cheers</string>
+	</array>
+	
+	<!-- Enable Keychain Sharing -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.irissecure.cheers</string>
+	</array>
+</dict>
+</plist>
