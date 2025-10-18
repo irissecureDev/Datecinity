@@ -10,7 +10,8 @@ import 'package:cheers/screens/home_screen.dart';
 import 'package:cheers/widgets/processing.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
-  const CompleteProfileScreen({super.key});
+  final bool showBackButton;
+  const CompleteProfileScreen({super.key, this.showBackButton = false});
 
   @override
   State<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
@@ -128,7 +129,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: APP_PRIMARY_COLOR,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: widget.showBackButton,
         title: Text(
           _i18n.translate('setup_preferences'),
           style: const TextStyle(color: Colors.white),
@@ -197,6 +198,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         });
                       },
                     ),
+                    onTap: () {
+                      setState(() {
+                        _selectedAnswersById[question.id] = entry.key;
+                      });
+                    },
                   ),
                 ),
               ],

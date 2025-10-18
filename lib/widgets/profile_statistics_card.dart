@@ -1,5 +1,6 @@
 import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/models/user_model.dart';
+import 'package:cheers/screens/complete_profile_screen.dart';
 import 'package:cheers/screens/disliked_profile_screen.dart';
 import 'package:cheers/screens/profile_likes_screen.dart';
 import 'package:cheers/screens/profile_visits_screen.dart';
@@ -28,6 +29,26 @@ class ProfileStatisticsCard extends StatelessWidget {
       shape: defaultCardBorder(),
       child: Column(
         children: [
+          ListTile(
+            leading: SvgIcon(
+              "assets/icons/settings_icon.svg",
+              width: 22,
+              height: 22,
+              color: Theme.of(context).primaryColor,
+            ),
+            trailing: const Icon(Icons.arrow_forward),
+            title: Text(i18n.translate("setup_preferences"), style: _textStyle),
+            onTap: () {
+              /// Go to profile visits screen
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const CompleteProfileScreen(showBackButton: true),
+                ),
+              );
+            },
+          ),
+          const Divider(height: 0),
           ListTile(
             leading: SvgIcon(
               "assets/icons/heart_icon.svg",
