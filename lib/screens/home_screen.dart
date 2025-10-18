@@ -293,7 +293,7 @@ class HomeScreenState extends State<HomeScreen> {
 
     // Get initial position
     var currentPosition = await Geolocator.getCurrentPosition(
-      locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
+      locationSettings: LocationSettings(accuracy: LocationAccuracy.best),
     );
 
     _appHelper.updateUserLocation(
@@ -306,7 +306,7 @@ class HomeScreenState extends State<HomeScreen> {
     _positionStream =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
+            accuracy: LocationAccuracy.best,
             distanceFilter: 10, // meters
           ),
         ).listen((Position position) {

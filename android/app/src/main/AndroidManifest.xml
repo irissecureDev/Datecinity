@@ -7,6 +7,7 @@
   <!-- For Geolocator Plugin -->
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
   <!-- For In-App purchases -->
   <uses-permission android:name="com.android.vending.BILLING" />
@@ -36,6 +37,7 @@
     android:label="Cheers"
     android:name="${applicationName}"
     android:icon="@mipmap/launcher_icon">
+    <service android:name="com.lyokone.location.FlutterLocationService" android:foregroundServiceType="location" />
     <activity
       android:name=".MainActivity"
       android:exported="true"
