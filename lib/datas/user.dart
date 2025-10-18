@@ -38,6 +38,8 @@ class User {
   final Map<String, dynamic>? userGallery;
   final Map<String, dynamic>? userSettings;
   final Map<String, dynamic>? preferences;
+  bool? hideProfile;
+  String? demographics;
 
   // Constructor
   User({
@@ -70,6 +72,8 @@ class User {
     required this.hobbies,
     required this.languages,
     required this.pets,
+    this.demographics,
+    this.hideProfile,
     this.preferences,
   });
 
@@ -109,6 +113,8 @@ class User {
       hobbies: List<String>.from(doc[USER_HOBBIES] ?? []),
       languages: List<String>.from(doc[USER_LANGUAGES] ?? []),
       preferences: doc[USER_PREFERENCES],
+      hideProfile: doc[USER_SHOW_PROFILE_BIO],
+      demographics: doc[USER_RACE_DEMOGRAPHICS],
     );
   }
 

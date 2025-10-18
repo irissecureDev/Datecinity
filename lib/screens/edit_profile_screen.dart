@@ -39,6 +39,9 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   //   text: UserModel().user.userJobTitle,
   // );
   final _bioController = TextEditingController(text: UserModel().user.userBio);
+  final _demographicsController = TextEditingController(
+    text: UserModel().user.demographics,
+  );
   late AppLocalizations _i18n;
   late ProgressDialog _pr;
 
@@ -156,10 +159,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
                     /// Show gallery
                     const UserGallery(),
-
-                    const SizedBox(height: 20),
-
-                    /// Bio field
+                    const SizedBox(height: 20.0),
                     TextFormField(
                       controller: _bioController,
                       maxLines: 4,
@@ -179,9 +179,32 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                         return null;
                       },
                     ),
+
+                    const SizedBox(height: 20),
+
+                    /// Bio field
+                    TextFormField(
+                      controller: _demographicsController,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: "Race",
+                        hintText: "Describe your race/demographics",
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: SvgIcon("assets/icons/info_icon.svg"),
+                        ),
+                      ),
+                      validator: (bio) {
+                        if (bio == null) {
+                          return "Please describe your race";
+                        }
+                        return null;
+                      },
+                    ),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<String>(
-                      value: _selectedEducation,
+                      initialValue: _selectedEducation,
                       decoration: InputDecoration(
                         labelText: _i18n.translate("education"),
                         hintText: _i18n.translate(
@@ -206,7 +229,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<String>(
-                      value: _selectedReligion,
+                      initialValue: _selectedReligion,
                       decoration: InputDecoration(
                         labelText: _i18n.translate("religion"),
                         hintText: _i18n.translate("choose_your_religion"),
@@ -423,6 +446,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       pets: _pets,
       hobbies: _hobbies,
       languages: _languages,
+      demographics: _demographicsController.text.trim(),
       onSuccess: () {
         /// Show success message
         successDialog(

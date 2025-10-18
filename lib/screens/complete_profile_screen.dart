@@ -130,6 +130,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       appBar: AppBar(
         backgroundColor: APP_PRIMARY_COLOR,
         automaticallyImplyLeading: widget.showBackButton,
+        leading: widget.showBackButton
+            ? const BackButton(color: Colors.white)
+            : null,
         title: Text(
           _i18n.translate('setup_preferences'),
           style: const TextStyle(color: Colors.white),

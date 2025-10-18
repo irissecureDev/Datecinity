@@ -104,6 +104,8 @@ const String USER_LANGUAGES = "user_languages";
 const String USER_PETS = "user_pets";
 const String USER_PREFERENCES = "user_preferences";
 const String USER_HAS_SEEN_WELCOME = "user_has_seen_welcome";
+const String USER_SHOW_PROFILE_BIO = "user_show_hide_profile_bio";
+const String USER_RACE_DEMOGRAPHICS = "user_race_demographics";
 // User Setting map - fields
 const String USER_MIN_AGE = "user_min_age";
 const String USER_MAX_AGE = "user_max_age";

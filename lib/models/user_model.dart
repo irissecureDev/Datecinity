@@ -373,6 +373,8 @@ class UserModel extends Model {
     // Callback functions
     required VoidCallback onSuccess,
     required Function(String) onFail,
+    String? demographics,
+    bool? hideProfile,
   }) async {
     // Notify
     isLoading = true;
@@ -473,6 +475,8 @@ class UserModel extends Model {
           USER_PETS: pets,
           USER_LANGUAGES: languages,
           USER_HOBBIES: hobbies,
+          USER_SHOW_PROFILE_BIO: !(hideProfile ?? false),
+          USER_RACE_DEMOGRAPHICS: demographics,
         })
         .then((_) async {
           /// Get current user in database
@@ -535,6 +539,8 @@ class UserModel extends Model {
     required List<String> pets,
     required List<String> hobbies,
     required List<String> languages,
+    String? demographics,
+    bool? hideProfile,
   }) async {
     /// Update user profile
     updateUserData(
@@ -548,6 +554,8 @@ class UserModel extends Model {
             USER_HOBBIES: hobbies,
             USER_LANGUAGES: languages,
             USER_EDUCATION: educationLevel,
+            USER_SHOW_PROFILE_BIO: !(hideProfile ?? false),
+            USER_RACE_DEMOGRAPHICS: demographics,
           },
         )
         .then((_) {
