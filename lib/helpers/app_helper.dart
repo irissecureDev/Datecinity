@@ -99,8 +99,8 @@ class AppHelper {
     required String userId,
     required double latitude,
     required double longitude,
-    required String country,
-    required String locality,
+    String? country,
+    String? locality,
   }) async {
     /// Initialize geoflutterfire instance
     final geo = Geoflutterfire();
@@ -116,8 +116,8 @@ class AppHelper {
       userId: userId,
       data: {
         USER_GEO_POINT: geoPoint.data,
-        USER_COUNTRY: country,
-        USER_LOCALITY: locality,
+        ...((country != null) ? {USER_COUNTRY: country} : {}),
+        ...((locality != null) ? {USER_LOCALITY: locality} : {}),
       },
     );
   }

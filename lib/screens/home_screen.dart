@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cheers/api/dislikes_api.dart';
+import 'package:cheers/api/likes_api.dart';
+import 'package:cheers/api/users_api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cheers/api/conversations_api.dart';
 import 'package:cheers/api/notifications_api.dart';
@@ -21,6 +24,7 @@ import 'package:cheers/constants/constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,6 +43,9 @@ class HomeScreenState extends State<HomeScreen> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream;
   // in_app_purchase stream
   late StreamSubscription<List<PurchaseDetails>> _inAppPurchaseStream;
+  final AppHelper _appHelper = AppHelper();
+
+  StreamSubscription<Position>? _positionStream;
 
   /// Tab navigation
   Widget _showCurrentNavBar() {
@@ -234,12 +241,13 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     /// Restore VIP Subscription
-    AppHelper().restoreVipAccount();
+    _appHelper.restoreVipAccount();
 
     /// Init streams
     _getCurrentUserUpdates();
     _handlePurchaseUpdates();
     _initFirebaseMessage();
+    _initLocationListener();
   }
 
   @override
@@ -248,6 +256,89 @@ class HomeScreenState extends State<HomeScreen> {
     // Close streams
     _userStream.drain();
     _inAppPurchaseStream.cancel();
+    _positionStream?.cancel();
+  }
+
+  Future<void> _initLocationListener() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      Fluttertoast.showToast(
+        msg: "Location services are disabled.",
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+
+    // Check permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        Fluttertoast.showToast(msg: "Location permission denied.");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      Fluttertoast.showToast(
+        msg:
+            "Location permission permanently denied. Please enable it from settings.",
+      );
+      return;
+    }
+
+    // Get initial position
+    var currentPosition = await Geolocator.getCurrentPosition(
+      locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
+    );
+
+    _appHelper.updateUserLocation(
+      userId: UserModel().getFirebaseUser!.uid, // widget.userId
+      latitude: currentPosition.latitude,
+      longitude: currentPosition.longitude,
+    );
+
+    // Listen to continuous location updates
+    _positionStream =
+        Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 10, // meters
+          ),
+        ).listen((Position position) {
+          /// First: Load All Disliked Users to be filtered
+          DislikesApi().getDislikedUsers(withLimit: false).then((
+            List<DocumentSnapshot<Map<String, dynamic>>> dislikedUsers,
+          ) async {
+            /// Validate user max distance
+            await UserModel().checkUserMaxDistance();
+
+            /// Load all users
+            UsersApi().getUsers(dislikedUsers: dislikedUsers).then((users) {
+              for (var user in users) {
+                LikesApi().likeUser(
+                  likedUserId: user[USER_ID],
+                  userDeviceToken: user[USER_DEVICE_TOKEN],
+                  nMessage:
+                      "${UserModel().user.userFullname.split(' ')[0]}, "
+                      "${_i18n.translate("liked_your_profile_click_and_see")}",
+                  onLikeResult: (result) {
+                    debugPrint('likeResult: $result');
+                  },
+                );
+              }
+            });
+          });
+          _appHelper.updateUserLocation(
+            userId: UserModel().getFirebaseUser!.uid, // widget.userId
+            latitude: position.latitude,
+            longitude: position.longitude,
+          );
+        });
   }
 
   @override
