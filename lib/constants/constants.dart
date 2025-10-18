@@ -111,6 +111,7 @@ const String USER_MIN_AGE = "user_min_age";
 const String USER_MAX_AGE = "user_max_age";
 const String USER_MAX_DISTANCE = "user_max_distance";
 const String USER_SHOW_ME = "user_show_me";
+const String USER_MATCH_PERCENT = "matching_percent";
 
 /// DATABASE FIELDS FOR FlaggedUsers COLLECTION  ///
 ///

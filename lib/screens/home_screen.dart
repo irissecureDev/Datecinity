@@ -320,16 +320,17 @@ class HomeScreenState extends State<HomeScreen> {
             /// Load all users
             UsersApi().getUsers(dislikedUsers: dislikedUsers).then((users) {
               for (var user in users) {
-                LikesApi().likeUser(
-                  likedUserId: user[USER_ID],
-                  userDeviceToken: user[USER_DEVICE_TOKEN],
-                  nMessage:
-                      "${UserModel().user.userFullname.split(' ')[0]}, "
-                      "${_i18n.translate("liked_your_profile_click_and_see")}",
-                  onLikeResult: (result) {
-                    debugPrint('likeResult: $result');
-                  },
-                );
+                if (user[user[USER_MATCH_PERCENT]] as double >= 70) {
+                  LikesApi().likeUser(
+                    likedUserId: user[USER_ID],
+                    userDeviceToken: user[USER_DEVICE_TOKEN],
+                    nMessage:
+                        "You have a ${user[USER_MATCH_PERCENT]}% match with ${UserModel().user.userFullname.split(' ')[0]}",
+                    onLikeResult: (result) {
+                      debugPrint('likeResult: $result');
+                    },
+                  );
+                }
               }
             });
           });
