@@ -349,11 +349,33 @@ class HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor.withOpacity(0.8),
+              ],
+            ),
+          ),
+        ),
         title: Row(
           children: [
             Image.asset("assets/images/app_logo.png", width: 40, height: 40),
             const SizedBox(width: 5),
-            const Text(APP_NAME),
+            const Text(
+              APP_NAME,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
         actions: [
@@ -427,7 +449,12 @@ class HomeScreenState extends State<HomeScreen> {
   /// Count unread notifications
   Widget _getNotificationCounter() {
     // Set icon
-    const icon = SvgIcon("assets/icons/bell_icon.svg", width: 33, height: 33);
+    const icon = SvgIcon(
+      "assets/icons/bell_icon.svg",
+      width: 33,
+      height: 33,
+      color: Colors.white,
+    );
 
     /// Handle stream
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
