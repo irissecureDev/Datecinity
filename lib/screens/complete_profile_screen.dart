@@ -177,10 +177,17 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               margin: const EdgeInsets.only(right: 8),
               child: TextButton.icon(
                 onPressed: _goToPreviousPage,
-                icon: const Icon(Icons.chevron_left, color: Colors.white, size: 20),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 label: const Text(
                   "Précédent",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -213,9 +220,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                 ),
               ),
             ),
-          
+
           Expanded(child: _buildQuestions()),
-          
+
           /// Bottom Navigation
           if (_questions != null)
             Container(
@@ -243,7 +250,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           label: const Text("Précédent"),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Theme.of(context).primaryColor,
-                            side: BorderSide(color: Theme.of(context).primaryColor),
+                            side: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -251,7 +260,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         ),
                       ),
                     ),
-                  
+
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -261,7 +270,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             ? LinearGradient(
                                 colors: [
                                   Theme.of(context).primaryColor,
-                                  Theme.of(context).primaryColor.withOpacity(0.8),
+                                  Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.8),
                                 ],
                               )
                             : null,
@@ -270,7 +281,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         boxShadow: hasSelectedAnswer
                             ? [
                                 BoxShadow(
-                                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.3),
                                   offset: const Offset(0, 4),
                                   blurRadius: 15,
                                 ),
@@ -280,21 +293,25 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       child: TextButton.icon(
                         onPressed: hasSelectedAnswer
                             ? (_currentPage == _questions!.length - 1
-                                ? _submitAnswers
-                                : _goToNextPage)
+                                  ? _submitAnswers
+                                  : _goToNextPage)
                             : null,
                         icon: Icon(
                           _currentPage == _questions!.length - 1
                               ? Icons.check
                               : Icons.chevron_right,
-                          color: hasSelectedAnswer ? Colors.white : Colors.grey[500],
+                          color: hasSelectedAnswer
+                              ? Colors.white
+                              : Colors.grey[500],
                         ),
                         label: Text(
                           _currentPage == _questions!.length - 1
                               ? _i18n.translate("SAVE")
                               : "Suivant",
                           style: TextStyle(
-                            color: hasSelectedAnswer ? Colors.white : Colors.grey[500],
+                            color: hasSelectedAnswer
+                                ? Colors.white
+                                : Colors.grey[500],
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
                           ),
@@ -346,10 +363,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             const SizedBox(height: 10),
             Text(
               "Préparation de votre quiz de compatibilité...",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -401,7 +415,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   children: [
                     /// Question Number Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -421,7 +438,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     /// Question Text
                     Text(
                       question.question,
@@ -444,28 +461,30 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               /// Answers
               ...question.answers.entries.map((entry) {
                 final bool isSelected = selectedAnswerKey == entry.key;
-                
+
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isSelected 
-                          ? Theme.of(context).primaryColor 
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
                           : Colors.grey[200]!,
                       width: isSelected ? 2 : 1,
                     ),
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: Theme.of(context).primaryColor.withOpacity(0.1),
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withOpacity(0.1),
                               offset: const Offset(0, 2),
                               blurRadius: 10,
                             ),
@@ -496,13 +515,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: isSelected 
-                                    ? Theme.of(context).primaryColor 
+                                color: isSelected
+                                    ? Theme.of(context).primaryColor
                                     : Colors.grey[400]!,
                                 width: 2,
                               ),
-                              color: isSelected 
-                                  ? Theme.of(context).primaryColor 
+                              color: isSelected
+                                  ? Theme.of(context).primaryColor
                                   : Colors.transparent,
                             ),
                             child: isSelected
@@ -514,28 +533,32 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                                 : null,
                           ),
                           const SizedBox(width: 16),
-                          
+
                           /// Answer Text
                           Expanded(
                             child: Text(
                               entry.value.toString(),
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                color: isSelected 
-                                    ? Theme.of(context).primaryColor 
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? Theme.of(context).primaryColor
                                     : const Color(0xFF2D3748),
                                 height: 1.4,
                               ),
                             ),
                           ),
-                          
+
                           /// Selected Indicator
                           if (isSelected)
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -550,7 +573,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   ),
                 );
               }).toList(),
-              
+
               const SizedBox(height: 100), // Space for bottom navigation
             ],
           ),
