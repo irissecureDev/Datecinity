@@ -75,27 +75,61 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text(_i18n.translate("edit_profile")),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        title: Text(
+          _i18n.translate("edit_profile"),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+        ),
+        centerTitle: true,
         actions: [
           // Save changes button
-          TextButton(
-            child: Text(
-              _i18n.translate("SAVE"),
-              style: TextStyle(color: Theme.of(context).primaryColor),
+          Container(
+            margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).primaryColor.withOpacity(0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
             ),
-            onPressed: () {
-              /// Validate form
-              if (_formKey.currentState!.validate()) {
-                _saveChanges();
-              }
-            },
+            child: TextButton(
+              onPressed: () {
+                /// Validate form
+                if (_formKey.currentState!.validate()) {
+                  _saveChanges();
+                }
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(
+                _i18n.translate("SAVE"),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
         ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
             child: ScopedModelDescendant<UserModel>(
@@ -103,300 +137,975 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// Profile photo
-                    GestureDetector(
-                      child: Center(
-                        child: Stack(
-                          children: <Widget>[
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                userModel.user.userProfilePhoto,
-                              ),
-                              radius: 80,
-                              backgroundColor: Theme.of(context).primaryColor,
-                            ),
-
-                            /// Edit icon
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: CircleAvatar(
-                                radius: 18,
-                                backgroundColor: Theme.of(context).primaryColor,
-                                child: const Icon(
-                                  Icons.edit,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    /// Profile photo section
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      onTap: () async {
-                        /// Update profile image
-                        _selectImage(
-                          imageUrl: userModel.user.userProfilePhoto,
-                          path: 'profile',
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: Text(
-                        _i18n.translate("profile_photo"),
-                        style: const TextStyle(fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    /// Profile gallery
-                    Text(
-                      _i18n.translate("gallery"),
-                      style: const TextStyle(fontSize: 18, color: Colors.grey),
-                      textAlign: TextAlign.left,
-                    ),
-                    const SizedBox(height: 5),
-
-                    /// Show gallery
-                    const UserGallery(),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: _bioController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        labelText: _i18n.translate("bio"),
-                        hintText: _i18n.translate("write_about_you"),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: SvgIcon("assets/icons/info_icon.svg"),
-                        ),
-                      ),
-                      validator: (bio) {
-                        if (bio == null) {
-                          return _i18n.translate("please_write_your_bio");
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    /// Bio field
-                    TextFormField(
-                      controller: _demographicsController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        labelText: "Race",
-                        hintText: "Describe your race/demographics",
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: SvgIcon("assets/icons/info_icon.svg"),
-                        ),
-                      ),
-                      validator: (bio) {
-                        if (bio == null) {
-                          return "Please describe your race";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    DropdownButtonFormField<String>(
-                      value: _selectedEducation,
-                      decoration: InputDecoration(
-                        labelText: _i18n.translate("education"),
-                        hintText: _i18n.translate(
-                          "choose_your_education_level",
-                        ),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.all(9.0),
-                          child: SvgIcon("assets/icons/university_icon.svg"),
-                        ),
-                      ),
-                      items: educationLevels
-                          .map(
-                            (level) => DropdownMenuItem(
-                              value: level,
-                              child: Text(level),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => _selectedEducation = value),
-                    ),
-                    const SizedBox(height: 20),
-                    DropdownButtonFormField<String>(
-                      value: _selectedReligion,
-                      decoration: InputDecoration(
-                        labelText: _i18n.translate("religion"),
-                        hintText: _i18n.translate("choose_your_religion"),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.all(9.0),
-                          child: const Icon(Icons.list, color: Colors.black38),
-                        ),
-                      ),
-                      items: religions
-                          .map(
-                            (level) => DropdownMenuItem(
-                              value: level,
-                              child: Text(level),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => _selectedReligion = value),
-                    ),
-
-                    const SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _hobbyController,
-                                decoration: InputDecoration(
-                                  hintText: _i18n.translate("add_hobby"),
-                                  labelText: _i18n.translate("hobbies"),
-                                ),
-                                onSubmitted: (value) => _addToList(
-                                  value,
-                                  _hobbies,
-                                  _hobbyController,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: () => _addToList(
-                                _hobbyController.text,
-                                _hobbies,
-                                _hobbyController,
-                              ),
-                              child: Text(_i18n.translate("add")),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          children: _hobbies
-                              .map(
-                                (hobby) => Chip(
-                                  label: Text(
-                                    hobby,
-                                    style: TextStyle(color: Colors.white),
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            child: Stack(
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Theme.of(
+                                        context,
+                                      ).primaryColor.withOpacity(0.3),
+                                      width: 3,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Theme.of(
+                                          context,
+                                        ).primaryColor.withOpacity(0.2),
+                                        blurRadius: 20,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
                                   ),
-                                  onDeleted: () =>
-                                      _removeFromList(hobby, _hobbies),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Pets (free input)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _petController,
-                                decoration: InputDecoration(
-                                  hintText: _i18n.translate("app_pet"),
-                                  labelText: _i18n.translate("pets"),
-                                ),
-                                onSubmitted: (value) =>
-                                    _addToList(value, _pets, _petController),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: () => _addToList(
-                                _petController.text,
-                                _pets,
-                                _petController,
-                              ),
-                              child: Text(_i18n.translate("add")),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          children: _pets
-                              .map(
-                                (pet) => Chip(
-                                  label: Text(
-                                    pet,
-                                    style: TextStyle(color: Colors.white),
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                      userModel.user.userProfilePhoto,
+                                    ),
+                                    radius: 60,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).primaryColor,
                                   ),
-                                  onDeleted: () => _removeFromList(pet, _pets),
                                 ),
-                              )
-                              .toList(),
-                        ),
-                      ],
+
+                                /// Edit icon
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context).primaryColor,
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.8),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.3),
+                                          blurRadius: 8,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: Colors.transparent,
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: () async {
+                              /// Update profile image
+                              _selectImage(
+                                imageUrl: userModel.user.userProfilePhoto,
+                                path: 'profile',
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            _i18n.translate("profile_photo"),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Tap to change your profile picture",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
 
-                    const SizedBox(height: 20.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _languagesController,
-                                decoration: InputDecoration(
-                                  hintText: _i18n.translate("add_language"),
-                                  labelText: _i18n.translate("languages"),
-                                ),
-                                onSubmitted: (value) => _addToList(
-                                  value,
-                                  _languages,
-                                  _languagesController,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: () => _addToList(
-                                _languagesController.text,
-                                _languages,
-                                _languagesController,
-                              ),
-                              child: Text(_i18n.translate("add")),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          children: _languages
-                              .map(
-                                (pet) => Chip(
-                                  label: Text(
-                                    pet,
-                                    style: TextStyle(color: Colors.white),
+                    const SizedBox(height: 24),
+
+                    /// Gallery section
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Theme.of(
+                                        context,
+                                      ).primaryColor.withOpacity(0.1),
+                                      Theme.of(
+                                        context,
+                                      ).primaryColor.withOpacity(0.05),
+                                    ],
                                   ),
-                                  onDeleted: () => _removeFromList(pet, _pets),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                              )
-                              .toList(),
-                        ),
-                      ],
+                                child: Icon(
+                                  Icons.photo_library,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                _i18n.translate("gallery"),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          /// Show gallery
+                          const UserGallery(),
+                        ],
+                      ),
                     ),
+
+                    const SizedBox(height: 24),
+
+                    /// Form fields section
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Personal Information",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            controller: _bioController,
+                            maxLines: 4,
+                            decoration: InputDecoration(
+                              labelText: _i18n.translate("bio"),
+                              hintText: _i18n.translate("write_about_you"),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: SvgIcon(
+                                  "assets/icons/info_icon.svg",
+                                  color: Theme.of(context).primaryColor,
+                                  width: 16,
+                                  height: 16,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                            validator: (bio) {
+                              if (bio == null || bio.trim().isEmpty) {
+                                return _i18n.translate("please_write_your_bio");
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          /// Demographics field
+                          TextFormField(
+                            controller: _demographicsController,
+                            maxLines: 4,
+                            decoration: InputDecoration(
+                              labelText: "Race",
+                              hintText: "Describe your race/demographics",
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: SvgIcon(
+                                  "assets/icons/info_icon.svg",
+                                  color: Theme.of(context).primaryColor,
+                                  width: 16,
+                                  height: 16,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                            validator: (bio) {
+                              if (bio == null || bio.trim().isEmpty) {
+                                return "Please describe your race";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          DropdownButtonFormField<String>(
+                            value: _selectedEducation,
+                            decoration: InputDecoration(
+                              labelText: _i18n.translate("education"),
+                              hintText: _i18n.translate(
+                                "choose_your_education_level",
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: SvgIcon(
+                                  "assets/icons/university_icon.svg",
+                                  color: Theme.of(context).primaryColor,
+                                  width: 16,
+                                  height: 16,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                            items: educationLevels
+                                .map(
+                                  (level) => DropdownMenuItem(
+                                    value: level,
+                                    child: Text(level),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) =>
+                                setState(() => _selectedEducation = value),
+                          ),
+                          const SizedBox(height: 20),
+                          DropdownButtonFormField<String>(
+                            value: _selectedReligion,
+                            decoration: InputDecoration(
+                              labelText: _i18n.translate("religion"),
+                              hintText: _i18n.translate("choose_your_religion"),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.favorite,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 16,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                            items: religions
+                                .map(
+                                  (level) => DropdownMenuItem(
+                                    value: level,
+                                    child: Text(level),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) =>
+                                setState(() => _selectedReligion = value),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    /// Interests section
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Interests & Preferences",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          /// Hobbies section
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.1),
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.sports_soccer,
+                                      color: Theme.of(context).primaryColor,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _i18n.translate("hobbies"),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _hobbyController,
+                                      decoration: InputDecoration(
+                                        hintText: _i18n.translate("add_hobby"),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[300]!,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[300]!,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(
+                                              context,
+                                            ).primaryColor,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
+                                      ),
+                                      onSubmitted: (value) => _addToList(
+                                        value,
+                                        _hobbies,
+                                        _hobbyController,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context).primaryColor,
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.8),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () => _addToList(
+                                        _hobbyController.text,
+                                        _hobbies,
+                                        _hobbyController,
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        _i18n.translate("add"),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _hobbies
+                                    .map(
+                                      (hobby) => Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(
+                                                context,
+                                              ).primaryColor.withOpacity(0.8),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Chip(
+                                          label: Text(
+                                            hobby,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.transparent,
+                                          deleteIconColor: Colors.white,
+                                          onDeleted: () =>
+                                              _removeFromList(hobby, _hobbies),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Pets section
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.1),
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.pets,
+                                      color: Theme.of(context).primaryColor,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _i18n.translate("pets"),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _petController,
+                                      decoration: InputDecoration(
+                                        hintText: _i18n.translate("app_pet"),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[300]!,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[300]!,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(
+                                              context,
+                                            ).primaryColor,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
+                                      ),
+                                      onSubmitted: (value) => _addToList(
+                                        value,
+                                        _pets,
+                                        _petController,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context).primaryColor,
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.8),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () => _addToList(
+                                        _petController.text,
+                                        _pets,
+                                        _petController,
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        _i18n.translate("add"),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _pets
+                                    .map(
+                                      (pet) => Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(
+                                                context,
+                                              ).primaryColor.withOpacity(0.8),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Chip(
+                                          label: Text(
+                                            pet,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.transparent,
+                                          deleteIconColor: Colors.white,
+                                          onDeleted: () =>
+                                              _removeFromList(pet, _pets),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          /// Languages section
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.1),
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.language,
+                                      color: Theme.of(context).primaryColor,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _i18n.translate("languages"),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _languagesController,
+                                      decoration: InputDecoration(
+                                        hintText: _i18n.translate(
+                                          "add_language",
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[300]!,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[300]!,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(
+                                              context,
+                                            ).primaryColor,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
+                                      ),
+                                      onSubmitted: (value) => _addToList(
+                                        value,
+                                        _languages,
+                                        _languagesController,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context).primaryColor,
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.8),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () => _addToList(
+                                        _languagesController.text,
+                                        _languages,
+                                        _languagesController,
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        _i18n.translate("add"),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _languages
+                                    .map(
+                                      (language) => Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(
+                                                context,
+                                              ).primaryColor.withOpacity(0.8),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Chip(
+                                          label: Text(
+                                            language,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.transparent,
+                                          deleteIconColor: Colors.white,
+                                          onDeleted: () => _removeFromList(
+                                            language,
+                                            _languages,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
                   ],
                 );
               },

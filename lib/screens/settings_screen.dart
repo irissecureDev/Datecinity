@@ -122,279 +122,610 @@ class SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(title: Text(_i18n.translate("settings"))),
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        title: Text(
+          _i18n.translate("settings"),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.all(20),
         child: ScopedModelDescendant<UserModel>(
           builder: (context, child, userModel) {
             return Column(
               children: [
-                /// Passport feature
-                /// Travel to any Country or City and Swipe Women there!
-                // Card(
-                //   margin: const EdgeInsets.symmetric(horizontal: 8),
-                //   elevation: 2.0,
-                //   shadowColor: Theme.of(context).primaryColor,
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       // Padding(
-                //       //   padding: const EdgeInsets.all(8.0),
-                //       //   child: Text(
-                //       //     _i18n.translate("passport"),
-                //       //     style: TextStyle(
-                //       //       fontSize: 18,
-                //       //       color: Theme.of(context).primaryColor,
-                //       //       fontWeight: FontWeight.bold,
-                //       //     ),
-                //       //   ),
-                //       // ),
-                //       ListTile(
-                //         leading: Icon(
-                //           Icons.flight,
-                //           color: Theme.of(context).primaryColor,
-                //           size: 40,
-                //         ),
-                //         title: Text(
-                //           _i18n.translate(
-                //             "travel_to_any_country_or_city_and_match_with_people_there",
-                //           ),
-                //         ),
-                //         trailing: TextButton(
-                //           style: TextButton.styleFrom(
-                //             backgroundColor: APP_PRIMARY_COLOR,
-                //           ),
-                //           child: Text(
-                //             _i18n.translate("travel_now"),
-                //             style: const TextStyle(color: Colors.white),
-                //           ),
-                //           onPressed: () async {
-                //             // // Check User VIP Account Status
-                //             if (UserModel().userIsVip) {
-                //               // Go to passport screen
-                //               _goToPassportScreen();
-                //             } else {
-                //               /// Show VIP dialog
-                //               showDialog(
-                //                 context: context,
-                //                 builder: (context) => const VipDialog(),
-                //               );
-                //             }
-                //           },
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // const SizedBox(height: 20),
-
                 /// User current location
-                Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          _i18n.translate("your_current_location"),
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
-                      ListTile(
-                        leading: SvgIcon(
-                          "assets/icons/location_point_icon.svg",
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        title: Text(
-                          '${UserModel().user.userCountry}, ${UserModel().user.userLocality}',
-                        ),
-                        trailing: TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: APP_PRIMARY_COLOR,
-                          ),
-                          child: Text(
-                            _i18n.translate("UPDATE"),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () async {
-                            /// Update user location: Country & City an Geo Data
-                            _updateUserLocation(false);
-                          },
-                        ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 15),
-
-                /// User Max distance
-                Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              '${_i18n.translate("maximum_distance")} ${_selectedMaxDistance.round()} km',
-                              style: const TextStyle(fontSize: 18),
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).primaryColor.withOpacity(0.1),
+                              Theme.of(context).primaryColor.withOpacity(0.05),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: SvgIcon(
+                                "assets/icons/location_point_icon.svg",
+                                color: Theme.of(context).primaryColor,
+                                width: 24,
+                                height: 24,
+                              ),
                             ),
-                            const SizedBox(height: 3),
+                            const SizedBox(width: 16),
                             Text(
-                              _i18n.translate("show_people_within_this_radius"),
-                              style: const TextStyle(color: Colors.grey),
+                              _i18n.translate("your_current_location"),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      Slider(
-                        activeColor: Theme.of(context).primaryColor,
-                        value: _selectedMaxDistance,
-                        label: '${_selectedMaxDistance.round()} km',
-                        divisions: 100,
-                        min: 0,
-
-                        /// Check User VIP Account to set max distance available
-                        max: UserModel().userIsVip
-                            ? AppModel().appInfo.vipAccountMaxDistance
-                            : AppModel().appInfo.freeAccountMaxDistance,
-                        onChanged: (radius) {
-                          setState(() {
-                            _selectedMaxDistance = radius;
-                          });
-                          // debug
-                          debugPrint(
-                            '_selectedMaxDistance: '
-                            '${radius.toStringAsFixed(2)}',
-                          );
-                        },
-                        onChangeEnd: (radius) {
-                          /// Update user max distance
-                          UserModel()
-                              .updateUserData(
-                                userId: UserModel().user.userId,
-                                data: {
-                                  '$USER_SETTINGS.$USER_MAX_DISTANCE':
-                                      double.parse(radius.toStringAsFixed(2)),
-                                },
-                              )
-                              .then((_) {
-                                debugPrint(
-                                  'User max distance updated -> ${radius.toStringAsFixed(2)}',
-                                );
-                              });
-                        },
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  color: Colors.grey[600],
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    '${UserModel().user.userCountry}, ${UserModel().user.userLocality}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Theme.of(context).primaryColor,
+                                      Theme.of(
+                                        context,
+                                      ).primaryColor.withOpacity(0.8),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: TextButton(
+                                  onPressed: () async {
+                                    /// Update user location: Country & City an Geo Data
+                                    _updateUserLocation(false);
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _i18n.translate("UPDATE"),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      // Show message for non VIP user
-                      UserModel().userIsVip
-                          ? const SizedBox(width: 0, height: 0)
-                          : Padding(
-                              padding: const EdgeInsets.all(8.0),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                /// User Max distance
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).primaryColor.withOpacity(0.1),
+                              Theme.of(context).primaryColor.withOpacity(0.05),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.radar,
+                                color: Theme.of(context).primaryColor,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${_i18n.translate("maximum_distance")} ${_selectedMaxDistance.round()} km',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _i18n.translate(
+                                      "show_people_within_this_radius",
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
                               child: Text(
-                                "${_i18n.translate("need_more_radius_away")} "
-                                "${AppModel().appInfo.vipAccountMaxDistance} km "
-                                "${_i18n.translate('radius_away')}",
+                                '${_selectedMaxDistance.round()} km',
                                 style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                   color: Theme.of(context).primaryColor,
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 16),
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                activeTrackColor: Theme.of(
+                                  context,
+                                ).primaryColor,
+                                inactiveTrackColor: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.2),
+                                thumbColor: Theme.of(context).primaryColor,
+                                overlayColor: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.2),
+                                thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 12,
+                                ),
+                                trackHeight: 6,
+                              ),
+                              child: Slider(
+                                value: _selectedMaxDistance,
+                                divisions: 100,
+                                min: 0,
+
+                                /// Check User VIP Account to set max distance available
+                                max: UserModel().userIsVip
+                                    ? AppModel().appInfo.vipAccountMaxDistance
+                                    : AppModel().appInfo.freeAccountMaxDistance,
+                                onChanged: (radius) {
+                                  setState(() {
+                                    _selectedMaxDistance = radius;
+                                  });
+                                  // debug
+                                  debugPrint(
+                                    '_selectedMaxDistance: '
+                                    '${radius.toStringAsFixed(2)}',
+                                  );
+                                },
+                                onChangeEnd: (radius) {
+                                  /// Update user max distance
+                                  UserModel()
+                                      .updateUserData(
+                                        userId: UserModel().user.userId,
+                                        data: {
+                                          '$USER_SETTINGS.$USER_MAX_DISTANCE':
+                                              double.parse(
+                                                radius.toStringAsFixed(2),
+                                              ),
+                                        },
+                                      )
+                                      .then((_) {
+                                        debugPrint(
+                                          'User max distance updated -> ${radius.toStringAsFixed(2)}',
+                                        );
+                                      });
+                                },
+                              ),
+                            ),
+                            // Show message for non VIP user
+                            UserModel().userIsVip
+                                ? const SizedBox(width: 0, height: 0)
+                                : Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.1),
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Theme.of(
+                                          context,
+                                        ).primaryColor.withOpacity(0.2),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: Theme.of(context).primaryColor,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            "${_i18n.translate("need_more_radius_away")} "
+                                            "${AppModel().appInfo.vipAccountMaxDistance} km "
+                                            "${_i18n.translate('radius_away')}",
+                                            style: TextStyle(
+                                              color: Theme.of(
+                                                context,
+                                              ).primaryColor,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
 
                 // User age range
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        title: Text(
-                          _i18n.translate("age_range"),
-                          style: const TextStyle(fontSize: 19),
-                        ),
-                        subtitle: Text(
-                          _i18n.translate("show_people_within_this_age_range"),
-                        ),
-                        trailing: Text(
-                          "${_selectedAgeRange.start.toStringAsFixed(0)} - "
-                          "${_selectedAgeRange.end.toStringAsFixed(0)}",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).primaryColor.withOpacity(0.1),
+                              Theme.of(context).primaryColor.withOpacity(0.05),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
                           ),
                         ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.calendar_today,
+                                color: Theme.of(context).primaryColor,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _i18n.translate("age_range"),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _i18n.translate(
+                                      "show_people_within_this_age_range",
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                "${_selectedAgeRange.start.toStringAsFixed(0)} - "
+                                "${_selectedAgeRange.end.toStringAsFixed(0)}",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      RangeSlider(
-                        activeColor: Theme.of(context).primaryColor,
-                        values: _selectedAgeRange,
-                        labels: _selectedAgeRangeLabels,
-                        divisions: 100,
-                        min: 18,
-                        max: 100,
-                        onChanged: (newRange) {
-                          // Update state
-                          setState(() {
-                            _selectedAgeRange = newRange;
-                            _selectedAgeRangeLabels = RangeLabels(
-                              newRange.start.toStringAsFixed(0),
-                              newRange.end.toStringAsFixed(0),
-                            );
-                          });
-                          debugPrint('_selectedAgeRange: $_selectedAgeRange');
-                        },
-                        onChangeEnd: (endValues) {
-                          /// Update age range
-                          ///
-                          /// Get start value
-                          final int minAge = int.parse(
-                            endValues.start.toStringAsFixed(0),
-                          );
-
-                          /// Get end value
-                          final int maxAge = int.parse(
-                            endValues.end.toStringAsFixed(0),
-                          );
-
-                          // Update age range
-                          UserModel()
-                              .updateUserData(
-                                userId: UserModel().user.userId,
-                                data: {
-                                  '$USER_SETTINGS.$USER_MIN_AGE': minAge,
-                                  '$USER_SETTINGS.$USER_MAX_AGE': maxAge,
-                                },
-                              )
-                              .then((_) {
-                                debugPrint('Age range updated');
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            activeTrackColor: Theme.of(context).primaryColor,
+                            inactiveTrackColor: Theme.of(
+                              context,
+                            ).primaryColor.withOpacity(0.2),
+                            thumbColor: Theme.of(context).primaryColor,
+                            overlayColor: Theme.of(
+                              context,
+                            ).primaryColor.withOpacity(0.2),
+                            thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 12,
+                            ),
+                            trackHeight: 6,
+                          ),
+                          child: RangeSlider(
+                            values: _selectedAgeRange,
+                            labels: _selectedAgeRangeLabels,
+                            divisions: 100,
+                            min: 18,
+                            max: 100,
+                            onChanged: (newRange) {
+                              // Update state
+                              setState(() {
+                                _selectedAgeRange = newRange;
+                                _selectedAgeRangeLabels = RangeLabels(
+                                  newRange.start.toStringAsFixed(0),
+                                  newRange.end.toStringAsFixed(0),
+                                );
                               });
-                        },
+                              debugPrint(
+                                '_selectedAgeRange: $_selectedAgeRange',
+                              );
+                            },
+                            onChangeEnd: (endValues) {
+                              /// Update age range
+                              ///
+                              /// Get start value
+                              final int minAge = int.parse(
+                                endValues.start.toStringAsFixed(0),
+                              );
+
+                              /// Get end value
+                              final int maxAge = int.parse(
+                                endValues.end.toStringAsFixed(0),
+                              );
+
+                              // Update age range
+                              UserModel()
+                                  .updateUserData(
+                                    userId: UserModel().user.userId,
+                                    data: {
+                                      '$USER_SETTINGS.$USER_MIN_AGE': minAge,
+                                      '$USER_SETTINGS.$USER_MAX_AGE': maxAge,
+                                    },
+                                  )
+                                  .then((_) {
+                                    debugPrint('Age range updated');
+                                  });
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
                 // Show me option
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
                   child: ListTile(
-                    leading: Icon(
-                      Icons.wc_outlined,
-                      color: Theme.of(context).primaryColor,
-                      size: 30,
+                    contentPadding: const EdgeInsets.all(20),
+                    leading: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(context).primaryColor.withOpacity(0.2),
+                            Theme.of(context).primaryColor.withOpacity(0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.wc_outlined,
+                        color: Theme.of(context).primaryColor,
+                        size: 24,
+                      ),
                     ),
                     title: Text(
                       _i18n.translate('show_me'),
-                      style: const TextStyle(fontSize: 18),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
-                    trailing: Text(
-                      _showMeOption(_i18n),
-                      style: const TextStyle(fontSize: 18),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          _showMeOption(_i18n),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.grey[400],
+                      size: 16,
                     ),
                     onTap: () {
                       /// Choose Show me option
@@ -409,66 +740,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
-
-                /// Hide user profile setting
-                // Card(
-                //   child: ListTile(
-                //     leading: _hideProfile
-                //         ? Icon(
-                //             Icons.visibility_off,
-                //             color: Theme.of(context).primaryColor,
-                //             size: 30,
-                //           )
-                //         : Icon(
-                //             Icons.visibility,
-                //             color: Theme.of(context).primaryColor,
-                //             size: 30,
-                //           ),
-                //     title: Text(
-                //       _i18n.translate('hide_profile'),
-                //       style: const TextStyle(fontSize: 18),
-                //     ),
-                //     subtitle: _hideProfile
-                //         ? Text(
-                //             _i18n.translate(
-                //               'your_profile_is_hidden_on_discover_tab',
-                //             ),
-                //             style: const TextStyle(color: Colors.red),
-                //           )
-                //         : Text(
-                //             _i18n.translate(
-                //               'your_profile_is_visible_on_discover_tab',
-                //             ),
-                //             style: const TextStyle(color: Colors.green),
-                //           ),
-                //     trailing: Switch(
-                //       activeColor: Theme.of(context).primaryColor,
-                //       value: _hideProfile,
-                //       onChanged: (newValue) {
-                //         // Update UI
-                //         setState(() {
-                //           _hideProfile = newValue;
-                //         });
-                //         // User status
-                //         String userStatus = 'active';
-                //         // Check status
-                //         if (newValue) {
-                //           userStatus = 'hidden';
-                //         }
-
-                //         // Update profile status
-                //         UserModel()
-                //             .updateUserData(
-                //               userId: UserModel().user.userId,
-                //               data: {USER_STATUS: userStatus},
-                //             )
-                //             .then((_) {
-                //               debugPrint('Profile hidden: $newValue');
-                //             });
-                //       },
-                //     ),
-                // ),
+                const SizedBox(height: 20),
               ],
             );
           },
