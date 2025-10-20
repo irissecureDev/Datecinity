@@ -14,7 +14,7 @@ import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/notifications_screen.dart';
 import 'package:cheers/tabs/conversations_tab.dart';
 import 'package:cheers/tabs/discover_tab.dart';
-// import 'package:cheers/tabs/matches_tab.dart';
+import 'package:cheers/tabs/matches_tab.dart';
 import 'package:cheers/tabs/profile_tab.dart';
 import 'package:cheers/widgets/notification_counter.dart';
 import 'package:cheers/widgets/svg_icon.dart';
@@ -50,10 +50,10 @@ class HomeScreenState extends State<HomeScreen> {
   /// Tab navigation
   Widget _showCurrentNavBar() {
     List<Widget> options = <Widget>[
-      const ProfileTab(),
-      // const MatchesTab(), // Index 1: Discover affiche le contenu Matches
-      const DiscoverTab(), // Index 2: Matches affiche le contenu Discover
-      const ConversationsTab(),
+      const ProfileTab(), // Index 0: Profile
+      const MatchesTab(), // Index 1: Discover affiche le contenu Matches (cartes swipe)
+      const DiscoverTab(), // Index 2: Matches affiche le contenu Discover (carte utilisateurs)
+      const ConversationsTab(), // Index 3: Conversations
     ];
 
     return options.elementAt(_selectedIndex);
@@ -387,26 +387,26 @@ class HomeScreenState extends State<HomeScreen> {
             label: _i18n.translate("profile"),
           ),
 
-          /// Discover Tab (index 1 - mais affiche le contenu Matches)
-          // BottomNavigationBarItem(
-          //   icon: SvgIcon(
-          //     "assets/icons/discover_icon.svg",
-          //     width: 27,
-          //     height: 27,
-          //     color: _selectedIndex == 1
-          //         ? Theme.of(context).primaryColor
-          //         : null,
-          //   ),
-          //   label: _i18n.translate("discover"),
-          // ),
-
-          /// Matches Tab (index 2 - mais affiche le contenu Discover)
+          /// Discover Tab (index 1 - affiche le contenu Matches: cartes swipe)
           BottomNavigationBarItem(
             icon: SvgIcon(
-              _selectedIndex == 1
+              "assets/icons/discover_icon.svg",
+              width: 27,
+              height: 27,
+              color: _selectedIndex == 1
+                  ? Theme.of(context).primaryColor
+                  : null,
+            ),
+            label: _i18n.translate("discover"),
+          ),
+
+          /// Matches Tab (index 2 - affiche le contenu Discover: carte utilisateurs)
+          BottomNavigationBarItem(
+            icon: SvgIcon(
+              _selectedIndex == 2
                   ? "assets/icons/heart_2_icon.svg"
                   : "assets/icons/heart_icon.svg",
-              color: _selectedIndex == 1
+              color: _selectedIndex == 2
                   ? Theme.of(context).primaryColor
                   : null,
             ),
@@ -453,12 +453,12 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _getConversationCounter() {
     // Set icon
     final icon = SvgIcon(
-      _selectedIndex == 2
+      _selectedIndex == 3
           ? "assets/icons/message_2_icon.svg"
           : "assets/icons/message_icon.svg",
       width: 30,
       height: 30,
-      color: _selectedIndex == 2 ? Theme.of(context).primaryColor : null,
+      color: _selectedIndex == 3 ? Theme.of(context).primaryColor : null,
     );
 
     /// Handle stream

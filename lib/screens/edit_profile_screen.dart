@@ -204,7 +204,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<String>(
-                      initialValue: _selectedEducation,
+                      value: _selectedEducation,
                       decoration: InputDecoration(
                         labelText: _i18n.translate("education"),
                         hintText: _i18n.translate(
@@ -229,7 +229,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<String>(
-                      initialValue: _selectedReligion,
+                      value: _selectedReligion,
                       decoration: InputDecoration(
                         labelText: _i18n.translate("religion"),
                         hintText: _i18n.translate("choose_your_religion"),

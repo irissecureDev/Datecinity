@@ -8,7 +8,6 @@ import 'package:cheers/helpers/app_helper.dart';
 import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/models/user_model.dart';
 import 'package:cheers/plugins/carousel_pro/carousel_pro.dart';
-import 'package:cheers/widgets/custom_badge.dart';
 import 'package:cheers/widgets/cicle_button.dart';
 import 'package:cheers/widgets/show_scaffold_msg.dart';
 import 'package:cheers/widgets/svg_icon.dart';
@@ -97,237 +96,300 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
 
-                    /// Profile details
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              /// Full Name
-                              Expanded(
+                    /// Profile details - Modern Design
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 0,
+                            blurRadius: 10,
+                            offset: const Offset(0, -5),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// Modern Header with Name and Badges
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.user.userFullname,
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF2D3748),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${userAge.toString()} ans',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF718096),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    /// Distance Badge
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Theme.of(context).primaryColor,
+                                            Theme.of(
+                                              context,
+                                            ).primaryColor.withOpacity(0.8),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const SvgIcon(
+                                            "assets/icons/location_point_icon.svg",
+                                            color: Colors.white,
+                                            width: 12,
+                                            height: 12,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${_appHelper.getDistanceBetweenUsers(userLat: widget.user.userGeoPoint.latitude, userLong: widget.user.userGeoPoint.longitude)}km',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+
+                                    /// Verified badge
+                                    if (widget.user.userIsVerified)
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Image.asset(
+                                          'assets/images/verified_badge.png',
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ),
+                                    const SizedBox(width: 8),
+
+                                    /// VIP badge
+                                    if (UserModel().user.userId ==
+                                            widget.user.userId &&
+                                        UserModel().userIsVip)
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.amber.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Image.asset(
+                                          'assets/images/crow_badge.png',
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            /// Quick Info Cards
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _modernInfoCard(
+                                    context,
+                                    icon: const SvgIcon(
+                                      "assets/icons/location_point_icon.svg",
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                    title: "Localisation",
+                                    subtitle:
+                                        "${widget.user.userLocality}, ${widget.user.userCountry}",
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _modernInfoCard(
+                                    context,
+                                    icon: const SvgIcon(
+                                      "assets/icons/gift_icon.svg",
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                    title: "Anniversaire",
+                                    subtitle:
+                                        '${widget.user.userBirthDay}/${widget.user.userBirthMonth}/${widget.user.userBirthYear}',
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _modernInfoCard(
+                                    context,
+                                    icon: const SvgIcon(
+                                      "assets/icons/info_icon.svg",
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                    title: "Membre depuis",
+                                    subtitle: timeago.format(
+                                      widget.user.userRegDate,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 32),
+
+                            /// Bio Section
+                            if (widget.user.userBio.isNotEmpty) ...[
+                              _modernSectionHeader(context, "À propos"),
+                              const SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF7FAFC),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: const Color(0xFFE2E8F0),
+                                    width: 1,
+                                  ),
+                                ),
                                 child: Text(
-                                  '${widget.user.userFullname}, '
-                                  '${userAge.toString()}',
+                                  widget.user.userBio,
                                   style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    height: 1.6,
+                                    color: Color(0xFF4A5568),
                                   ),
                                 ),
                               ),
-
-                              /// Show verified badge
-                              widget.user.userIsVerified
-                                  ? Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      child: Image.asset(
-                                        'assets/images/verified_badge.png',
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                    )
-                                  : const SizedBox(width: 0, height: 0),
-
-                              /// Show VIP badge for current user
-                              UserModel().user.userId == widget.user.userId &&
-                                      UserModel().userIsVip
-                                  ? Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      child: Image.asset(
-                                        'assets/images/crow_badge.png',
-                                        width: 25,
-                                        height: 25,
-                                      ),
-                                    )
-                                  : const SizedBox(width: 0, height: 0),
-
-                              /// Location distance
-                              CustomBadge(
-                                icon: const SvgIcon(
-                                  "assets/icons/location_point_icon.svg",
-                                  color: Colors.white,
-                                  width: 15,
-                                  height: 15,
-                                ),
-                                text:
-                                    '${_appHelper.getDistanceBetweenUsers(userLat: widget.user.userGeoPoint.latitude, userLong: widget.user.userGeoPoint.longitude)}km',
-                              ),
+                              const SizedBox(height: 24),
                             ],
-                          ),
 
-                          const SizedBox(height: 5),
+                            /// Details Sections
+                            if (widget.user.religion.isNotEmpty) ...[
+                              _modernDetailSection(
+                                context,
+                                title: _i18n.translate("religion"),
+                                content: widget.user.religion,
+                                icon: const SvgIcon(
+                                  "assets/icons/info_icon.svg",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
 
-                          /// Home location
-                          _rowProfileInfo(
-                            context,
-                            icon: SvgIcon(
-                              "assets/icons/location_point_icon.svg",
-                              color: Theme.of(context).primaryColor,
-                              width: 24,
-                              height: 24,
-                            ),
-                            title:
-                                "${widget.user.userLocality}, ${widget.user.userCountry}",
-                          ),
+                            if (widget.user.education.isNotEmpty) ...[
+                              _modernDetailSection(
+                                context,
+                                title: _i18n.translate("education"),
+                                content: widget.user.education,
+                                icon: const SvgIcon(
+                                  "assets/icons/university_icon.svg",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
 
-                          const SizedBox(height: 5),
+                            if (widget.user.languages.isNotEmpty) ...[
+                              _modernDetailSection(
+                                context,
+                                title: _i18n.translate("languages"),
+                                content: widget.user.languages.join(", "),
+                                icon: const SvgIcon(
+                                  "assets/icons/conversation_icon.svg",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
 
-                          /// Job title
-                          // _rowProfileInfo(
-                          //   context,
-                          //   icon: SvgIcon(
-                          //     "assets/icons/job_bag_icon.svg",
-                          //     color: Theme.of(context).primaryColor,
-                          //     width: 27,
-                          //     height: 27,
-                          //   ),
-                          //   title: widget.user.userJobTitle,
-                          // ),
-                          const SizedBox(height: 5),
+                            if (widget.user.hobbies.isNotEmpty) ...[
+                              _modernDetailSection(
+                                context,
+                                title: _i18n.translate("hobbies"),
+                                content: widget.user.hobbies.join(", "),
+                                icon: const SvgIcon(
+                                  "assets/icons/game_icon.svg",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
 
-                          /// Education
-                          // _rowProfileInfo(
-                          //   context,
-                          //   icon: SvgIcon(
-                          //     "assets/icons/university_icon.svg",
-                          //     color: Theme.of(context).primaryColor,
-                          //     width: 34,
-                          //     height: 34,
-                          //   ),
-                          //   title: widget.user.userSchool,
-                          // ),
+                            if (widget.user.pets.isNotEmpty) ...[
+                              _modernDetailSection(
+                                context,
+                                title: _i18n.translate("pets"),
+                                content: widget.user.pets.join(", "),
+                                icon: const SvgIcon(
+                                  "assets/icons/heart_icon.svg",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
 
-                          /// Birthday
-                          _rowProfileInfo(
-                            context,
-                            icon: SvgIcon(
-                              "assets/icons/gift_icon.svg",
-                              color: Theme.of(context).primaryColor,
-                              width: 28,
-                              height: 28,
-                            ),
-                            title:
-                                '${_i18n.translate('birthday')} ${widget.user.userBirthYear}/${widget.user.userBirthMonth}/${widget.user.userBirthDay}',
-                          ),
-
-                          /// Join date
-                          _rowProfileInfo(
-                            context,
-                            icon: SvgIcon(
-                              "assets/icons/info_icon.svg",
-                              color: Theme.of(context).primaryColor,
-                              width: 28,
-                              height: 28,
-                            ),
-                            title:
-                                '${_i18n.translate('join_date')} ${timeago.format(widget.user.userRegDate)}',
-                          ),
-
-                          const Divider(),
-
-                          /// Profile bio
-                          Text(
-                            _i18n.translate("bio"),
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            widget.user.userBio,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
-                          ),
-
-                          const SizedBox(height: 20.0),
-
-                          Text(
-                            _i18n.translate("religion"),
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            widget.user.religion,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
-                          ),
-
-                          const SizedBox(height: 20.0),
-
-                          Text(
-                            _i18n.translate("education"),
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            widget.user.education,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
-                          ),
-
-                          const SizedBox(height: 20.0),
-
-                          Text(
-                            _i18n.translate("languages"),
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            widget.user.languages.join(", "),
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
-                          ),
-
-                          const SizedBox(height: 20.0),
-
-                          Text(
-                            _i18n.translate("hobbies"),
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            widget.user.hobbies.join(", "),
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
-                          ),
-
-                          const SizedBox(height: 20.0),
-
-                          Text(
-                            _i18n.translate("pets"),
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            widget.user.pets.join(", "),
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: 80,
+                            ), // Space for bottom buttons
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -369,22 +431,139 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _rowProfileInfo(
+  /// Modern info card widget
+  Widget _modernInfoCard(
     BuildContext context, {
     required Widget icon,
     required String title,
+    required String subtitle,
   }) {
-    return Row(
-      children: [
-        icon,
-        const SizedBox(width: 10),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(title, style: const TextStyle(fontSize: 19)),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7FAFC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    iconTheme: IconThemeData(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  child: icon,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).primaryColor,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF4A5568),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Modern section header
+  Widget _modernSectionHeader(BuildContext context, String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+        color: Color(0xFF2D3748),
+      ),
+    );
+  }
+
+  /// Modern detail section
+  Widget _modernDetailSection(
+    BuildContext context, {
+    required String title,
+    required String content,
+    required Widget icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
+              ),
+              child: icon,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).primaryColor,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  content,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF4A5568),
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

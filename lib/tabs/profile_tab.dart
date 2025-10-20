@@ -1,11 +1,8 @@
-import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/models/user_model.dart';
-import 'package:cheers/widgets/default_card_border.dart';
 import 'package:cheers/widgets/delete_account_button.dart';
 import 'package:cheers/widgets/profile_basic_info_card.dart';
 import 'package:cheers/widgets/profile_statistics_card.dart';
 import 'package:cheers/widgets/sign_out_button_card.dart';
-// import 'package:cheers/widgets/vip_account_card.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -44,61 +41,217 @@ class ProfileTab extends StatelessWidget {
       );
     }
 
-    final i18n = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(8.0),
       child: ScopedModelDescendant<UserModel>(
         builder: (context, child, userModel) {
-          return Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// Basic profile info
-                const ProfileBasicInfoCard(),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Basic profile info
+              const ProfileBasicInfoCard(),
 
-                const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-                /// Profile Statistics Card
-                const ProfileStatisticsCard(),
+              /// Profile Statistics Card
+              const ProfileStatisticsCard(),
 
-                const SizedBox(height: 25.0),
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  elevation: 4.0,
-                  shape: defaultCardBorder(),
-                  child: ListTile(
-                    leading: const Icon(Icons.exit_to_app),
-                    title: Text(
-                      "Settings",
-                      style: const TextStyle(fontSize: 18),
+              const SizedBox(height: 25.0),
+
+              /// Modern Settings Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 0,
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
                     ),
-                    trailing: const Icon(Icons.arrow_forward),
-                    onTap: showAccountOption,
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Column(
+                    children: [
+                      /// Header Section
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Theme.of(context).primaryColor.withOpacity(0.1),
+                              Theme.of(context).primaryColor.withOpacity(0.05),
+                            ],
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Icon(
+                                Icons.settings_outlined,
+                                color: Theme.of(context).primaryColor,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Paramètres",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Gérez votre compte",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Settings Option
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        child: InkWell(
+                          onTap: showAccountOption,
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.1),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.05),
+                                  spreadRadius: 0,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.red[400]!,
+                                        Colors.red[300]!,
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.exit_to_app_outlined,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Options du compte",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF2D3748),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        "Déconnexion & suppression",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600],
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
+                                      context,
+                                    ).primaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
 
-                // const Spacer(),
+              // const Spacer(),
 
-                // const SizedBox(height: 10),
+              // const SizedBox(height: 10),
 
-                /// Show VIP dialog
-                // const VipAccountCard(),
-                // const SizedBox(height: 10),
+              /// Show VIP dialog
+              // const VipAccountCard(),
+              // const SizedBox(height: 10),
 
-                /// App Section Card
-                // AppSectionCard(),
-                // const SizedBox(height: 20),
+              /// App Section Card
+              // AppSectionCard(),
+              // const SizedBox(height: 20),
 
-                /// Sign out button card
-                // const SignOutButtonCard(),
+              /// Sign out button card
+              // const SignOutButtonCard(),
 
-                // const SizedBox(height: 25),
+              // const SizedBox(height: 25),
 
-                /// Delete Account Button
-                // const DeleteAccountButton(),
-                // const SizedBox(height: 25),
-              ],
-            ),
+              /// Delete Account Button
+              // const DeleteAccountButton(),
+              // const SizedBox(height: 25),
+            ],
           );
         },
       ),

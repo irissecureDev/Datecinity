@@ -1,21 +1,9 @@
 import 'package:cheers/helpers/app_localizations.dart';
-// import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/complete_profile_screen.dart';
-// import 'package:cheers/screens/disliked_profile_screen.dart';
-// import 'package:cheers/screens/profile_likes_screen.dart';
-// import 'package:cheers/screens/profile_visits_screen.dart';
-import 'package:cheers/widgets/default_card_border.dart';
 import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class ProfileStatisticsCard extends StatelessWidget {
-  // Text style
-  final _textStyle = const TextStyle(
-    color: Colors.black,
-    fontSize: 16.0,
-    fontWeight: FontWeight.w500,
-  );
-
   const ProfileStatisticsCard({super.key});
 
   @override
@@ -23,107 +11,189 @@ class ProfileStatisticsCard extends StatelessWidget {
     /// Initialization
     final i18n = AppLocalizations.of(context);
 
-    return Card(
-      elevation: 4.0,
-      color: Colors.grey[100],
-      shape: defaultCardBorder(),
-      child: Column(
-        children: [
-          ListTile(
-            leading: SvgIcon(
-              "assets/icons/settings_icon.svg",
-              width: 22,
-              height: 22,
-              color: Theme.of(context).primaryColor,
-            ),
-            trailing: const Icon(Icons.arrow_forward),
-            title: Text(
-              i18n.translate("fill_compatibility_quiz"),
-              style: _textStyle,
-            ),
-            onTap: () {
-              /// Go to profile visits screen
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const CompleteProfileScreen(showBackButton: true),
-                ),
-              );
-            },
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
-          // const Divider(height: 0),
-          // ListTile(
-          //   leading: SvgIcon(
-          //     "assets/icons/heart_icon.svg",
-          //     width: 22,
-          //     height: 22,
-          //     color: Theme.of(context).primaryColor,
-          //   ),
-          //   title: Text(i18n.translate("LIKES"), style: _textStyle),
-          //   trailing: _counter(context, UserModel().user.userTotalLikes),
-          //   onTap: () {
-          //     /// Go to profile likes screen
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => const ProfileLikesScreen(),
-          //       ),
-          //     );
-          //   },
-          // ),
-          // const Divider(height: 0),
-          // ListTile(
-          //   leading: SvgIcon(
-          //     "assets/icons/eye_icon.svg",
-          //     width: 31,
-          //     height: 31,
-          //     color: Theme.of(context).primaryColor,
-          //   ),
-          //   title: Text(i18n.translate("VISITS"), style: _textStyle),
-          //   trailing: _counter(context, UserModel().user.userTotalVisits),
-          //   onTap: () {
-          //     /// Go to profile visits screen
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => const ProfileVisitsScreen(),
-          //       ),
-          //     );
-          //   },
-          // ),
-          // const Divider(height: 0),
-          // ListTile(
-          //   leading: SvgIcon(
-          //     "assets/icons/close_icon.svg",
-          //     width: 25,
-          //     height: 25,
-          //     color: Theme.of(context).primaryColor,
-          //   ),
-          //   title: Text(i18n.translate("DISLIKED_PROFILES"), style: _textStyle),
-          //   trailing: _counter(context, UserModel().user.userTotalDisliked),
-          //   onTap: () {
-          //     /// Go to disliked profile screen
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => const DislikedProfilesScreen(),
-          //       ),
-          //     );
-          //   },
-          // ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.white, Colors.grey[50]!],
+            ),
+          ),
+          child: Column(
+            children: [
+              /// Modern Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).primaryColor.withOpacity(0.1),
+                      Theme.of(context).primaryColor.withOpacity(0.05),
+                    ],
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: SvgIcon(
+                        "assets/icons/settings_icon.svg",
+                        width: 24,
+                        height: 24,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Profil",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Text(
+                            "Améliorez votre compatibilité",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              /// Enhanced List Item
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: InkWell(
+                  onTap: () {
+                    /// Go to profile compatibility quiz
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const CompleteProfileScreen(showBackButton: true),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(
+                            context,
+                          ).primaryColor.withOpacity(0.05),
+                          spreadRadius: 0,
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).primaryColor,
+                                Theme.of(context).primaryColor.withOpacity(0.8),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.quiz_outlined,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                i18n.translate("fill_compatibility_quiz"),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF2D3748),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Répondez au quiz pour améliorer vos matchs",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
-
-  // Widget _counter(BuildContext context, int value) {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       color: Theme.of(context).primaryColor, //.withAlpha(85),
-  //       shape: BoxShape.circle,
-  //     ),
-  //     padding: const EdgeInsets.all(6.0),
-  //     child: Text(
-  //       value.toString(),
-  //       style: const TextStyle(color: Colors.white),
-  //     ),
-  //   );
-  // }
 }
