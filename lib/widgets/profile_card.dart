@@ -196,6 +196,9 @@ class ProfileCard extends StatelessWidget {
           Positioned(
             top: 10,
             left: page == 'discover' ? 8 : 5,
+            right: page == 'discover'
+                ? 60
+                : null, // Add right constraint to prevent overflow
             child: CustomBadge(
               icon: page == 'discover'
                   ? const SvgIcon(

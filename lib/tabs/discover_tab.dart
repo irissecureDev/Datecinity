@@ -159,104 +159,115 @@ class DiscoverTabState extends State<DiscoverTab> {
 
   /// Build swipe buttons
   Widget swipeButtons(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        /// Rewind profiles
-        ///
-        /// Go to Disliked Profiles
-        cicleButton(
-          bgColor: Colors.white,
-          padding: 8,
-          icon: const Icon(Icons.restore, size: 22, color: Colors.grey),
-          onTap: () {
-            // Go to Disliked Profiles Screen
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const DislikedProfilesScreen(),
-              ),
-            );
-          },
-        ),
-
-        const SizedBox(width: 20),
-
-        /// Swipe left and reject user
-        cicleButton(
-          bgColor: Colors.white,
-          padding: 8,
-          icon: const Icon(Icons.close, size: 35, color: Colors.grey),
-          onTap: () {
-            /// Get card current index
-            final cardIndex = _swipeKey.currentState!.currentIndex;
-
-            /// Check card valid index
-            if (cardIndex != -1) {
-              /// Swipe left
-              _swipeKey.currentState!.swipeLeft();
-            }
-          },
-        ),
-
-        const SizedBox(width: 20),
-
-        /// Swipe right and like user
-        cicleButton(
-          bgColor: Colors.white,
-          padding: 8,
-          icon: Icon(
-            Icons.favorite_border,
-            size: 35,
-            color: Theme.of(context).primaryColor,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          /// Rewind profiles
+          ///
+          /// Go to Disliked Profiles
+          Flexible(
+            child: cicleButton(
+              bgColor: Colors.white,
+              padding: 8,
+              icon: const Icon(Icons.restore, size: 22, color: Colors.grey),
+              onTap: () {
+                // Go to Disliked Profiles Screen
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const DislikedProfilesScreen(),
+                  ),
+                );
+              },
+            ),
           ),
-          onTap: () async {
-            /// Get card current index
-            final cardIndex = _swipeKey.currentState!.currentIndex;
 
-            /// Check card valid index
-            if (cardIndex != -1) {
-              /// Swipe right
-              _swipeKey.currentState!.swipeRight();
-            }
-          },
-        ),
+          /// Swipe left and reject user
+          Flexible(
+            child: cicleButton(
+              bgColor: Colors.white,
+              padding: 8,
+              icon: const Icon(Icons.close, size: 35, color: Colors.grey),
+              onTap: () {
+                /// Get card current index
+                final cardIndex = _swipeKey.currentState!.currentIndex;
 
-        const SizedBox(width: 20),
+                /// Check card valid index
+                if (cardIndex != -1) {
+                  /// Swipe left
+                  _swipeKey.currentState!.swipeLeft();
+                }
+              },
+            ),
+          ),
 
-        /// Go to user profile
-        cicleButton(
-          bgColor: Colors.white,
-          padding: 8,
-          icon: const Icon(Icons.remove_red_eye, size: 22, color: Colors.grey),
-          onTap: () {
-            /// Get card current index
-            final cardIndex = _swipeKey.currentState!.currentIndex;
+          /// Swipe right and like user
+          Flexible(
+            child: cicleButton(
+              bgColor: Colors.white,
+              padding: 8,
+              icon: Icon(
+                Icons.favorite_border,
+                size: 35,
+                color: Theme.of(context).primaryColor,
+              ),
+              onTap: () async {
+                /// Get card current index
+                final cardIndex = _swipeKey.currentState!.currentIndex;
 
-            /// Check card valid index
-            if (cardIndex != -1) {
-              /// Get User object
-              final User user = User.fromDocument(_users![cardIndex].data()!);
+                /// Check card valid index
+                if (cardIndex != -1) {
+                  /// Swipe right
+                  _swipeKey.currentState!.swipeRight();
+                }
+              },
+            ),
+          ),
 
-              /// Go to profile screen
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ProfileScreen(user: user, showButtons: false),
-                ),
-              );
+          /// Go to user profile
+          Flexible(
+            child: cicleButton(
+              bgColor: Colors.white,
+              padding: 8,
+              icon: const Icon(
+                Icons.remove_red_eye,
+                size: 22,
+                color: Colors.grey,
+              ),
+              onTap: () {
+                /// Get card current index
+                final cardIndex = _swipeKey.currentState!.currentIndex;
 
-              /// Increment user visits an push notification
-              _visitsApi.visitUserProfile(
-                visitedUserId: user.userId,
-                userDeviceToken: user.userDeviceToken,
-                nMessage:
-                    "${UserModel().user.userFullname.split(' ')[0]}, "
-                    "${_i18n.translate("visited_your_profile_click_and_see")}",
-              );
-            }
-          },
-        ),
-      ],
+                /// Check card valid index
+                if (cardIndex != -1) {
+                  /// Get User object
+                  final User user = User.fromDocument(
+                    _users![cardIndex].data()!,
+                  );
+
+                  /// Go to profile screen
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ProfileScreen(user: user, showButtons: false),
+                    ),
+                  );
+
+                  /// Increment user visits an push notification
+                  _visitsApi.visitUserProfile(
+                    visitedUserId: user.userId,
+                    userDeviceToken: user.userDeviceToken,
+                    nMessage:
+                        "${UserModel().user.userFullname.split(' ')[0]}, "
+                        "${_i18n.translate("visited_your_profile_click_and_see")}",
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 

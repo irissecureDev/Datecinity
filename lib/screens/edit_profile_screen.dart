@@ -22,9 +22,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String? _selectedEducation = educationLevels.firstWhere(
     (e) => e == UserModel().user.education,
+    orElse: () => educationLevels.first,
   );
   String? _selectedReligion = religions.firstWhere(
     (r) => r == UserModel().user.religion,
+    orElse: () => religions.first,
   );
   final List<String> _hobbies = UserModel().user.hobbies;
   final List<String> _pets = UserModel().user.pets;

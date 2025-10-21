@@ -320,12 +320,17 @@ class HomeScreenState extends State<HomeScreen> {
             /// Load all users
             UsersApi().getUsers(dislikedUsers: dislikedUsers).then((users) {
               for (var user in users) {
-                if (user[user[USER_MATCH_PERCENT]] as double >= 70) {
+                // Get the matching percentage from user data with safe access
+                final userData = user.data();
+                final double matchPercent = (userData?[USER_MATCH_PERCENT] ?? 0)
+                    .toDouble();
+
+                if (matchPercent >= 70) {
                   LikesApi().likeUser(
                     likedUserId: user[USER_ID],
                     userDeviceToken: user[USER_DEVICE_TOKEN],
                     nMessage:
-                        "You have a ${user[USER_MATCH_PERCENT]}% match with ${UserModel().user.userFullname.split(' ')[0]}",
+                        "You have a ${matchPercent.toInt()}% match with ${UserModel().user.userFullname.split(' ')[0]}",
                     onLikeResult: (result) {
                       debugPrint('likeResult: $result');
                     },
