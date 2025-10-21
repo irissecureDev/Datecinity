@@ -104,7 +104,7 @@ class ProfileStatisticsCard extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "Répondez au quiz pour améliorer vos matchs",
+                                "Answer the quiz to improve your matches",
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey[600],

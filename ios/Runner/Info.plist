@@ -29,17 +29,17 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSCameraUsageDescription</key>
-		<string>Cheers a besoin d'accéder à votre appareil photo pour que vous puissiez prendre des photos de profil.</string>
+		<string>Cheers needs access to your camera to take profile pictures.</string>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
+		<string>Cheers uses your location to show you profiles of people near you and improve your dating experience.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
-		<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
+		<string>Cheers uses your location to show you profiles of people near you and improve your dating experience.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Cheers utilise votre localisation pour vous montrer des profils de personnes près de chez vous et améliorer votre expérience de rencontres.</string>
+		<string>Cheers uses your location to show you profiles of people near you and improve your dating experience.</string>
 		<key>NSMicrophoneUsageDescription</key>
-		<string>Cheers a besoin d'accéder au microphone pour les appels vidéo et vocaux avec vos correspondances.</string>
+		<string>Cheers needs access to the microphone for video and voice calls with your matches.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Cheers a besoin d'accéder à votre galerie photo pour que vous puissiez sélectionner des photos de profil.</string>
+		<string>Cheers needs access to your photo library to select profile pictures.</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

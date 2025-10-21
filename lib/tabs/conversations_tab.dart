@@ -22,18 +22,18 @@ class ConversationsTabState extends State<ConversationsTab> {
   late AppLocalizations _i18n;
   late ProgressDialog _pr;
 
-  /// Obtenir le nom d'affichage correct depuis le document conversation
+  /// Get correct display name from conversation document
   String _getDisplayName(Map<String, dynamic> conversation) {
     try {
       String fullName = conversation[USER_FULLNAME] ?? "";
-      if (fullName.isEmpty) return "Utilisateur";
+      if (fullName.isEmpty) return "User";
 
-      // Prendre le prénom seulement (premier mot)
+      // Take only first name (first word)
       List<String> nameParts = fullName.trim().split(" ");
-      return nameParts.isNotEmpty ? nameParts[0] : "Utilisateur";
+      return nameParts.isNotEmpty ? nameParts[0] : "User";
     } catch (e) {
       debugPrint("Error getting display name: $e");
-      return "Utilisateur";
+      return "User";
     }
   }
 
@@ -51,18 +51,18 @@ class ConversationsTabState extends State<ConversationsTab> {
       final difference = now.difference(dateTime);
 
       if (difference.inDays == 0) {
-        // Aujourd'hui - afficher l'heure
+        // Today - show time
         return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
       } else if (difference.inDays == 1) {
-        // Hier
-        return "Hier";
+        // Yesterday
+        return "Yesterday";
       } else if (difference.inDays < 7) {
-        // Cette semaine - afficher le jour
-        const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        // This week - show day
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         return days[dateTime.weekday - 1];
       } else {
-        // Plus d'une semaine - utiliser timeago
-        return timeago.format(dateTime, locale: 'fr');
+        // More than a week - use timeago
+        return timeago.format(dateTime, locale: 'en');
       }
     } catch (e) {
       debugPrint("Error formatting timestamp: $e");
@@ -70,7 +70,7 @@ class ConversationsTabState extends State<ConversationsTab> {
     }
   }
 
-  /// Construire un élément de conversation moderne
+  /// Build a modern conversation item
   Widget _buildConversationItem(
     DocumentSnapshot<Map<String, dynamic>> conversation,
   ) {
@@ -112,7 +112,7 @@ class ConversationsTabState extends State<ConversationsTab> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Photo de profil avec indicateur de statut
+                // Profile photo with status indicator
                 Stack(
                   children: [
                     Container(
@@ -172,12 +172,12 @@ class ConversationsTabState extends State<ConversationsTab> {
 
                 const SizedBox(width: 16),
 
-                // Contenu de la conversation
+                // Conversation content
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Ligne supérieure : Nom et timestamp
+                      // Top line: Name and timestamp
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -210,7 +210,7 @@ class ConversationsTabState extends State<ConversationsTab> {
                       // Message preview
                       Row(
                         children: [
-                          // Icône pour les images
+                          // Icon for images
                           if (messageType == 'image') ...[
                             Container(
                               padding: const EdgeInsets.all(4),
@@ -263,7 +263,7 @@ class ConversationsTabState extends State<ConversationsTab> {
                   ),
                 ),
 
-                // Badge nouveau message et flèche
+                // New message badge and arrow
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -310,22 +310,22 @@ class ConversationsTabState extends State<ConversationsTab> {
     );
   }
 
-  /// Ouvrir une conversation
+  /// Open a conversation
   Future<void> _openChat(
     DocumentSnapshot<Map<String, dynamic>> conversation,
   ) async {
     try {
       final data = conversation.data()!;
 
-      // Afficher le dialogue de progression
+      // Show progress dialog
       _pr.show(_i18n.translate("loading"));
 
-      // Marquer comme lu
+      // Mark as read
       if (!(data[MESSAGE_READ] ?? true)) {
         await conversation.reference.update({MESSAGE_READ: true});
       }
 
-      // Récupérer les informations utilisateur mises à jour
+      // Get updated user information
       final userDoc = await UserModel().getUser(data[USER_ID]);
 
       if (!userDoc.exists) {
@@ -341,10 +341,10 @@ class ConversationsTabState extends State<ConversationsTab> {
 
       final User user = User.fromDocument(userDoc.data()!);
 
-      // Cacher le dialogue de progression
+      // Hide progress dialog
       _pr.hide();
 
-      // Naviguer vers l'écran de chat
+      // Navigate to chat screen
       if (mounted) {
         Navigator.of(
           context,
@@ -380,7 +380,7 @@ class ConversationsTabState extends State<ConversationsTab> {
       ),
       child: Column(
         children: [
-          // En-tête moderne
+          // Modern header
           Container(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             decoration: BoxDecoration(
@@ -426,7 +426,7 @@ class ConversationsTabState extends State<ConversationsTab> {
             ),
           ),
 
-          // Liste des conversations
+          // Conversations list
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: _conversationsApi.getConversations(),
@@ -496,7 +496,7 @@ class ConversationsTabState extends State<ConversationsTab> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Commencez à matcher pour démarrer des conversations !",
+                          "Start matching to begin conversations!",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],

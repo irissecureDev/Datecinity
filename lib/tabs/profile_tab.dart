@@ -60,7 +60,7 @@ class ProfileTab extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Gestion du compte",
+                              "Account Management",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
@@ -68,7 +68,7 @@ class ProfileTab extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "Gérez vos paramètres de compte",
+                              "Manage your account settings",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[600],
@@ -141,7 +141,7 @@ class ProfileTab extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            "Ces actions sont irréversibles. Assurez-vous de votre choix avant de continuer.",
+                            "These actions are irreversible. Please confirm your choice before proceeding.",
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.blue[700],
@@ -234,7 +234,7 @@ class ProfileTab extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          "Options du compte",
+                          "Account Options",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

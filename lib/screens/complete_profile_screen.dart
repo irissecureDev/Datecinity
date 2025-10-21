@@ -162,7 +162,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             ),
             if (_questions != null)
               Text(
-                '${_currentPage + 1} sur ${_questions!.length}',
+                '${_currentPage + 1} of ${_questions!.length}',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
                   fontSize: 14,
@@ -183,7 +183,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   size: 20,
                 ),
                 label: const Text(
-                  "Précédent",
+                  "Previous",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -362,7 +362,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              "Préparation de votre quiz de compatibilité...",
+              "Preparing your compatibility quiz...",
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
@@ -451,7 +451,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Choisissez la réponse qui vous correspond le mieux',
+                      'Choose the answer that best matches you',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
