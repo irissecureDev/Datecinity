@@ -123,12 +123,12 @@ flutter_launcher_icons:
 
 # Generate splash logo settings
 flutter_native_splash:
-  color: "#EBE0D7"
+  color: "#E6DBD0"
   color_dark: "#000000"
   image: "assets/images/app_logo.png"
   android: true
   ios: true 
   android_12:
-    color: "#EBE0D7"
+    color: "#E6DBD0"
     color_dark: "#000000"
     image: "assets/images/app_logo.png"  

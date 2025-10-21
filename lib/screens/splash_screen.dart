@@ -80,7 +80,7 @@ class SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          color: const Color(0xFFEBE0D7),
+          color: const Color(0xFFE6DBD0),
           child: Center(
             child: SingleChildScrollView(
               child: Column(

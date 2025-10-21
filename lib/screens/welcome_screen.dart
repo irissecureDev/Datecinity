@@ -14,7 +14,7 @@ class WelcomeScreen extends StatelessWidget {
     final i18n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFE6DBD0),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
