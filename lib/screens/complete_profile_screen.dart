@@ -25,6 +25,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   late ProgressDialog _pr;
 
   final Map<String, String> _selectedAnswersById = {};
+  bool _hasExistingPreferences = false;
 
   @override
   void dispose() {
@@ -39,6 +40,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     _pr = ProgressDialog(context, isDismissible: false);
 
     if (_questions == null) {
+      // Load existing user preferences first
+      _loadExistingPreferences();
+
       _api.getQuestions().then((list) {
         if (mounted) {
           setState(() {
@@ -49,6 +53,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           });
         }
       });
+    }
+  }
+
+  /// Load existing user preferences to pre-fill the quiz
+  void _loadExistingPreferences() {
+    final Map<String, dynamic>? userPreferences = UserModel().user.preferences;
+    if (userPreferences != null && userPreferences.isNotEmpty) {
+      setState(() {
+        // Convert existing preferences to the expected format
+        userPreferences.forEach((key, value) {
+          _selectedAnswersById[key] = value.toString();
+        });
+        _hasExistingPreferences = true;
+      });
+      debugPrint('Loaded existing preferences: $_selectedAnswersById');
     }
   }
 
@@ -153,7 +172,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _i18n.translate('setup_preferences'),
+              _hasExistingPreferences
+                  ? '${_i18n.translate('setup_preferences')} (Updated)'
+                  : _i18n.translate('setup_preferences'),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
