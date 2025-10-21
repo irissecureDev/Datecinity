@@ -572,7 +572,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
 
               const SizedBox(height: 100), // Space for bottom navigation
             ],

@@ -1,6 +1,5 @@
 import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/screens/complete_profile_screen.dart';
-import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class ProfileStatisticsCard extends StatelessWidget {
@@ -37,62 +36,6 @@ class ProfileStatisticsCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              /// Modern Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).primaryColor.withOpacity(0.1),
-                      Theme.of(context).primaryColor.withOpacity(0.05),
-                    ],
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: SvgIcon(
-                        "assets/icons/settings_icon.svg",
-                        width: 24,
-                        height: 24,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Profil",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Text(
-                            "Améliorez votre compatibilité",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
               /// Enhanced List Item
               Container(
                 padding: const EdgeInsets.all(20),
