@@ -346,7 +346,11 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
       markers: _markers,
       myLocationEnabled: true,
       myLocationButtonEnabled: true,
-      onMapCreated: (controller) => _mapController.complete(controller),
+      onMapCreated: (controller) {
+        if (!_mapController.isCompleted) {
+          _mapController.complete(controller);
+        }
+      },
     );
   }
 
@@ -500,12 +504,16 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
                               color: Colors.grey,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              '${user.userLocality}, ${user.userCountry}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Text(
+                                '${user.userLocality}, ${user.userCountry}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
