@@ -103,23 +103,11 @@ class ProfileTab extends StatelessWidget {
                   /// Sign Out Option
                   Container(
                     margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.orange[200]!, width: 1),
-                    ),
                     child: const SignOutButtonCard(),
                   ),
 
                   /// Delete Account Option
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.red[200]!, width: 1),
-                    ),
-                    child: const DeleteAccountButton(),
-                  ),
+                  Container(child: const DeleteAccountButton()),
 
                   const SizedBox(height: 16),
 
