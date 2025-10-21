@@ -106,10 +106,7 @@ class ProfileTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.orange[50],
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.orange[200]!,
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.orange[200]!, width: 1),
                     ),
                     child: const SignOutButtonCard(),
                   ),
@@ -119,10 +116,7 @@ class ProfileTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.red[50],
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.red[200]!,
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.red[200]!, width: 1),
                     ),
                     child: const DeleteAccountButton(),
                   ),
@@ -135,10 +129,7 @@ class ProfileTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.blue[50],
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.blue[200]!,
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.blue[200]!, width: 1),
                     ),
                     child: Row(
                       children: [
@@ -197,7 +188,10 @@ class ProfileTab extends StatelessWidget {
                   onTap: showAccountOption,
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 20,
+                    ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -228,10 +222,7 @@ class ProfileTab extends StatelessWidget {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [
-                                Colors.red[400]!,
-                                Colors.red[300]!,
-                              ],
+                              colors: [Colors.red[400]!, Colors.red[300]!],
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
