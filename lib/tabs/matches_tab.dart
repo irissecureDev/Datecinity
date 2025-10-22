@@ -155,7 +155,8 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
             position: LatLng(geo.latitude, geo.longitude),
             icon: icon,
             infoWindow: InfoWindow(
-              title: '${user.userFullname}, $age ans',
+              title:
+                  '${user.userFullname.split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, $age years',
               snippet:
                   '${compatibility.round()}% compatible • ${user.userLocality}, ${user.userCountry}',
             ),
@@ -245,7 +246,14 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
     final currentPrefs = UserModel().user.preferences ?? {};
     final userPrefs = user.preferences ?? {};
 
-    if (currentPrefs.isEmpty || userPrefs.isEmpty) return 0.0;
+    debugPrint('🔍 Calculating compatibility for: ${user.userFullname}');
+    debugPrint('📊 Current user preferences: ${currentPrefs.length} items');
+    debugPrint('👤 Other user preferences: ${userPrefs.length} items');
+
+    if (currentPrefs.isEmpty || userPrefs.isEmpty) {
+      debugPrint('❌ No preferences found, returning 0% compatibility');
+      return 0.0;
+    }
 
     int matchingAnswers = 0;
     for (final entry in currentPrefs.entries) {
@@ -255,9 +263,15 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
       }
     }
 
-    return (matchingAnswers / currentPrefs.length * 100)
+    final double result = (matchingAnswers / currentPrefs.length * 100)
         .clamp(0, 100)
         .toDouble();
+
+    debugPrint(
+      '✅ Compatibility result: ${result.round()}% ($matchingAnswers/${currentPrefs.length} matches)',
+    );
+
+    return result;
   }
 
   @override
@@ -485,7 +499,7 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
                       children: [
                         // Nom et âge
                         Text(
-                          '${user.userFullname}, $age ans',
+                          '${user.userFullname.split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, $age years',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -671,7 +685,7 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
 
               // Nom et âge
               Text(
-                '${user.userFullname}, $age ans',
+                '${user.userFullname.split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, $age years',
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,

@@ -127,7 +127,17 @@ class ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        widget.user.userFullname,
+                                        widget.user.userFullname
+                                            .split(' ')
+                                            .map(
+                                              (word) => word.isNotEmpty
+                                                  ? word[0].toUpperCase() +
+                                                        word
+                                                            .substring(1)
+                                                            .toLowerCase()
+                                                  : word,
+                                            )
+                                            .join(' '),
                                         style: const TextStyle(
                                           fontSize: 28,
                                           fontWeight: FontWeight.w700,
@@ -136,7 +146,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '${userAge.toString()} ans',
+                                        '${userAge.toString()} years',
                                         style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w500,

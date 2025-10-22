@@ -96,7 +96,7 @@ class ProfileBasicInfoCard extends StatelessWidget {
                     children: [
                       /// Name and age with modern typography
                       Text(
-                        "${UserModel().user.userFullname.split(' ')[0]},",
+                        "${UserModel().user.userFullname.split(' ')[0].toUpperCase()},",
                         style: const TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w700,
@@ -105,7 +105,7 @@ class ProfileBasicInfoCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${userAge.toString()} ans",
+                        "${userAge.toString()} years",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
