@@ -5,7 +5,7 @@ import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/blocked_account_screen.dart';
 import 'package:cheers/screens/welcome_screen.dart';
 import 'package:cheers/screens/home_screen.dart';
-import 'package:cheers/screens/sign_up_screen.dart';
+import 'package:cheers/screens/multi_step_sign_up_screen.dart';
 import 'package:cheers/screens/update_location_sceen.dart';
 import 'package:cheers/screens/verification_code_screen.dart';
 import 'package:cheers/widgets/default_button.dart';
@@ -161,7 +161,7 @@ class PhoneNumberScreenState extends State<PhoneNumberScreen> {
         /// Authenticate User Account
         UserModel().authUserAccount(
           updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
-          signUpScreen: () => _nextScreen(const SignUpScreen()),
+          signUpScreen: () => _nextScreen(const MultiStepSignUpScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
           blockedScreen: () => _nextScreen(const BlockedAccountScreen()),
           completePreferencesScreen: () => _nextScreen(const WelcomeScreen()),

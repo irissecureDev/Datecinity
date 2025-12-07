@@ -19,13 +19,29 @@ class ProfileCard extends StatelessWidget {
   /// Swiper position
   final SwiperPosition? position;
 
-  ProfileCard({super.key, this.page, this.position, required this.user});
+  /// Compatibility percentage
+  final double? compatibility;
+
+  ProfileCard({
+    super.key,
+    this.page,
+    this.position,
+    required this.user,
+    this.compatibility,
+  });
 
   // Local variables
   final AppHelper _appHelper = AppHelper();
 
   @override
   Widget build(BuildContext context) {
+    // Debug print pour vérifier la compatibilité
+    if (page == 'discover' && compatibility != null) {
+      debugPrint(
+        '🎯 ProfileCard: Affichage compatibility ${compatibility!.round()}% pour ${user.userFullname}',
+      );
+    }
+
     // Variables
     final bool requireVip = page == 'require_vip' && !UserModel().userIsVip;
     late ImageProvider userPhoto;
@@ -39,9 +55,9 @@ class ProfileCard extends StatelessWidget {
     //
     // Get User Birthday
     final DateTime userBirthday = DateTime(
-      UserModel().user.userBirthYear,
-      UserModel().user.userBirthMonth,
-      UserModel().user.userBirthDay,
+      user.userBirthYear,
+      user.userBirthMonth,
+      user.userBirthDay,
     );
     // Get User Current Age
     final int userAge = UserModel().calculateUserAge(userBirthday);
@@ -82,7 +98,7 @@ class ProfileCard extends StatelessWidget {
                 /// User info container
                 child: Container(
                   alignment: Alignment.bottomLeft,
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(16.0), // Padding plus généreux
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,39 +111,18 @@ class ProfileCard extends StatelessWidget {
                               '${user.userFullname}, '
                               '${userAge.toString()}',
                               style: TextStyle(
-                                fontSize: page == 'discover' ? 20 : 18,
+                                fontSize: page == 'discover'
+                                    ? 22
+                                    : 18, // Taille plus grande
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8.0),
-
-                      // User location
-                      Row(
-                        children: [
-                          // Icon
-                          const SvgIcon(
-                            "assets/icons/location_point_icon.svg",
-                            color: Color(0xffFFFFFF),
-                            width: 24,
-                            height: 24,
-                          ),
-
-                          const SizedBox(width: 5),
-
-                          // Locality & Country
-                          Expanded(
-                            child: Text(
-                              "${user.userLocality}, ${user.userCountry}",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.7),
+                                    blurRadius: 2,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -195,10 +190,7 @@ class ProfileCard extends StatelessWidget {
           /// Show location distance
           Positioned(
             top: 10,
-            left: page == 'discover' ? 8 : 5,
-            right: page == 'discover'
-                ? 60
-                : null, // Add right constraint to prevent overflow
+            left: 8,
             child: CustomBadge(
               icon: page == 'discover'
                   ? const SvgIcon(
@@ -212,6 +204,51 @@ class ProfileCard extends StatelessWidget {
                   '${_appHelper.getDistanceBetweenUsers(userLat: user.userGeoPoint.latitude, userLong: user.userGeoPoint.longitude)}km',
             ),
           ),
+
+          /// Show compatibility percentage
+          page == 'discover' && compatibility != null
+              ? Positioned(
+                  bottom: 90, // En bas, au-dessus des boutons
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.pink.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SvgIcon(
+                          "assets/icons/heart_icon.svg",
+                          color: Colors.white,
+                          width: 14,
+                          height: 14,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${compatibility!.round()}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : const SizedBox(width: 0, height: 0),
 
           /// Show Like or Dislike
           page == 'discover'
@@ -242,14 +279,25 @@ class ProfileCard extends StatelessWidget {
           // Show Report/Block profile button
           page == 'discover'
               ? Positioned(
-                  right: 0,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.flag,
-                      color: Theme.of(context).primaryColor,
-                      size: 32,
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    width: 36, // Taille fixe pour uniformité
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.4),
+                      shape: BoxShape.circle,
                     ),
-                    onPressed: () => ReportDialog(userId: user.userId).show(),
+                    child: IconButton(
+                      iconSize: 18,
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(
+                        Icons.flag,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      onPressed: () => ReportDialog(userId: user.userId).show(),
+                    ),
                   ),
                 )
               : const SizedBox(width: 0, height: 0),

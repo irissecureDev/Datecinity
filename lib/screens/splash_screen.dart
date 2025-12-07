@@ -12,7 +12,7 @@ import 'package:cheers/screens/update_app_screen.dart';
 import 'package:cheers/widgets/app_logo.dart';
 import 'package:cheers/widgets/my_circular_progress.dart';
 import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/sign_up_screen.dart';
+import 'package:cheers/screens/multi_step_sign_up_screen.dart';
 import 'package:cheers/screens/sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -65,7 +65,7 @@ class SplashScreenState extends State<SplashScreen> {
         UserModel().authUserAccount(
           updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
           signInScreen: () => _nextScreen(const SignInScreen()),
-          signUpScreen: () => _nextScreen(const SignUpScreen()),
+          signUpScreen: () => _nextScreen(const MultiStepSignUpScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
           blockedScreen: () => _nextScreen(const BlockedAccountScreen()),
           completePreferencesScreen: () => _nextScreen(const WelcomeScreen()),

@@ -25,7 +25,59 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   late ProgressDialog _pr;
 
   final Map<String, String> _selectedAnswersById = {};
-  bool _hasExistingPreferences = false;
+
+  // Special handling for ranking questions (Question 11 and 13)
+  final Map<String, Map<String, int>> _rankingAnswersByQuestion =
+      {}; // questionId -> {answerKey -> rank}
+  bool _isRankingQuestion(PreferencesQuestion question) {
+    return question.question.toLowerCase().contains('rank') ||
+        question.question.toLowerCase().contains('love language') ||
+        question.question.toLowerCase().contains(
+          'how important are the following factors',
+        );
+  }
+
+  /// Function to remove text within parentheses
+  String _cleanAnswerText(String text) {
+    return text.replaceAll(RegExp(r'\s*\([^)]*\)'), '').trim();
+  }
+
+  // Helper methods for ranking functionality
+  Map<String, int> _getRankingAnswersForQuestion(String questionId) {
+    return _rankingAnswersByQuestion[questionId] ?? {};
+  }
+
+  void _setRankingAnswersForQuestion(
+    String questionId,
+    Map<String, int> rankings,
+  ) {
+    _rankingAnswersByQuestion[questionId] = rankings;
+  }
+
+  int _getNextAvailableRank(String questionId) {
+    Map<String, int> rankings = _getRankingAnswersForQuestion(questionId);
+    for (int i = 1; i <= 5; i++) {
+      if (!rankings.values.contains(i)) {
+        return i;
+      }
+    }
+    return 6; // All ranks taken
+  }
+
+  void _adjustRanksAfterRemoval(String questionId, int removedRank) {
+    Map<String, int> rankings = _getRankingAnswersForQuestion(questionId);
+    rankings.forEach((key, rank) {
+      if (rank > removedRank) {
+        rankings[key] = rank - 1;
+      }
+    });
+    _setRankingAnswersForQuestion(questionId, rankings);
+  }
+
+  /// Mark ranking question as answered in regular answers
+  void _markRankingQuestionAsAnswered(String questionId) {
+    _selectedAnswersById[questionId] = 'ranking_completed';
+  }
 
   @override
   void dispose() {
@@ -63,11 +115,37 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       setState(() {
         // Convert existing preferences to the expected format
         userPreferences.forEach((key, value) {
-          _selectedAnswersById[key] = value.toString();
+          if (key.startsWith('ranking_')) {
+            // Handle ranking data: format is ranking_questionId_answerKey
+            List<String> parts = key.split('_');
+            if (parts.length >= 3) {
+              String questionId = parts[1];
+              String answerKey = parts
+                  .sublist(2)
+                  .join(
+                    '_',
+                  ); // Join back in case answerKey contains underscores
+              int rank = int.tryParse(value.toString()) ?? 0;
+
+              // Initialize ranking map for this question if not exists
+              if (!_rankingAnswersByQuestion.containsKey(questionId)) {
+                _rankingAnswersByQuestion[questionId] = {};
+              }
+
+              // Set the ranking
+              _rankingAnswersByQuestion[questionId]![answerKey] = rank;
+
+              // Mark question as answered
+              _selectedAnswersById[questionId] = 'ranking_completed';
+            }
+          } else {
+            // Regular answer
+            _selectedAnswersById[key] = value.toString();
+          }
         });
-        _hasExistingPreferences = true;
       });
       debugPrint('Loaded existing preferences: $_selectedAnswersById');
+      debugPrint('Loaded existing rankings: $_rankingAnswersByQuestion');
     }
   }
 
@@ -97,8 +175,24 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   void _submitAnswers() {
     _pr.show(_i18n.translate("processing"));
+
+    // Prepare final preferences including ranking data
+    Map<String, String> finalPreferences = Map.from(_selectedAnswersById);
+
+    // Add ranking data for all ranking questions
+    if (_rankingAnswersByQuestion.isNotEmpty) {
+      _rankingAnswersByQuestion.forEach((questionId, rankings) {
+        rankings.forEach((answerKey, rank) {
+          if (rank > 0) {
+            finalPreferences['ranking_${questionId}_$answerKey'] = rank
+                .toString();
+          }
+        });
+      });
+    }
+
     UserModel().updatePreferences(
-      preferences: _selectedAnswersById,
+      preferences: finalPreferences,
       onSuccess: () async {
         // Mark user as having seen welcome screen
         await UserModel().updateUserData(
@@ -140,9 +234,24 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasSelectedAnswer =
-        _questions != null &&
-        _selectedAnswersById[_questions![_currentPage].id] != null;
+    bool hasSelectedAnswer = false;
+
+    if (_questions != null) {
+      PreferencesQuestion currentQuestion = _questions![_currentPage];
+
+      if (_isRankingQuestion(currentQuestion)) {
+        // For ranking questions, check if at least 1 item is ranked
+        Map<String, int> rankings = _getRankingAnswersForQuestion(
+          currentQuestion.id,
+        );
+        hasSelectedAnswer = rankings.values
+            .where((rank) => rank > 0)
+            .isNotEmpty;
+      } else {
+        // For regular questions, check if an answer is selected
+        hasSelectedAnswer = _selectedAnswersById[currentQuestion.id] != null;
+      }
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7FAFC),
@@ -172,9 +281,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _hasExistingPreferences
-                  ? '${_i18n.translate('setup_preferences')} (Updated)'
-                  : _i18n.translate('setup_preferences'),
+              _i18n.translate('setup_preferences'),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -192,27 +299,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ),
           ],
         ),
-        actions: [
-          if (_currentPage > 0)
-            Container(
-              margin: const EdgeInsets.only(right: 8),
-              child: TextButton.icon(
-                onPressed: _goToPreviousPage,
-                icon: const Icon(
-                  Icons.chevron_left,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                label: const Text(
-                  "Previous",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-        ],
+        actions: [],
       ),
       body: Column(
         children: [
@@ -268,7 +355,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         child: OutlinedButton.icon(
                           onPressed: _goToPreviousPage,
                           icon: const Icon(Icons.chevron_left),
-                          label: const Text("Précédent"),
+                          label: const Text("Previous"),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Theme.of(context).primaryColor,
                             side: BorderSide(
@@ -283,7 +370,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     ),
 
                   Expanded(
-                    flex: 2,
+                    flex: 1,
                     child: Container(
                       height: 50,
                       decoration: BoxDecoration(
@@ -328,7 +415,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         label: Text(
                           _currentPage == _questions!.length - 1
                               ? _i18n.translate("SAVE")
-                              : "Suivant",
+                              : "Next",
                           style: TextStyle(
                             color: hasSelectedAnswer
                                 ? Colors.white
@@ -403,12 +490,291 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       );
     }
 
+    /// Build special ranking interface for Question 11 and 13
+    Widget buildRankingQuestionPage(PreferencesQuestion question) {
+      // Check if question has answers
+      if (question.answers.isEmpty) {
+        return const Center(
+          child: Text(
+            'No options available for this question',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        );
+      }
+
+      List<String> answerKeys = question.answers.keys.toList();
+
+      // Get or initialize ranking for this question
+      Map<String, int> rankings = _getRankingAnswersForQuestion(question.id);
+
+      // Ensure all answer keys are initialized in the rankings map
+      for (String key in answerKeys) {
+        if (!rankings.containsKey(key)) {
+          rankings[key] = 0; // 0 means not ranked yet
+        }
+      }
+
+      // Update the rankings if we added new keys
+      if (rankings.isNotEmpty) {
+        _setRankingAnswersForQuestion(question.id, rankings);
+      }
+
+      // Get ranked items (items with rank 1-5)
+      List<String> rankedKeys = answerKeys
+          .where((key) => (rankings[key] ?? 0) > 0)
+          .toList();
+      rankedKeys.sort((a, b) => (rankings[a] ?? 0).compareTo(rankings[b] ?? 0));
+
+      // Get unranked items
+      List<String> unrankedKeys = answerKeys
+          .where((key) => (rankings[key] ?? 0) == 0)
+          .toList();
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Question Card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    offset: const Offset(0, 4),
+                    blurRadius: 15,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    question.question,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2D3748),
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            /// Ranked Items (1-5)
+            if (rankedKeys.isNotEmpty) ...[
+              Text(
+                'Ranked Items',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...rankedKeys.asMap().entries.map((entry) {
+                String key = entry.value;
+                int rank = rankings[key] ?? 0;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor,
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        offset: const Offset(0, 2),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        /// Rank Number
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              rank.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+
+                        /// Answer Text
+                        Expanded(
+                          child: Text(
+                            _cleanAnswerText(
+                              (question.answers[key] ?? '').toString(),
+                            ),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+
+                        /// Remove button
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              rankings[key] = 0;
+                              // Adjust other ranks
+                              _adjustRanksAfterRemoval(question.id, rank);
+                              _setRankingAnswersForQuestion(
+                                question.id,
+                                rankings,
+                              );
+
+                              // Check if no items are ranked anymore
+                              bool hasRankedItems = rankings.values.any(
+                                (r) => r > 0,
+                              );
+                              if (!hasRankedItems) {
+                                // Remove the question from answered list
+                                _selectedAnswersById.remove(question.id);
+                              }
+                            });
+                          },
+                          icon: Icon(
+                            Icons.remove_circle,
+                            color: Colors.red[400],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 20),
+            ],
+
+            /// Unranked Items
+            if (unrankedKeys.isNotEmpty) ...[
+              Text(
+                'Available Options',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...unrankedKeys.map((key) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey[200]!, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        offset: const Offset(0, 1),
+                        blurRadius: 3,
+                      ),
+                    ],
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      // Add to ranking
+                      setState(() {
+                        int nextRank = _getNextAvailableRank(question.id);
+                        if (nextRank <= 5) {
+                          rankings[key] = nextRank;
+                          _setRankingAnswersForQuestion(question.id, rankings);
+                          // Mark question as answered
+                          _markRankingQuestionAsAnswered(question.id);
+                        }
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          /// Add Icon
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.grey[600],
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+
+                          /// Answer Text
+                          Expanded(
+                            child: Text(
+                              _cleanAnswerText(
+                                (question.answers[key] ?? '').toString(),
+                              ),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF2D3748),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
+
+            const SizedBox(height: 100), // Space for bottom navigation
+          ],
+        ),
+      );
+    }
+
     return PageView.builder(
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: _questions!.length,
       itemBuilder: (ctx, idx) {
         final PreferencesQuestion question = _questions![idx];
+
+        // Check if this is the ranking question (Question 11)
+        if (_isRankingQuestion(question)) {
+          return buildRankingQuestionPage(question);
+        }
+
         final selectedAnswerKey = _selectedAnswersById[question.id];
 
         return SingleChildScrollView(
@@ -558,7 +924,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           /// Answer Text
                           Expanded(
                             child: Text(
-                              entry.value.toString(),
+                              _cleanAnswerText(entry.value.toString()),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: isSelected

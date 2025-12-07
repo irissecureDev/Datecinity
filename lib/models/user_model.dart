@@ -7,6 +7,7 @@ import 'package:cheers/helpers/app_helper.dart';
 import 'package:cheers/models/app_model.dart';
 import 'package:cheers/plugins/geoflutterfire/geoflutterfire.dart';
 import 'package:cheers/plugins/locationpicker/place_picker.dart';
+import 'package:cheers/services/suggestions_notifications_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -245,6 +246,11 @@ class UserModel extends Model {
 
             // Go to home screen
             homeScreen();
+
+            // Point 5: Déclencher les notifications intelligentes après connexion
+            Future.delayed(Duration(seconds: 2), () {
+              SuggestionsNotificationsService().onUserLogin(user.userId);
+            });
           }
           // Debug
           debugPrint("firebaseUser exists");
@@ -669,6 +675,11 @@ class UserModel extends Model {
       // Show success message
       onSuccess();
       debugPrint('updateUserLocation() -> success');
+
+      // Point 5: Déclencher notifications pour nouveaux matches à proximité
+      Future.delayed(Duration(seconds: 3), () {
+        SuggestionsNotificationsService().onLocationUpdate(user.userId);
+      });
     } else {
       // Show error message
       onSuccess();

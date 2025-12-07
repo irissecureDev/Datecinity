@@ -1,19 +1,16 @@
 import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:cheers/api/matches_api.dart';
-
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
+import 'package:cheers/models/hotspot.dart';
+import 'package:cheers/services/hotspots_service.dart';
+import 'package:cheers/widgets/hotspots_map_widget.dart';
+import 'package:cheers/widgets/hotspots_list_widget.dart';
 import 'package:cheers/widgets/processing.dart';
-import 'package:cheers/widgets/svg_icon.dart';
+import 'package:cheers/helpers/app_localizations.dart';
 
+/// Onglet Matches transformé avec la logique des hotspots
+///
+/// Tab 1 - Carte : Affiche les zones de concentration d'utilisateurs avec marqueurs colorés
+/// Tab 2 - Liste : Liste des lieux populaires avec détails et actions
 class MatchesTab extends StatefulWidget {
   const MatchesTab({super.key});
 
@@ -22,18 +19,13 @@ class MatchesTab extends StatefulWidget {
 }
 
 class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
-  final MatchesApi _matchesApi = MatchesApi();
-  final AppHelper _appHelper = AppHelper();
-  List<DocumentSnapshot<Map<String, dynamic>>>? _matches;
-  List<User>? _matchUsers;
-  LatLng? _currentLocation;
+  final HotspotsService _hotspotsService = HotspotsService();
+
+  // État
+  List<Hotspot> _hotspots = [];
+  bool _isLoadingHotspots = false;
+  String? _errorMessage;
   late AppLocalizations _i18n;
-
-  final Set<Marker> _markers = {};
-  final Completer<GoogleMapController> _mapController = Completer();
-
-  // Ajout d'un marqueur pour la position actuelle
-  Marker? _currentLocationMarker;
 
   // Tab controller pour basculer entre carte et liste
   late TabController _tabController;
@@ -42,7 +34,7 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _loadMatchesAndLocation();
+    _loadHotspots();
   }
 
   @override
@@ -51,228 +43,69 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _showLocationDeniedDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(_i18n.translate("location_permission_denied")),
-        content: Text(_i18n.translate("enable_location_permission")),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(_i18n.translate("ok")),
-          ),
-        ],
-      ),
-    );
-  }
+  /// Charger les hotspots
+  Future<void> _loadHotspots() async {
+    if (_isLoadingHotspots) return;
 
-  Future<void> _loadMatchesAndLocation() async {
+    setState(() {
+      _isLoadingHotspots = true;
+      _errorMessage = null;
+    });
+
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
+      final hotspots = await _hotspotsService.detectHotspots();
 
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          debugPrint('Location permission denied');
-          _showLocationDeniedDialog();
-          return;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        debugPrint('Location permission denied forever');
-        _showLocationDeniedDialog();
-        return;
-      }
-
-      final Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ),
-      );
-
-      setState(() {
-        _currentLocation = LatLng(position.latitude, position.longitude);
-      });
-
-      final matches = await _matchesApi.getMatches();
-      if (!mounted) return;
-
-      setState(() {
-        _matches = matches;
-      });
-
-      // Charger les détails des utilisateurs matches avec pourcentages de compatibilité
-      await _loadMatchUsers(matches);
-
-      // Mettre à jour le marqueur de position actuelle avec le bon message
-      String locationSnippet;
-      if (matches.isEmpty) {
-        locationSnippet = _i18n.translate("no_matches_in_your_area");
-      } else {
-        locationSnippet = _i18n.translate("current_position");
-      }
-
-      _currentLocationMarker = Marker(
-        markerId: const MarkerId('current_location'),
-        position: _currentLocation!,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: InfoWindow(
-          title: _i18n.translate("your_location"),
-          snippet: locationSnippet,
-        ),
-      );
-
-      // Ajouter le marqueur de position actuelle
-      setState(() {
-        _markers.clear(); // Effacer les anciens marqueurs
-        _markers.add(_currentLocationMarker!);
-      });
-
-      // Charger les marqueurs des matches
-      for (var match in matches) {
-        final userSnapshot = await UserModel().getUser(match.id);
-        if (userSnapshot.exists) {
-          final data = userSnapshot.data();
-          final User user = User.fromDocument(data!);
-          final geo = user.userGeoPoint;
-          final double compatibility = _calculateCompatibility(user);
-          final int age = DateTime.now().year - user.userBirthYear;
-
-          // Créer un marqueur personnalisé pour chaque match
-          BitmapDescriptor icon;
-          try {
-            icon = await user.getMarkerFromUrl();
-          } catch (e) {
-            // Fallback vers un marqueur par défaut si l'image échoue
-            icon = BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRed,
-            );
-          }
-
-          final marker = Marker(
-            markerId: MarkerId(match.id),
-            position: LatLng(geo.latitude, geo.longitude),
-            icon: icon,
-            infoWindow: InfoWindow(
-              title:
-                  '${user.userFullname.split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, $age years',
-              snippet:
-                  '${compatibility.round()}% compatible • ${user.userLocality}, ${user.userCountry}',
-            ),
-            onTap: () {
-              _showMatchDialog(user);
-            },
-          );
-
-          if (mounted) {
-            setState(() => _markers.add(marker));
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint("Error loading matches or location: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_i18n.translate("error_loading_matches")),
-            backgroundColor: Colors.red,
-          ),
-        );
+        setState(() {
+          _hotspots = hotspots;
+          _isLoadingHotspots = false;
+        });
+      }
+
+      debugPrint('🎯 ${hotspots.length} hotspots loaded');
+    } catch (e) {
+      debugPrint('❌ Error loading hotspots: $e');
+
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Error loading popular places';
+          _isLoadingHotspots = false;
+        });
       }
     }
   }
 
-  /// Charger les détails des utilisateurs matches avec calcul de compatibilité
-  Future<void> _loadMatchUsers(
-    List<DocumentSnapshot<Map<String, dynamic>>> matches,
-  ) async {
-    List<Map<String, dynamic>> usersWithCompatibility = [];
-    final currentUser = UserModel().user;
-    final currentPrefs = currentUser.preferences ?? {};
+  /// Gérer le tap sur un hotspot
+  void _onHotspotTap(Hotspot hotspot) {
+    debugPrint('🎯 Hotspot selected: ${hotspot.placeName}');
 
-    for (var match in matches) {
-      try {
-        final userSnapshot = await UserModel().getUser(match.id);
-        if (userSnapshot.exists) {
-          final data = userSnapshot.data()!;
-          final User user = User.fromDocument(data);
-
-          // Calculer le pourcentage de compatibilité
-          double compatibilityPercentage = 0.0;
-          if (currentPrefs.isNotEmpty && (user.preferences ?? {}).isNotEmpty) {
-            int matchingAnswers = 0;
-            for (final entry in currentPrefs.entries) {
-              if ((user.preferences ?? {}).containsKey(entry.key) &&
-                  (user.preferences ?? {})[entry.key] == entry.value) {
-                matchingAnswers++;
-              }
-            }
-            compatibilityPercentage =
-                (matchingAnswers / currentPrefs.length * 100)
-                    .clamp(0, 100)
-                    .toDouble();
-          }
-
-          // Créer un objet avec l'utilisateur et son pourcentage
-          usersWithCompatibility.add({
-            'user': user,
-            'compatibility': compatibilityPercentage,
-          });
-        }
-      } catch (e) {
-        debugPrint("Error loading match user ${match.id}: $e");
-      }
+    // Basculer vers l'onglet carte si on est sur la liste
+    if (_tabController.index == 1) {
+      _tabController.animateTo(0);
     }
+  }
 
-    // Trier par pourcentage de compatibilité décroissant
-    usersWithCompatibility.sort(
-      (a, b) => (b['compatibility'] as double).compareTo(
-        a['compatibility'] as double,
+  /// Gérer la demande d'itinéraire
+  void _onGetDirections(Hotspot hotspot) {
+    // TODO: Intégrer avec une app de navigation externe
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('🧭 Route to ${hotspot.placeName}'),
+        action: SnackBarAction(
+          label: 'Open Maps',
+          onPressed: () {
+            // TODO: Ouvrir Google Maps ou Apple Maps
+            debugPrint('🗺️ Ouverture navigation vers ${hotspot.placeName}');
+          },
+        ),
       ),
     );
-
-    if (mounted) {
-      setState(() {
-        _matchUsers = usersWithCompatibility
-            .map((item) => item['user'] as User)
-            .toList();
-      });
-    }
   }
 
-  /// Calculer le pourcentage de compatibilité pour un utilisateur donné
-  double _calculateCompatibility(User user) {
-    final currentPrefs = UserModel().user.preferences ?? {};
-    final userPrefs = user.preferences ?? {};
-
-    debugPrint('🔍 Calculating compatibility for: ${user.userFullname}');
-    debugPrint('📊 Current user preferences: ${currentPrefs.length} items');
-    debugPrint('👤 Other user preferences: ${userPrefs.length} items');
-
-    if (currentPrefs.isEmpty || userPrefs.isEmpty) {
-      debugPrint('❌ No preferences found, returning 0% compatibility');
-      return 0.0;
-    }
-
-    int matchingAnswers = 0;
-    for (final entry in currentPrefs.entries) {
-      if (userPrefs.containsKey(entry.key) &&
-          userPrefs[entry.key] == entry.value) {
-        matchingAnswers++;
-      }
-    }
-
-    final double result = (matchingAnswers / currentPrefs.length * 100)
-        .clamp(0, 100)
-        .toDouble();
-
-    debugPrint(
-      '✅ Compatibility result: ${result.round()}% ($matchingAnswers/${currentPrefs.length} matches)',
-    );
-
-    return result;
+  /// Actualiser les hotspots
+  Future<void> _refreshHotspots() async {
+    await _hotspotsService.forceRefresh();
+    await _loadHotspots();
   }
 
   @override
@@ -281,85 +114,17 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
 
     return Column(
       children: [
-        // Header avec titre moderne
+        // Barre d'onglets style moderne
         Container(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).primaryColor.withOpacity(0.1),
-                Theme.of(context).primaryColor.withOpacity(0.05),
-              ],
-            ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Discover Matches",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: Theme.of(context).primaryColor,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _matches?.length != null
-                          ? "${_matches!.length} potential matches nearby"
-                          : "Loading matches...",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.8),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Onglets améliorés pour basculer entre carte et liste
-        Container(
-          margin: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          height: 54,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(27),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 20,
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -368,8 +133,6 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
             controller: _tabController,
             indicator: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
                 colors: [
                   Theme.of(context).primaryColor,
                   Theme.of(context).primaryColor.withOpacity(0.8),
@@ -379,7 +142,7 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
               boxShadow: [
                 BoxShadow(
                   color: Theme.of(context).primaryColor.withOpacity(0.3),
-                  blurRadius: 12,
+                  blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
@@ -388,23 +151,23 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey[600],
             labelStyle: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
               letterSpacing: 0.2,
             ),
             unselectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               fontSize: 15,
             ),
             dividerColor: Colors.transparent,
-            tabs: [
+            tabs: const [
               Tab(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.map_outlined, size: 20),
-                    const SizedBox(width: 8),
-                    Text(_i18n.translate("map")),
+                    Icon(Icons.map, size: 20),
+                    SizedBox(width: 8),
+                    Text("Map"),
                   ],
                 ),
               ),
@@ -412,701 +175,102 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.grid_view_rounded, size: 20),
-                    const SizedBox(width: 8),
-                    Text(_i18n.translate("list")),
+                    Icon(Icons.list, size: 20),
+                    SizedBox(width: 8),
+                    Text("List"),
                   ],
                 ),
               ),
             ],
-            onTap: (index) {
-              HapticFeedback.lightImpact();
-            },
           ),
         ),
 
         // Contenu selon l'onglet sélectionné
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [_buildMap(), _buildList()],
-          ),
-        ),
+        Expanded(child: _buildContent()),
       ],
     );
   }
 
-  Widget _buildMap() {
-    if (_currentLocation == null) {
-      return Processing(text: _i18n.translate("loading_location"));
+  /// Construire le contenu selon l'état
+  Widget _buildContent() {
+    if (_isLoadingHotspots) {
+      return const Processing(text: "Finding popular places...");
     }
 
-    if (_matches == null) {
-      return Processing(text: _i18n.translate("loading"));
+    if (_errorMessage != null) {
+      return _buildErrorState();
     }
 
-    // Toujours afficher la carte avec au moins la position actuelle
-    // même s'il n'y a pas de matches
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: _currentLocation!,
-        zoom: 12,
-      ),
-      markers: _markers,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: true,
-      onMapCreated: (controller) {
-        if (!_mapController.isCompleted) {
-          _mapController.complete(controller);
-        }
-      },
+    return TabBarView(
+      controller: _tabController,
+      physics:
+          const NeverScrollableScrollPhysics(), // Désactive le swipe entre tabs pour éviter les conflits
+      children: [_buildMapView(), _buildListView()],
     );
   }
 
-  /// Construire la vue en liste des matches
-  Widget _buildList() {
-    if (_currentLocation == null) {
-      return Processing(text: _i18n.translate("loading_location"));
-    }
+  /// Construire la vue carte
+  Widget _buildMapView() {
+    return Container(
+      child: HotspotsMapWidget(
+        hotspots: _hotspots,
+        onHotspotTap: _onHotspotTap,
+        onRefresh: _refreshHotspots,
+      ),
+    );
+  }
 
-    if (_matches == null) {
-      return Processing(text: _i18n.translate("loading"));
-    }
+  /// Construire la vue liste
+  Widget _buildListView() {
+    return HotspotsListWidget(
+      hotspots: _hotspots,
+      onHotspotTap: _onHotspotTap,
+      onGetDirections: _onGetDirections,
+      onRefresh: _refreshHotspots,
+    );
+  }
 
-    if (_matchUsers == null) {
-      return Processing(text: _i18n.translate("loading"));
-    }
-
-    if (_matchUsers!.isEmpty) {
-      return Center(
+  /// Construire l'état d'erreur
+  Widget _buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                Icons.favorite_outline,
-                size: 60,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-            const SizedBox(height: 20),
+            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+            const SizedBox(height: 16),
             Text(
-              _i18n.translate("no_matches_found"),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF2D3748),
+              'Loading Error',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.red[700],
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              "Continuez à utiliser l'app pour trouver des matches !",
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              _errorMessage ?? 'An error occurred',
               textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _refreshHotspots,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
             ),
           ],
         ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-      itemCount: _matchUsers!.length,
-      itemBuilder: (context, index) {
-        final User user = _matchUsers![index];
-        final double compatibility = _calculateCompatibility(user);
-        final int age = DateTime.now().year - user.userBirthYear;
-        final int distance = _appHelper.getDistanceBetweenUsers(
-          userLat: user.userGeoPoint.latitude,
-          userLong: user.userGeoPoint.longitude,
-        );
-
-        return AnimatedContainer(
-          duration: Duration(milliseconds: 300 + (index * 50)),
-          curve: Curves.easeOutCubic,
-          margin: const EdgeInsets.only(bottom: 20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.white, Colors.grey[50]!],
-            ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                offset: const Offset(0, 6),
-                blurRadius: 20,
-                spreadRadius: 0,
-              ),
-              BoxShadow(
-                color: Theme.of(context).primaryColor.withOpacity(0.08),
-                offset: const Offset(0, 2),
-                blurRadius: 10,
-                spreadRadius: 0,
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.mediumImpact();
-                _showMatchDialog(user);
-              },
-              borderRadius: BorderRadius.circular(24),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    // Photo de profil améliorée avec stack et badges
-                    Stack(
-                      children: [
-                        Container(
-                          width: 90,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Theme.of(context).primaryColor,
-                                Theme.of(context).primaryColor.withOpacity(0.7),
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withOpacity(0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(3),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(17),
-                              child: user.userProfilePhoto.isNotEmpty
-                                  ? Image.network(
-                                      user.userProfilePhoto,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey[200],
-                                                borderRadius:
-                                                    BorderRadius.circular(17),
-                                              ),
-                                              child: const Icon(
-                                                Icons.person,
-                                                size: 45,
-                                                color: Colors.grey,
-                                              ),
-                                            );
-                                          },
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(17),
-                                      ),
-                                      child: const Icon(
-                                        Icons.person,
-                                        size: 45,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ),
-
-                        // Badge de compatibilité en overlay
-                        Positioned(
-                          top: -2,
-                          right: -2,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: compatibility >= 80
-                                    ? [Colors.green[400]!, Colors.green[600]!]
-                                    : compatibility >= 60
-                                    ? [Colors.orange[400]!, Colors.orange[600]!]
-                                    : [Colors.red[400]!, Colors.red[600]!],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Text(
-                              '${compatibility.round()}%',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // Indicateur en ligne
-                        Positioned(
-                          bottom: 2,
-                          right: 2,
-                          child: Container(
-                            width: 14,
-                            height: 14,
-                            decoration: BoxDecoration(
-                              color: Colors.green[400],
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.white, width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.green.withOpacity(0.3),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(width: 20),
-
-                    // Informations utilisateur améliorées
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Nom et âge avec style amélioré
-                          Text(
-                            '${user.userFullname.split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, $age years',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF1A202C),
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-
-                          // Localisation avec style moderne
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: const Icon(
-                                  Icons.location_on,
-                                  size: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  '${user.userLocality}, ${user.userCountry}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Distance et compatibility badges
-                          Row(
-                            children: [
-                              // Distance avec design moderne
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[50],
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.blue[200]!,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.near_me,
-                                      size: 12,
-                                      color: Colors.blue[700],
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${distance}km',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.blue[700],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-
-                              // Badge compatible amélioré
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Theme.of(context).primaryColor,
-                                      Theme.of(
-                                        context,
-                                      ).primaryColor.withOpacity(0.8),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.favorite,
-                                      size: 12,
-                                      color: Colors.white,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${compatibility.round()}% match',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Flèche d'action améliorée
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Theme.of(context).primaryColor.withOpacity(0.1),
-                            Theme.of(context).primaryColor.withOpacity(0.05),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 18,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  /// Affiche un dialog avec les détails du match
-  void _showMatchDialog(User user) {
-    // Calculer l'âge à partir de l'année de naissance
-    int currentYear = DateTime.now().year;
-    int age = currentYear - user.userBirthYear;
-
-    // Calculer la distance et la compatibilité
-    final int distance = _appHelper.getDistanceBetweenUsers(
-      userLat: user.userGeoPoint.latitude,
-      userLong: user.userGeoPoint.longitude,
-    );
-    final double compatibility = _calculateCompatibility(user);
-
-    // Obtenir les photos depuis la galerie
-    List<String> photos = [];
-    if (user.userGallery != null) {
-      user.userGallery!.forEach((key, value) {
-        if (value is String && value.isNotEmpty) {
-          photos.add(value);
-        }
-      });
-    }
-    // Ajouter la photo de profil si disponible
-    if (user.userProfilePhoto.isNotEmpty &&
-        !photos.contains(user.userProfilePhoto)) {
-      photos.insert(0, user.userProfilePhoto);
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          contentPadding: const EdgeInsets.all(24),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Photo de profil avec bordure moderne
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.8),
-                    ],
-                  ),
-                ),
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.white,
-                  child: CircleAvatar(
-                    radius: 46,
-                    backgroundImage: photos.isNotEmpty
-                        ? NetworkImage(photos.first)
-                        : null,
-                    child: photos.isEmpty
-                        ? const Icon(Icons.person, size: 50, color: Colors.grey)
-                        : null,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Nom et âge
-              Text(
-                '${user.userFullname.split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, $age years',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF2D3748),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-
-              // Badges d'informations
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Distance
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.blue[200]!, width: 1),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SvgIcon(
-                          "assets/icons/location_point_icon.svg",
-                          width: 12,
-                          height: 12,
-                          color: Colors.blue,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${distance}km',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.blue[700],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Compatibilité
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).primaryColor,
-                          Theme.of(context).primaryColor.withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.favorite,
-                          size: 12,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${compatibility.round()}%',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Localisation
-              Text(
-                '${user.userLocality}, ${user.userCountry}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-
-              // Bio (si disponible)
-              if (user.userBio.isNotEmpty) ...[
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                  ),
-                  child: Text(
-                    user.userBio,
-                    textAlign: TextAlign.center,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      height: 1.4,
-                      color: Color(0xFF4A5568),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ],
-          ),
-          actions: [
-            // Bouton Fermer
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-              ),
-              child: Text(
-                _i18n.translate("close"),
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-
-            // Bouton Voir le profil
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).primaryColor.withOpacity(0.8),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  // Navigation vers le profil complet
-                  // Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(user: user)));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Text(
-                  _i18n.translate("view_profile"),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      ),
     );
   }
 }

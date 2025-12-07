@@ -11,6 +11,9 @@ import 'package:cheers/helpers/app_helper.dart';
 import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/helpers/app_notifications.dart';
 import 'package:cheers/models/user_model.dart';
+import 'package:cheers/services/suggestions_service.dart';
+import 'package:cheers/services/suggestions_notifications_service.dart';
+import 'package:cheers/models/proximity_profile.dart';
 import 'package:cheers/screens/notifications_screen.dart';
 import 'package:cheers/tabs/conversations_tab.dart';
 import 'package:cheers/tabs/discover_tab.dart';
@@ -38,6 +41,8 @@ class HomeScreenState extends State<HomeScreen> {
   final _conversationsApi = ConversationsApi();
   final _notificationsApi = NotificationsApi();
   final _appNotifications = AppNotifications();
+  final _suggestionsService = SuggestionsService();
+  final _suggestionsNotificationsService = SuggestionsNotificationsService();
   int _selectedIndex = 0;
   late AppLocalizations _i18n;
   late Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream;
@@ -46,14 +51,15 @@ class HomeScreenState extends State<HomeScreen> {
   final AppHelper _appHelper = AppHelper();
 
   StreamSubscription<Position>? _positionStream;
+  Timer? _proximityCheckTimer;
 
   /// Tab navigation
   Widget _showCurrentNavBar() {
     List<Widget> options = <Widget>[
-      const ProfileTab(), // Index 0: Profile
-      const MatchesTab(), // Index 1: Discover affiche le contenu Matches (cartes swipe)
-      const DiscoverTab(), // Index 2: Matches affiche le contenu Discover (carte utilisateurs)
-      const ConversationsTab(), // Index 3: Conversations
+      const MatchesTab(), // Index 0: Discover affiche le contenu Matches (cartes swipe)
+      const DiscoverTab(), // Index 1: Matches affiche le contenu Discover (carte utilisateurs)
+      const ConversationsTab(), // Index 2: Conversations
+      const ProfileTab(), // Index 3: Profile
     ];
 
     return options.elementAt(_selectedIndex);
@@ -257,6 +263,7 @@ class HomeScreenState extends State<HomeScreen> {
     _userStream.drain();
     _inAppPurchaseStream.cancel();
     _positionStream?.cancel();
+    _proximityCheckTimer?.cancel();
   }
 
   Future<void> _initLocationListener() async {
@@ -309,42 +316,26 @@ class HomeScreenState extends State<HomeScreen> {
             accuracy: LocationAccuracy.best,
             distanceFilter: 10, // meters
           ),
-        ).listen((Position position) {
-          /// First: Load All Disliked Users to be filtered
-          DislikesApi().getDislikedUsers(withLimit: false).then((
-            List<DocumentSnapshot<Map<String, dynamic>>> dislikedUsers,
-          ) async {
-            /// Validate user max distance
-            await UserModel().checkUserMaxDistance();
-
-            /// Load all users
-            UsersApi().getUsers(dislikedUsers: dislikedUsers).then((users) {
-              for (var user in users) {
-                // Get the matching percentage from user data with safe access
-                final userData = user.data();
-                final double matchPercent = (userData?[USER_MATCH_PERCENT] ?? 0)
-                    .toDouble();
-
-                if (matchPercent >= 70) {
-                  LikesApi().likeUser(
-                    likedUserId: user[USER_ID],
-                    userDeviceToken: user[USER_DEVICE_TOKEN],
-                    nMessage:
-                        "You have a ${matchPercent.toInt()}% match with ${UserModel().user.userFullname.split(' ')[0]}",
-                    onLikeResult: (result) {
-                      debugPrint('likeResult: $result');
-                    },
-                  );
-                }
-              }
-            });
-          });
-          _appHelper.updateUserLocation(
-            userId: UserModel().getFirebaseUser!.uid, // widget.userId
+        ).listen((Position position) async {
+          // Mettre à jour la position de l'utilisateur
+          await _appHelper.updateUserLocation(
+            userId: UserModel().getFirebaseUser!.uid,
             latitude: position.latitude,
             longitude: position.longitude,
           );
+
+          // Détecter les nouveaux profils de proximité
+          await _detectProximityProfiles();
+
+          // Logique existante pour les matches automatiques (optionnel)
+          await _handleAutomaticMatching();
         });
+
+    // Timer pour nettoyer le cache et vérifier les expirations toutes les minutes
+    _proximityCheckTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+      _suggestionsService.cleanProximityCache();
+      debugPrint('🧹 Cache de proximité nettoyé automatiquement');
+    });
   }
 
   @override
@@ -401,39 +392,26 @@ class HomeScreenState extends State<HomeScreen> {
         currentIndex: _selectedIndex,
         onTap: _onTappedNavBar,
         items: [
-          /// Profile Tab
-          BottomNavigationBarItem(
-            icon: SvgIcon(
-              _selectedIndex == 0
-                  ? "assets/icons/user_2_icon.svg"
-                  : "assets/icons/user_icon.svg",
-              color: _selectedIndex == 0
-                  ? Theme.of(context).primaryColor
-                  : null,
-            ),
-            label: _i18n.translate("profile"),
-          ),
-
-          /// Discover Tab (index 1 - affiche le contenu Matches: cartes swipe)
+          /// Discover Tab (index 0 - affiche le contenu Matches: cartes swipe)
           BottomNavigationBarItem(
             icon: SvgIcon(
               "assets/icons/discover_icon.svg",
               width: 27,
               height: 27,
-              color: _selectedIndex == 1
+              color: _selectedIndex == 0
                   ? Theme.of(context).primaryColor
                   : null,
             ),
             label: _i18n.translate("discover"),
           ),
 
-          /// Matches Tab (index 2 - affiche le contenu Discover: carte utilisateurs)
+          /// Matches Tab (index 1 - affiche le contenu Discover: carte utilisateurs)
           BottomNavigationBarItem(
             icon: SvgIcon(
-              _selectedIndex == 2
+              _selectedIndex == 1
                   ? "assets/icons/heart_2_icon.svg"
                   : "assets/icons/heart_icon.svg",
-              color: _selectedIndex == 2
+              color: _selectedIndex == 1
                   ? Theme.of(context).primaryColor
                   : null,
             ),
@@ -444,6 +422,19 @@ class HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: _getConversationCounter(),
             label: _i18n.translate("chats"),
+          ),
+
+          /// Profile Tab
+          BottomNavigationBarItem(
+            icon: SvgIcon(
+              _selectedIndex == 3
+                  ? "assets/icons/user_2_icon.svg"
+                  : "assets/icons/user_icon.svg",
+              color: _selectedIndex == 3
+                  ? Theme.of(context).primaryColor
+                  : null,
+            ),
+            label: _i18n.translate("profile"),
           ),
         ],
       ),
@@ -485,12 +476,12 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _getConversationCounter() {
     // Set icon
     final icon = SvgIcon(
-      _selectedIndex == 3
+      _selectedIndex == 2
           ? "assets/icons/message_2_icon.svg"
           : "assets/icons/message_icon.svg",
       width: 30,
       height: 30,
-      color: _selectedIndex == 3 ? Theme.of(context).primaryColor : null,
+      color: _selectedIndex == 2 ? Theme.of(context).primaryColor : null,
     );
 
     /// Handle stream
@@ -511,5 +502,137 @@ class HomeScreenState extends State<HomeScreen> {
         }
       },
     );
+  }
+
+  /// Détecter les nouveaux profils de proximité et envoyer des notifications
+  Future<void> _detectProximityProfiles() async {
+    try {
+      debugPrint('🔍 Détection profils de proximité...');
+
+      // Détecter les nouveaux profils dans un rayon de 100m avec 50% de compatibilité minimum
+      final newProfiles = await _suggestionsService.detectNewProximityProfiles(
+        maxDistanceKm: 0.1, // 100 mètres
+        minCompatibility: 0.5, // 50% de compatibilité
+      );
+
+      if (newProfiles.isNotEmpty) {
+        debugPrint(
+          '✨ ${newProfiles.length} nouveaux profils détectés à proximité',
+        );
+
+        // Filtrer les profils nécessitant une notification (très compatibles)
+        final notificationProfiles = newProfiles
+            .where((profile) => profile.compatibility >= 0.7) // 70% minimum
+            .toList();
+
+        if (notificationProfiles.isNotEmpty) {
+          debugPrint(
+            '🔔 Envoi de notifications pour ${notificationProfiles.length} profils hautement compatibles',
+          );
+
+          // Déclencher les notifications via le service
+          await _suggestionsNotificationsService.checkAndNotifyNearbyMatches(
+            UserModel().user.userId,
+          );
+
+          // Afficher une notification locale
+          _showLocalProximityNotification(notificationProfiles);
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur détection proximité: $e');
+    }
+  }
+
+  /// Afficher une notification locale pour les profils de proximité
+  void _showLocalProximityNotification(List<ProximityProfile> profiles) {
+    if (profiles.isEmpty) return;
+
+    String message;
+    if (profiles.length == 1) {
+      final profile = profiles.first;
+      final distanceM = (profile.distance * 1000).round();
+      message =
+          '📍 ${profile.user.userFullname} est à ${distanceM}m de vous ! (${(profile.compatibility * 100).round()}% compatible)';
+    } else {
+      message =
+          '📍 ${profiles.length} personnes hautement compatibles sont près de vous !';
+    }
+
+    // Afficher un toast
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+      backgroundColor: Theme.of(context).primaryColor,
+      textColor: Colors.white,
+      fontSize: 14.0,
+    );
+
+    // Afficher aussi un SnackBar si possible
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.location_on, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(message, style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+          backgroundColor: Theme.of(context).primaryColor,
+          duration: Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Voir',
+            textColor: Colors.white,
+            onPressed: () {
+              // Aller à l'onglet Discover
+              setState(() {
+                _selectedIndex = 1; // Index pour Discover
+              });
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  /// Gérer les matches automatiques (logique existante optionnelle)
+  Future<void> _handleAutomaticMatching() async {
+    try {
+      /// First: Load All Disliked Users to be filtered
+      final dislikedUsers = await DislikesApi().getDislikedUsers(
+        withLimit: false,
+      );
+
+      /// Validate user max distance
+      await UserModel().checkUserMaxDistance();
+
+      /// Load all users
+      final users = await UsersApi().getUsers(dislikedUsers: dislikedUsers);
+
+      for (var user in users) {
+        // Get the matching percentage from user data with safe access
+        final userData = user.data();
+        final double matchPercent = (userData?[USER_MATCH_PERCENT] ?? 0)
+            .toDouble();
+
+        if (matchPercent >= 70) {
+          LikesApi().likeUser(
+            likedUserId: user[USER_ID],
+            userDeviceToken: user[USER_DEVICE_TOKEN],
+            nMessage:
+                "You have a ${matchPercent.toInt()}% match with ${UserModel().user.userFullname.split(' ')[0]}",
+            onLikeResult: (result) {
+              debugPrint('likeResult: $result');
+            },
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur automatic matching: $e');
+    }
   }
 }

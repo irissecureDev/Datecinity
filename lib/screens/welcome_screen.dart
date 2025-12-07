@@ -14,7 +14,7 @@ class WelcomeScreen extends StatelessWidget {
     final i18n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE6DBD0),
+      backgroundColor: const Color(0xFFEBE1D8),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -49,7 +49,7 @@ class WelcomeScreen extends StatelessWidget {
                   i18n.translate("welcome_description"),
                   style: const TextStyle(
                     fontSize: 16,
-                    color: Colors.grey,
+                    color: Colors.black54,
                     height: 1.5,
                   ),
                   textAlign: TextAlign.center,
@@ -58,10 +58,10 @@ class WelcomeScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // Fill Compatibility Quiz Button
+              // Complete Compatibility Quiz Button
               DefaultButton(
                 child: Text(
-                  i18n.translate("fill_compatibility_quiz"),
+                  "Complete Compatibility Quiz",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

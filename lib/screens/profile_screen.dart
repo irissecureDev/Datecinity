@@ -74,6 +74,45 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor.withOpacity(0.8),
+              ],
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          widget.user.userFullname.split(' ')[0], // Prénom de l'utilisateur
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        centerTitle: true,
+        actions: <Widget>[
+          // Check the current User ID
+          if (UserModel().user.userId != widget.user.userId)
+            IconButton(
+              icon: const Icon(Icons.flag, color: Colors.white, size: 24),
+              // Report/Block profile dialog
+              onPressed: () => ReportDialog(userId: widget.user.userId).show(),
+            ),
+        ],
+      ),
       body: ScopedModelDescendant<UserModel>(
         builder: (context, child, userModel) {
           return Stack(
@@ -241,39 +280,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
                             const SizedBox(height: 24),
 
-                            /// Quick Info Cards
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _modernInfoCard(
-                                    context,
-                                    icon: const SvgIcon(
-                                      "assets/icons/location_point_icon.svg",
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                    title: "Localisation",
-                                    subtitle:
-                                        "${widget.user.userLocality}, ${widget.user.userCountry}",
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _modernInfoCard(
-                                    context,
-                                    icon: const SvgIcon(
-                                      "assets/icons/gift_icon.svg",
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                    title: "Anniversaire",
-                                    subtitle:
-                                        '${widget.user.userBirthDay}/${widget.user.userBirthMonth}/${widget.user.userBirthYear}',
-                                  ),
-                                ),
-                              ],
-                            ),
-
+                            /// Quick Info Cards supprimées (Localisation et Anniversaire)
                             const SizedBox(height: 20),
 
                             Row(
@@ -402,34 +409,6 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-
-              /// AppBar to return back
-              Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  iconTheme: IconThemeData(
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  actions: <Widget>[
-                    // Check the current User ID
-                    if (UserModel().user.userId != widget.user.userId)
-                      IconButton(
-                        icon: Icon(
-                          Icons.flag,
-                          color: Theme.of(context).primaryColor,
-                          size: 32,
-                        ),
-                        // Report/Block profile dialog
-                        onPressed: () =>
-                            ReportDialog(userId: widget.user.userId).show(),
-                      ),
                   ],
                 ),
               ),

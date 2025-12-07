@@ -4,6 +4,7 @@ import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/profile_likes_screen.dart';
 import 'package:cheers/screens/profile_screen.dart';
 import 'package:cheers/screens/profile_visits_screen.dart';
+import 'package:cheers/tabs/discover_tab.dart';
 import 'package:flutter/material.dart';
 
 class AppNotifications {
@@ -46,6 +47,34 @@ class AppNotifications {
             ),
           );
         }
+        break;
+
+      // Point 5: Nouveaux types de notifications intelligentes
+      case 'high_compatibility':
+      case 'new_matches':
+
+        /// Aller à l'onglet Découvrir pour voir les nouvelles suggestions
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const DiscoverTab()),
+        );
+        break;
+
+      case 'nearby_match':
+
+        /// Aller à l'onglet Découvrir avec un message spécial
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const DiscoverTab()),
+        );
+        // Optionnel: Afficher un snackbar pour indiquer qu'il faut activer la localisation
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '💡 Activez la localisation pour voir les matches à proximité',
+            ),
+            backgroundColor: Colors.blue,
+            duration: Duration(seconds: 3),
+          ),
+        );
         break;
 
       case 'alert':

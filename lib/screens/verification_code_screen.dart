@@ -5,7 +5,7 @@ import 'package:cheers/models/user_model.dart';
 import 'package:cheers/plugins/otp_screen/otp_screen.dart';
 import 'package:cheers/screens/welcome_screen.dart';
 import 'package:cheers/screens/home_screen.dart';
-import 'package:cheers/screens/sign_up_screen.dart';
+import 'package:cheers/screens/multi_step_sign_up_screen.dart';
 import 'package:cheers/screens/update_location_sceen.dart';
 import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +52,7 @@ class VerificationCodeScreenState extends State<VerificationCodeScreen> {
         UserModel().authUserAccount(
           updateLocationScreen: () => _nextScreen(const UpdateLocationScreen()),
           homeScreen: () => _nextScreen(const HomeScreen()),
-          signUpScreen: () => _nextScreen(const SignUpScreen()),
+          signUpScreen: () => _nextScreen(const MultiStepSignUpScreen()),
           completePreferencesScreen: () => _nextScreen(const WelcomeScreen()),
         );
       },
