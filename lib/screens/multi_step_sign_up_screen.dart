@@ -485,28 +485,48 @@ class MultiStepSignUpScreenState extends State<MultiStepSignUpScreen> {
 
           const SizedBox(height: 20),
 
-          /// Birthday card
-          Card(
-            elevation: 1,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.grey.shade300),
-            ),
-            child: Container(
-              decoration: BoxDecoration(color: Colors.grey.shade50),
-              child: ListTile(
-                leading: const SvgIcon("assets/icons/calendar_icon.svg"),
-                title: Text(
-                  _birthday ?? i18n.translate("tap_to_select_birthday"),
-                  style: TextStyle(
-                    color: _birthday == null
-                        ? Colors.grey.shade600
-                        : Colors.black87,
-                    fontWeight: FontWeight.w500,
+          /// Birthday field
+          InkWell(
+            onTap: _showDatePicker,
+            child: InputDecorator(
+              decoration: InputDecoration(
+                labelText: "Date of birth",
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: SvgIcon("assets/icons/calendar_icon.svg"),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).primaryColor,
+                    width: 2,
                   ),
                 ),
-                onTap: _showDatePicker,
+                filled: true,
+                fillColor: Colors.grey.shade50,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+              ),
+              child: Text(
+                _birthday ?? i18n.translate("tap_to_select_birthday"),
+                style: TextStyle(
+                  color: _birthday == null
+                      ? Colors.grey.shade600
+                      : Colors.black87,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400, // Matching other fields usually
+                ),
               ),
             ),
           ),

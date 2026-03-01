@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// APP SETINGS INFO CONSTANTS - SECTION ///
 ///
-const String APP_NAME = "Cheers";
+const String APP_NAME = "DateCinity";
 const Color APP_PRIMARY_COLOR = Color(0xFF7F3BBF);
 const Color APP_ACCENT_COLOR = Color.fromARGB(255, 157, 113, 197);
 const String APP_VERSION_NAME = "Android v1.0.0 & iOS v1.0.0";
@@ -51,6 +51,7 @@ const String C_DISLIKES = "Dislikes";
 const String C_MESSAGES = "Messages";
 const String C_NOTIFICATIONS = "Notifications";
 const String C_BLOCKED_USERS = 'BlockedUsers';
+const String C_SPARKS = 'Sparks';
 
 /// DATABASE FIELDS FOR AppInfo COLLECTION  ///
 ///
@@ -106,12 +107,26 @@ const String USER_PREFERENCES = "user_preferences";
 const String USER_HAS_SEEN_WELCOME = "user_has_seen_welcome";
 const String USER_SHOW_PROFILE_BIO = "user_show_hide_profile_bio";
 const String USER_RACE_DEMOGRAPHICS = "user_race_demographics";
+const String USER_FAMILY_PLANNING = "user_family_planning";
+const String USER_FINANCIAL_READINESS = "user_financial_readiness";
+const String USER_DESIRED_CHILDREN_COUNT = "user_desired_children_count";
+const String USER_HEIGHT_CM = "user_height_cm";
+const String USER_WEIGHT_KG = "user_weight_kg";
+const String USER_HAS_CHILDREN = "user_has_children";
+const String USER_CHILDREN_COUNT = "user_children_count";
+const String USER_WANTS_CHILDREN = "user_wants_children";
+const String USER_SMOKING_HABIT = "user_smoking_habit";
+const String USER_ALCOHOL_HABIT = "user_alcohol_habit";
 // User Setting map - fields
 const String USER_MIN_AGE = "user_min_age";
 const String USER_MAX_AGE = "user_max_age";
 const String USER_MAX_DISTANCE = "user_max_distance";
 const String USER_SHOW_ME = "user_show_me";
 const String USER_MATCH_PERCENT = "matching_percent";
+const String USER_VISIBILITY_PROFILE_PHOTO = "visibility_profile_photo";
+const String USER_VISIBILITY_GALLERY = "visibility_gallery";
+const String USER_VISIBILITY_IDENTITY = "visibility_identity";
+const String USER_VISIBILITY_INTERESTS = "visibility_interests";
 
 /// DATABASE FIELDS FOR FlaggedUsers COLLECTION  ///
 ///

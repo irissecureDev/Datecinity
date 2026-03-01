@@ -1,27 +1,20 @@
+import 'dart:async';
+import 'package:cheers/api/notifications_api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/api/dislikes_api.dart';
-import 'package:cheers/api/likes_api.dart';
-import 'package:cheers/api/matches_api.dart';
-import 'package:cheers/api/visits_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/dialogs/its_match_dialog.dart';
+import 'package:cheers/datas/user.dart' as app_data;
 import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
 import 'package:cheers/models/proximity_profile.dart';
-import 'package:cheers/plugins/swipe_stack/swipe_stack.dart';
-import 'package:cheers/screens/disliked_profile_screen.dart';
+import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/profile_screen.dart';
+import 'package:cheers/services/foreground_push_service.dart';
 import 'package:cheers/services/suggestions_service.dart';
-import 'package:cheers/widgets/cicle_button.dart';
+import 'package:cheers/widgets/discovery_flow_widget.dart';
 import 'package:cheers/widgets/no_data.dart';
 import 'package:cheers/widgets/processing.dart';
-import 'package:cheers/widgets/profile_card.dart';
-import 'package:cheers/widgets/advanced_profile_card.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cheers/api/users_api.dart';
-import 'dart:async';
 
 class DiscoverTab extends StatefulWidget {
   const DiscoverTab({super.key});
@@ -32,181 +25,350 @@ class DiscoverTab extends StatefulWidget {
 
 class DiscoverTabState extends State<DiscoverTab>
     with TickerProviderStateMixin {
-  // Variables
-  final GlobalKey<SwipeStackState> _swipeKey = GlobalKey<SwipeStackState>();
-  final LikesApi _likesApi = LikesApi();
-  final DislikesApi _dislikesApi = DislikesApi();
-  final MatchesApi _matchesApi = MatchesApi();
-  final VisitsApi _visitsApi = VisitsApi();
-  final UsersApi _usersApi = UsersApi();
+  static const double _sparkMaxDistanceKm = 0.5;
+  static const double _sparkMinCompatibility = 0.6;
+  static const double _sparkHighCompatibility = 0.75;
+  static const bool _enableFakeSparksForTesting = true;
+
   final SuggestionsService _suggestionsService = SuggestionsService();
 
-  List<DocumentSnapshot<Map<String, dynamic>>>? _users;
-  List<ProximityProfile>? _proximityProfiles;
   late AppLocalizations _i18n;
-
-  // Tab controller pour basculer entre découverte normale et suggestions intelligentes
   late TabController _tabController;
-
-  // Timer pour rafraîchir l'interface et supprimer les profils expirés
+  late PageController _sparksPageController;
   Timer? _refreshTimer;
 
-  // Filtres pour les suggestions
-  final double _maxDistance = 50.0;
-  final double _minCompatibility = 0.3;
-  bool _isLoadingSuggestions = false;
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    _refreshTimer?.cancel();
-    super.dispose();
-  }
-
-  /// Calculer le pourcentage de compatibilité pour un utilisateur donné
-  double _calculateCompatibility(User user) {
-    final currentPrefs = UserModel().user.preferences ?? {};
-    final userPrefs = user.preferences ?? {};
-
-    debugPrint('🔍 Calculating compatibility for: ${user.userFullname}');
-    debugPrint('📊 Current user preferences: ${currentPrefs.length} items');
-    debugPrint('👤 Other user preferences: ${userPrefs.length} items');
-
-    if (currentPrefs.isEmpty || userPrefs.isEmpty) {
-      debugPrint('❌ No preferences found, returning 0% compatibility');
-      return 0.0;
-    }
-
-    int matchingAnswers = 0;
-    for (final entry in currentPrefs.entries) {
-      if (userPrefs.containsKey(entry.key) &&
-          userPrefs[entry.key] == entry.value) {
-        matchingAnswers++;
-      }
-    }
-
-    final double result = (matchingAnswers / currentPrefs.length * 100)
-        .clamp(0, 100)
-        .toDouble();
-
-    debugPrint(
-      '✅ Compatibility result: ${result.round()}% ($matchingAnswers/${currentPrefs.length} matches)',
-    );
-
-    return result;
-  }
-
-  /// Get all Users
-  Future<void> _loadUsers(
-    List<DocumentSnapshot<Map<String, dynamic>>> dislikedUsers,
-  ) async {
-    _usersApi.getUsers(dislikedUsers: dislikedUsers).then((users) {
-      // Check result
-      if (users.isNotEmpty) {
-        if (mounted) {
-          setState(() => _users = users);
-        }
-      } else {
-        if (mounted) {
-          setState(() => _users = []);
-        }
-      }
-      // Debug
-      debugPrint('getUsers() -> ${users.length}');
-      debugPrint('getDislikedUsers() -> ${dislikedUsers.length}');
-    });
-  }
-
-  /// Charger les profils de proximité depuis le cache
-  Future<void> _loadProximityProfiles() async {
-    if (_isLoadingSuggestions) return;
-
-    setState(() {
-      _isLoadingSuggestions = true;
-    });
-
-    try {
-      // Obtenir les profils de proximité depuis le service
-      final proximityProfiles = _suggestionsService
-          .getActiveProximityProfiles();
-
-      debugPrint(
-        '📍 ${proximityProfiles.length} profils de proximité actifs récupérés',
-      );
-
-      if (mounted) {
-        setState(() {
-          _proximityProfiles = proximityProfiles;
-          _isLoadingSuggestions = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('❌ Erreur chargement profils proximité: $e');
-      if (mounted) {
-        setState(() {
-          _proximityProfiles = [];
-          _isLoadingSuggestions = false;
-        });
-      }
-    }
-  }
-
-  /// Rafraîchir les profils de proximité et supprimer les expirés
-  void _refreshProximityProfiles() {
-    if (!mounted) return;
-
-    // Nettoyer le cache automatiquement
-    _suggestionsService.cleanProximityCache();
-
-    // Recharger les profils actifs
-    _loadProximityProfiles();
-
-    debugPrint('🔄 Proximity profiles refreshed');
-  }
+  List<ProximityProfile> _sparkProfiles = [];
+  bool _isLoadingSparks = false;
+  double _currentSparkPage = 0;
+  bool _didCenterInitialSparkPage = false;
+  bool _didSimulateNearbyPush = false;
+  final NotificationsApi _notificationsApi = NotificationsApi();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _sparksPageController = PageController(viewportFraction: 0.72)
+      ..addListener(() {
+        if (!_sparksPageController.hasClients) return;
+        final page = _sparksPageController.page;
+        if (page == null) return;
+        if ((page - _currentSparkPage).abs() < 0.001) return;
+        setState(() {
+          _currentSparkPage = page;
+        });
+      });
+    _loadSparkProfiles(detectNearby: true);
 
-    /// First: Load All Disliked Users to be filtered
-    _dislikesApi.getDislikedUsers(withLimit: false).then((
-      List<DocumentSnapshot<Map<String, dynamic>>> dislikedUsers,
-    ) async {
-      /// Validate user max distance
-      await UserModel().checkUserMaxDistance();
-
-      /// Load all users
-      await _loadUsers(dislikedUsers);
-    });
-
-    // Charger les suggestions de proximité
-    _loadProximityProfiles();
-
-    // Timer pour rafraîchir l'interface toutes les 30 secondes et supprimer les profils expirés
-    _refreshTimer = Timer.periodic(Duration(seconds: 30), (timer) {
-      _refreshProximityProfiles();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      _loadSparkProfiles(detectNearby: true);
     });
   }
 
   @override
+  void dispose() {
+    _sparksPageController.dispose();
+    _tabController.dispose();
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadSparkProfiles({required bool detectNearby}) async {
+    if (_isLoadingSparks) return;
+
+    setState(() {
+      _isLoadingSparks = true;
+    });
+
+    try {
+      _suggestionsService.cleanProximityCache();
+
+      if (detectNearby) {
+        await _suggestionsService.detectNewProximityProfiles(
+          maxDistanceKm: _sparkMaxDistanceKm,
+          minCompatibility: _sparkMinCompatibility,
+        );
+      }
+
+      final profiles = _suggestionsService
+          .getActiveProximityProfiles()
+          .where(
+            (profile) =>
+                !profile.isExpired &&
+                profile.distance <= _sparkMaxDistanceKm &&
+                profile.compatibility >= _sparkHighCompatibility,
+          )
+          .toList();
+
+      profiles.sort((a, b) {
+        final comp = b.compatibility.compareTo(a.compatibility);
+        if (comp != 0) return comp;
+        return a.distance.compareTo(b.distance);
+      });
+
+      final resolvedProfiles =
+          (kDebugMode && _enableFakeSparksForTesting && profiles.length < 5)
+          ? _buildFakeSparkProfiles()
+          : profiles;
+
+      final usingFakeProfiles =
+          kDebugMode && _enableFakeSparksForTesting && profiles.length < 5;
+
+      if (mounted) {
+        setState(() {
+          _sparkProfiles = resolvedProfiles;
+          _isLoadingSparks = false;
+          _didCenterInitialSparkPage = false;
+        });
+
+        _centerInitialSparkCardIfNeeded();
+
+        if (usingFakeProfiles &&
+            defaultTargetPlatform == TargetPlatform.iOS &&
+            !_didSimulateNearbyPush &&
+            resolvedProfiles.isNotEmpty) {
+          _didSimulateNearbyPush = true;
+          final fake = resolvedProfiles.first;
+          await ForegroundPushService.instance.showFakeNearbyMatchNotification(
+            fullName: fake.user.userFullname,
+            compatibility: fake.compatibility,
+            distanceKm: fake.distance,
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _sparkProfiles = [];
+          _isLoadingSparks = false;
+        });
+      }
+      debugPrint('❌ Sparks load error: $e');
+    }
+  }
+
+  List<ProximityProfile> _buildFakeSparkProfiles() {
+    final now = DateTime.now();
+
+    app_data.User fakeUser({
+      required String id,
+      required String fullName,
+      required int year,
+      required String photo,
+      required String gender,
+      required String city,
+    }) {
+      return app_data.User(
+        userId: id,
+        userProfilePhoto: photo,
+        userFullname: fullName,
+        userGender: gender,
+        userBirthDay: 12,
+        userBirthMonth: 6,
+        userBirthYear: year,
+        userBio: 'Profil de test pour le carousel Sparks',
+        userPhoneNumber: '',
+        userEmail: '$id@test.cheers',
+        userGallery: const {},
+        userCountry: 'France',
+        userLocality: city,
+        userGeoPoint: const GeoPoint(48.8566, 2.3522),
+        userSettings: const {},
+        userStatus: 'active',
+        userLevel: 'user',
+        userIsVerified: true,
+        userRegDate: now,
+        userLastLogin: now,
+        userDeviceToken: '',
+        userTotalLikes: 0,
+        userTotalVisits: 0,
+        userTotalDisliked: 0,
+        education: 'Bachelor',
+        religion: '',
+        hobbies: const ['music', 'travel'],
+        languages: const ['fr', 'en'],
+        pets: const [],
+        preferences: const {},
+      );
+    }
+
+    return [
+      ProximityProfile(
+        user: fakeUser(
+          id: 'fake_spark_1',
+          fullName: 'Justin Martin',
+          year: 1994,
+          photo: 'https://i.pravatar.cc/900?img=12',
+          gender: 'Male',
+          city: 'Paris',
+        ),
+        detectedAt: now.subtract(const Duration(minutes: 1)),
+        distance: 0.12,
+        compatibility: 0.91,
+      ),
+      ProximityProfile(
+        user: fakeUser(
+          id: 'fake_spark_2',
+          fullName: 'Emma Laurent',
+          year: 1997,
+          photo: 'https://i.pravatar.cc/900?img=47',
+          gender: 'Female',
+          city: 'Lyon',
+        ),
+        detectedAt: now.subtract(const Duration(minutes: 2)),
+        distance: 0.18,
+        compatibility: 0.88,
+      ),
+      ProximityProfile(
+        user: fakeUser(
+          id: 'fake_spark_3',
+          fullName: 'Sara Diallo',
+          year: 1998,
+          photo: 'https://i.pravatar.cc/900?img=32',
+          gender: 'Female',
+          city: 'Marseille',
+        ),
+        detectedAt: now.subtract(const Duration(minutes: 3)),
+        distance: 0.25,
+        compatibility: 0.86,
+      ),
+      ProximityProfile(
+        user: fakeUser(
+          id: 'fake_spark_4',
+          fullName: 'Nora Benali',
+          year: 1996,
+          photo: 'https://i.pravatar.cc/900?img=5',
+          gender: 'Female',
+          city: 'Bordeaux',
+        ),
+        detectedAt: now.subtract(const Duration(minutes: 4)),
+        distance: 0.31,
+        compatibility: 0.84,
+      ),
+      ProximityProfile(
+        user: fakeUser(
+          id: 'fake_spark_5',
+          fullName: 'Lucas Petit',
+          year: 1993,
+          photo: 'https://i.pravatar.cc/900?img=14',
+          gender: 'Male',
+          city: 'Nantes',
+        ),
+        detectedAt: now.subtract(const Duration(minutes: 5)),
+        distance: 0.39,
+        compatibility: 0.82,
+      ),
+    ];
+  }
+
+  void _centerInitialSparkCardIfNeeded() {
+    if (_didCenterInitialSparkPage || _sparkProfiles.length < 3) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_sparksPageController.hasClients) return;
+      if (_didCenterInitialSparkPage) return;
+
+      _sparksPageController.jumpToPage(1);
+      setState(() {
+        _currentSparkPage = 1;
+        _didCenterInitialSparkPage = true;
+      });
+    });
+  }
+
+  Future<void> _triggerFakeNearbyPush() async {
+    final profile = _sparkProfiles.isNotEmpty
+        ? _sparkProfiles.first
+        : _buildFakeSparkProfiles().first;
+
+    await ForegroundPushService.instance.showFakeNearbyMatchNotification(
+      fullName: profile.user.userFullname,
+      compatibility: profile.compatibility,
+      distanceKm: profile.distance,
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Notification test envoyée.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Future<void> _triggerSelfFcmPush() async {
+    try {
+      final messaging = FirebaseMessaging.instance;
+      await messaging.requestPermission(alert: true, badge: true, sound: true);
+
+      for (int i = 0; i < 5; i++) {
+        final apns = await messaging.getAPNSToken();
+        if (apns != null && apns.isNotEmpty) {
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+
+      final token = await messaging.getToken();
+
+      if (token == null || token.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Token FCM indisponible. Active les notifications iOS et relance l\'app.',
+            ),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      await _notificationsApi.sendPushNotification(
+        nTitle: '🧪 Test push FCM',
+        nBody: 'Push réelle envoyée sur ce device iOS.',
+        nType: 'nearby_match',
+        nSenderId: UserModel().user.userId,
+        nUserDeviceToken: token,
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Push FCM envoyée. Vérifie la bannière iOS.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur test push FCM: $e'),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    /// Initialization
     _i18n = AppLocalizations.of(context);
     return Column(
       children: [
-        // Barre d'onglets style Matches
+        // Barre d'onglets
         Container(
-          margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 12),
           height: 54,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFFECE1FF),
             borderRadius: BorderRadius.circular(27),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
+                color: const Color(0xFF6E43B7).withOpacity(0.15),
+                blurRadius: 16,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -258,9 +420,9 @@ class DiscoverTabState extends State<DiscoverTab>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.psychology, size: 20),
+                    const Icon(Icons.local_fire_department, size: 20),
                     const SizedBox(width: 8),
-                    Text("Suggestions"),
+                    Text("Sparks"),
                   ],
                 ),
               ),
@@ -268,592 +430,230 @@ class DiscoverTabState extends State<DiscoverTab>
             onTap: (index) {
               HapticFeedback.lightImpact();
               if (index == 1) {
-                // Load/refresh proximity profiles when switching to Suggestions tab
-                _loadProximityProfiles();
+                _loadSparkProfiles(detectNearby: true);
               }
             },
           ),
         ),
+
+        if (kDebugMode && defaultTargetPlatform == TargetPlatform.iOS)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                TextButton.icon(
+                  onPressed: _triggerFakeNearbyPush,
+                  icon: const Icon(
+                    Icons.notifications_active_outlined,
+                    size: 18,
+                  ),
+                  label: const Text('Tester notification proximité'),
+                ),
+                TextButton.icon(
+                  onPressed: _triggerSelfFcmPush,
+                  icon: const Icon(Icons.send_outlined, size: 18),
+                  label: const Text('Tester push FCM (réelle)'),
+                ),
+              ],
+            ),
+          ),
 
         // Contenu selon l'onglet sélectionné
         Expanded(
           child: TabBarView(
             controller: _tabController,
-            children: [_buildDiscoverView(), _buildSuggestionsView()],
+            children: [_buildDiscoverView(), _buildSparksView()],
           ),
         ),
       ],
     );
   }
 
-  /// Vue de découverte normale (Onglet 1)
+  /// Discover tab - New Discovery flow with animations
   Widget _buildDiscoverView() {
-    /// Check result
-    if (_users == null) {
-      return Processing(text: _i18n.translate("loading"));
-    } else if (_users!.isEmpty) {
-      /// No user found
-      return NoData(
-        svgName: 'search_icon',
-        text: _i18n.translate(
-          "no_user_found_around_you_please_try_again_later",
-        ),
-      );
-    } else {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          /// User card list
-          SwipeStack(
-            key: _swipeKey,
-            children: _users!.map((userDoc) {
-              // Get User object
-              final User user = User.fromDocument(userDoc.data()!);
-              // Calculate compatibility
-              final double compatibility = _calculateCompatibility(user);
-              // Return user profile
-              return SwiperItem(
-                builder: (SwiperPosition position, double progress) {
-                  /// Return User Card with compatibility
-                  return ProfileCard(
-                    page: 'discover',
-                    position: position,
-                    user: user,
-                    compatibility: compatibility,
-                  );
-                },
-              );
-            }).toList(),
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-            translationInterval: 6,
-            scaleInterval: 0.03,
-            stackFrom: StackFrom.None,
-            onEnd: () => debugPrint("onEnd"),
-            onSwipe: (int index, SwiperPosition position) {
-              /// Control swipe position
-              switch (position) {
-                case SwiperPosition.None:
-                  break;
-                case SwiperPosition.Left:
-
-                  /// Swipe Left Dislike profile
-                  _dislikesApi.dislikeUser(
-                    dislikedUserId: _users![index][USER_ID],
-                    onDislikeResult: (r) => debugPrint('onDislikeResult: $r'),
-                  );
-
-                  break;
-
-                case SwiperPosition.Right:
-
-                  /// Swipe right and Like profile
-                  _likeUser(context, clickedUserDoc: _users![index]);
-
-                  break;
-              }
-            },
-          ),
-
-          /// Swipe buttons
-          Positioned(
-            bottom: 15,
-            left: 0,
-            right: 0,
-            child: swipeButtons(context),
-          ),
-        ],
-      );
-    }
+    return const DiscoveryFlowWidget();
   }
 
-  /// Vue des suggestions par proximité avec expiration automatique (Onglet 2)
-  Widget _buildSuggestionsView() {
-    if (_isLoadingSuggestions) {
-      return Processing(text: "Searching for compatible profiles...");
+  /// Sparks tab - TODO: implement new functionality
+  Widget _buildSparksView() {
+    if (_isLoadingSparks && _sparkProfiles.isEmpty) {
+      return const Processing(text: 'Searching nearby profiles...');
     }
 
-    if (_proximityProfiles == null || _proximityProfiles!.isEmpty) {
-      return NoData(
+    if (_sparkProfiles.isEmpty) {
+      return const NoData(
         svgName: 'search_icon',
         text:
-            'No temporary suggestions available.\nMove around to discover new profiles.',
+            'No high-compatibility profile nearby for now. Move around and try again.',
       );
-    }
-
-    // Grouper par distance en utilisant ProximityProfile
-    Map<String, List<ProximityProfile>> groupedByDistance = {
-      '5m': [],
-      '10m': [],
-      '25m': [],
-      '50m': [],
-      '100m+': [],
-    };
-
-    for (final profile in _proximityProfiles!) {
-      final distanceM = profile.distance * 1000; // Convertir en mètres
-
-      if (distanceM <= 5) {
-        groupedByDistance['5m']!.add(profile);
-      } else if (distanceM <= 10) {
-        groupedByDistance['10m']!.add(profile);
-      } else if (distanceM <= 25) {
-        groupedByDistance['25m']!.add(profile);
-      } else if (distanceM <= 50) {
-        groupedByDistance['50m']!.add(profile);
-      } else {
-        groupedByDistance['100m+']!.add(profile);
-      }
     }
 
     return RefreshIndicator(
-      onRefresh: _loadProximityProfiles,
-      child: ListView(
-        padding: EdgeInsets.all(16),
-        children: [
-          // En-tête avec statistiques et timer
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-                  Theme.of(context).primaryColor.withOpacity(0.05),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      onRefresh: () => _loadSparkProfiles(detectNearby: true),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final cardHeight = constraints.maxHeight * 0.8;
+          final cardWidth = constraints.maxWidth * 0.66;
+
+          if (_sparkProfiles.length == 1) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Temporary Suggestions',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8),
-                Text(
-                  '${_proximityProfiles!.length} compatible profile${_proximityProfiles!.length > 1 ? 's' : ''} detected nearby',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '⏰ Profiles disappear automatically after 10 minutes',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.orange[700],
-                    fontStyle: FontStyle.italic,
+                const SizedBox(height: 16),
+                Center(
+                  child: SizedBox(
+                    width: cardWidth,
+                    height: cardHeight,
+                    child: _buildSparkProfileCard(_sparkProfiles.first),
                   ),
                 ),
               ],
-            ),
-          ),
+            );
+          }
 
-          SizedBox(height: 16),
+          _centerInitialSparkCardIfNeeded();
 
-          // Groupes par distance avec informations de temps restant
-          ...groupedByDistance.entries.map((entry) {
-            if (entry.value.isEmpty) return SizedBox.shrink();
-
-            return _buildProximityDistanceGroup(entry.key, entry.value);
-          }),
-        ],
-      ),
-    );
-  }
-
-  /// Construire un groupe de profils de proximité par distance avec timer d'expiration
-  Widget _buildProximityDistanceGroup(
-    String distance,
-    List<ProximityProfile> profiles,
-  ) {
-    if (profiles.isEmpty) return SizedBox.shrink();
-
-    String title;
-    IconData icon;
-    Color color;
-
-    switch (distance) {
-      case '5m':
-        title = 'Very close (≤ 5m)';
-        icon = Icons.location_on;
-        color = Colors.red;
-        break;
-      case '10m':
-        title = 'Close (≤ 10m)';
-        icon = Icons.near_me;
-        color = Colors.orange;
-        break;
-      case '25m':
-        title = 'Nearby (≤ 25m)';
-        icon = Icons.my_location;
-        color = Colors.blue;
-        break;
-      case '50m':
-        title = 'In the area (≤ 50m)';
-        icon = Icons.location_city;
-        color = Colors.green;
-        break;
-      default:
-        title = 'In the region (100m+)';
-        icon = Icons.location_city;
-        color = Colors.green;
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Row(
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              Icon(icon, color: color, size: 20),
-              SizedBox(width: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
-              ),
-              SizedBox(width: 8),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '${profiles.length}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: color,
+              const SizedBox(height: 16),
+              SizedBox(
+                height: cardHeight,
+                child: ClipRect(
+                  child: PageView.builder(
+                    controller: _sparksPageController,
+                    itemCount: _sparkProfiles.length,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final delta = index - _currentSparkPage;
+                      final distance = delta.abs().clamp(0.0, 1.0);
+
+                      final scale = 1 - (distance * 0.1);
+                      final verticalOffset = distance * 10;
+                      final rotation = delta.clamp(-1.0, 1.0) * 0.06;
+
+                      return Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()
+                          ..translate(0.0, verticalOffset)
+                          ..scale(scale)
+                          ..rotateZ(rotation),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: _buildSparkProfileCard(_sparkProfiles[index]),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
             ],
-          ),
-        ),
+          );
+        },
+      ),
+    );
+  }
 
-        // Liste des profils avec informations d'expiration
-        ...profiles.map((profile) {
-          final exactDistanceM = (profile.distance * 1000).round();
-          final timeRemaining = profile.minutesUntilExpiry;
+  Widget _buildSparkProfileCard(ProximityProfile profile) {
+    final user = profile.user;
+    final fullName = user.userFullname.trim();
+    final firstName = fullName.isEmpty ? 'Private' : fullName.split(' ').first;
+    final age = (DateTime.now().year - user.userBirthYear).clamp(18, 99);
+    final compatibilityPercent = (profile.compatibility * 100).round();
 
-          return Container(
-            margin: EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: timeRemaining <= 2
-                  ? Border.all(color: Colors.red, width: 2)
-                  : timeRemaining <= 5
-                  ? Border.all(color: Colors.orange, width: 1)
-                  : null,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ProfileScreen(
+              user: user,
+              showButtons: true,
+              respectVisibilitySettings: true,
+              isPreviewMode: true,
             ),
-            child: Column(
-              children: [
-                // Barre de temps restant en haut
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: timeRemaining <= 2
-                        ? Colors.red.withOpacity(0.1)
-                        : timeRemaining <= 5
-                        ? Colors.orange.withOpacity(0.1)
-                        : Colors.blue.withOpacity(0.1),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
+          ),
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            user.userProfilePhoto.isNotEmpty
+                ? Image.network(
+                    user.userProfilePhoto,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        _buildImageFallback(),
+                  )
+                : _buildImageFallback(),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    const Color(0xFF2D1B4E).withOpacity(0.88),
+                  ],
+                  stops: const [0.45, 1.0],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$firstName, $age',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  child: Row(
+                  const SizedBox(height: 4),
+                  Row(
                     children: [
-                      Icon(
-                        Icons.timer,
+                      const Icon(
+                        Icons.local_fire_department,
                         size: 16,
-                        color: timeRemaining <= 2
-                            ? Colors.red
-                            : timeRemaining <= 5
-                            ? Colors.orange
-                            : Colors.blue,
+                        color: Color(0xFFFFD54F),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       Text(
-                        profile.timeUntilExpiryFormatted,
-                        style: TextStyle(
+                        '$compatibilityPercent% Compatibility',
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: timeRemaining <= 2
-                              ? Colors.red
-                              : timeRemaining <= 5
-                              ? Colors.orange
-                              : Colors.blue,
-                        ),
-                      ),
-                      Spacer(),
-                      Icon(Icons.location_on, size: 14, color: color),
-                      SizedBox(width: 4),
-                      Text(
-                        '${exactDistanceM}m',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: color,
                         ),
                       ),
                     ],
                   ),
-                ),
-
-                // Carte de profil principale
-                AdvancedProfileCard(
-                  user: profile.user,
-                  compatibility: profile.compatibility,
-                  distance: profile.distance,
-                  isListView: true,
-                  onLike: () => _handleLike(profile.user),
-                  onSuperLike: () => _handleSuperLike(profile.user),
-                  onViewProfile: () => _handleViewProfile(profile.user),
-                ),
-              ],
-            ),
-          );
-        }),
-
-        SizedBox(height: 16),
-      ],
-    );
-  }
-
-  /// Gérer le like
-  void _handleLike(User user) {
-    HapticFeedback.heavyImpact();
-    debugPrint('❤️ Like pour ${user.userFullname}');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('❤️ ${user.userFullname} ajouté(e) à vos likes'),
-        backgroundColor: Colors.pink,
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
-  /// Gérer le super like
-  void _handleSuperLike(User user) {
-    HapticFeedback.heavyImpact();
-    debugPrint('⭐ Super Like pour ${user.userFullname}');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('⭐ Super Like envoyé à ${user.userFullname}'),
-        backgroundColor: Colors.blue,
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
-  /// Gérer la vue du profil
-  void _handleViewProfile(User user) {
-    HapticFeedback.lightImpact();
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ProfileScreen(user: user, showButtons: false),
-      ),
-    );
-  }
-
-  /// Build swipe buttons
-  Widget swipeButtons(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          /// Rewind profiles - Go to Disliked Profiles
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: cicleButton(
-              bgColor: Colors.transparent,
-              padding: 10,
-              icon: const Icon(Icons.restore, size: 20, color: Colors.grey),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const DislikedProfilesScreen(),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          /// Swipe left and reject user
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: cicleButton(
-              bgColor: Colors.transparent,
-              padding: 12,
-              icon: const Icon(Icons.close, size: 24, color: Colors.red),
-              onTap: () {
-                final cardIndex = _swipeKey.currentState!.currentIndex;
-                if (cardIndex != -1) {
-                  _swipeKey.currentState!.swipeLeft();
-                }
-              },
-            ),
-          ),
-
-          /// Swipe right and like user
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: cicleButton(
-              bgColor: Colors.transparent,
-              padding: 12,
-              icon: Icon(
-                Icons.favorite,
-                size: 24,
-                color: Theme.of(context).primaryColor,
+                ],
               ),
-              onTap: () async {
-                final cardIndex = _swipeKey.currentState!.currentIndex;
-                if (cardIndex != -1) {
-                  _swipeKey.currentState!.swipeRight();
-                }
-              },
             ),
-          ),
-
-          /// Go to user profile
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: cicleButton(
-              bgColor: Colors.transparent,
-              padding: 10,
-              icon: const Icon(
-                Icons.remove_red_eye,
-                size: 20,
-                color: Colors.grey,
-              ),
-              onTap: () {
-                final cardIndex = _swipeKey.currentState!.currentIndex;
-                if (cardIndex != -1) {
-                  final User user = User.fromDocument(
-                    _users![cardIndex].data()!,
-                  );
-
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ProfileScreen(user: user, showButtons: false),
-                    ),
-                  );
-
-                  _visitsApi.visitUserProfile(
-                    visitedUserId: user.userId,
-                    userDeviceToken: user.userDeviceToken,
-                    nMessage:
-                        "${UserModel().user.userFullname.split(' ')[0]}, "
-                        "${_i18n.translate("visited_your_profile_click_and_see")}",
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  /// Like user function
-  Future<void> _likeUser(
-    BuildContext context, {
-    required DocumentSnapshot<Map<String, dynamic>> clickedUserDoc,
-  }) async {
-    /// Check match first
-    await _matchesApi.checkMatch(
-      userId: clickedUserDoc[USER_ID],
-      onMatchResult: (result) {
-        if (result) {
-          /// It`s match - show dialog to ask user to chat or continue playing
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return ItsMatchDialog(
-                swipeKey: _swipeKey,
-                matchedUser: User.fromDocument(clickedUserDoc.data()!),
-              );
-            },
-          );
-        }
-      },
-    );
-
-    /// like profile
-    await _likesApi.likeUser(
-      likedUserId: clickedUserDoc[USER_ID],
-      userDeviceToken: clickedUserDoc[USER_DEVICE_TOKEN],
-      nMessage:
-          "${UserModel().user.userFullname.split(' ')[0]}, "
-          "${_i18n.translate("liked_your_profile_click_and_see")}",
-      onLikeResult: (result) {
-        debugPrint('likeResult: $result');
-      },
+  Widget _buildImageFallback() {
+    return Container(
+      color: const Color(0xFFE6E1ED),
+      child: const Center(
+        child: Icon(Icons.person, size: 44, color: Color(0xFF9E9E9E)),
+      ),
     );
   }
 }

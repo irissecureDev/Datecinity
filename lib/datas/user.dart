@@ -40,6 +40,16 @@ class User {
   final Map<String, dynamic>? preferences;
   bool? hideProfile;
   String? demographics;
+  String? familyPlanning;
+  bool? financialReadiness;
+  int? desiredChildrenCount;
+  int? heightCm;
+  int? weightKg;
+  bool? hasChildren;
+  int? childrenCount;
+  bool? wantsChildren;
+  String? smokingHabit;
+  String? alcoholHabit;
 
   // Constructor
   User({
@@ -74,6 +84,16 @@ class User {
     required this.pets,
     this.demographics,
     this.hideProfile,
+    this.familyPlanning,
+    this.financialReadiness,
+    this.desiredChildrenCount,
+    this.heightCm,
+    this.weightKg,
+    this.hasChildren,
+    this.childrenCount,
+    this.wantsChildren,
+    this.smokingHabit,
+    this.alcoholHabit,
     this.preferences,
   });
 
@@ -115,6 +135,16 @@ class User {
       preferences: doc[USER_PREFERENCES],
       hideProfile: doc[USER_SHOW_PROFILE_BIO],
       demographics: doc[USER_RACE_DEMOGRAPHICS],
+      familyPlanning: doc[USER_FAMILY_PLANNING],
+      financialReadiness: doc[USER_FINANCIAL_READINESS],
+      desiredChildrenCount: doc[USER_DESIRED_CHILDREN_COUNT],
+      heightCm: doc[USER_HEIGHT_CM],
+      weightKg: doc[USER_WEIGHT_KG],
+      hasChildren: doc[USER_HAS_CHILDREN],
+      childrenCount: doc[USER_CHILDREN_COUNT],
+      wantsChildren: doc[USER_WANTS_CHILDREN],
+      smokingHabit: doc[USER_SMOKING_HABIT],
+      alcoholHabit: doc[USER_ALCOHOL_HABIT],
     );
   }
 

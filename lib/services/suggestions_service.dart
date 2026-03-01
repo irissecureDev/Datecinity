@@ -390,7 +390,6 @@ class SuggestionsService {
   void cleanProximityCache() {
     final statsBefore = _proximityCache.getStats();
     _proximityCache.getActiveProfiles(); // Déclenche le nettoyage automatique
-    final statsAfter = _proximityCache.getStats();
 
     if (statsBefore['expired_profiles'] > 0) {
       debugPrint(

@@ -78,30 +78,29 @@ class SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     _i18n = AppLocalizations.of(context);
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          color: const Color(0xFFE6DBD0),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: const Color(0xFF120024),
+        child: SafeArea(
           child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const AppLogo(),
-                  const SizedBox(height: 10),
-                  const Text(
-                    APP_NAME,
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const AppLogo(width: 150, height: 150),
+                const SizedBox(height: 20),
+                const Text(
+                  APP_NAME,
+                  style: TextStyle(
+                    fontSize: 42,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 2,
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    _i18n.translate("app_short_description"),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 20),
-                  const MyCircularProgress(),
-                ],
-              ),
+                ),
+                const SizedBox(height: 40),
+                const MyCircularProgress(),
+              ],
             ),
           ),
         ),

@@ -1,90 +1,121 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/screens/complete_profile_screen.dart';
-import 'package:cheers/widgets/app_logo.dart';
-import 'package:cheers/widgets/default_button.dart';
 import 'package:cheers/models/user_model.dart';
+import 'package:cheers/constants/constants.dart';
+import 'package:cheers/widgets/spark_theme.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
+  Future<void> _goToCompatibilityQuiz(BuildContext context) async {
+    // Mark user as having seen welcome screen
+    await UserModel().updateUserData(
+      userId: UserModel().user.userId,
+      data: {USER_HAS_SEEN_WELCOME: true},
+    );
+
+    // Navigate to Complete Profile Screen (Compatibility Quiz)
+    if (context.mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const CompleteProfileScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final i18n = AppLocalizations.of(context);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFEBE1D8),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(),
+      body: SparkBackground(
+        showGlow: true,
+        glowIntensity: 0.4,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 32.0,
+              vertical: 24.0,
+            ),
+            child: Column(
+              children: [
+                const Spacer(flex: 1),
 
-              // App Logo
-              const AppLogo(width: 120, height: 120),
+                // App Logo
+                const SparkLogo(size: 130),
+                const SizedBox(height: 16),
 
-              const SizedBox(height: 40),
-
-              // Welcome Title
-              Text(
-                i18n.translate("welcome_to_cheers_dating_app"),
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: APP_PRIMARY_COLOR,
+                // Datecinity Title
+                const Text(
+                  APP_NAME,
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: SparkTheme.textPrimary,
+                    letterSpacing: 1.2,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
 
-              const SizedBox(height: 24),
+                const Spacer(flex: 1),
 
-              // Description Text
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text(
-                  i18n.translate("welcome_description"),
-                  style: const TextStyle(
+                // First paragraph
+                const Text(
+                  "Before you begin your compatibility test, take a moment to slow down.",
+                  style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black54,
+                    color: SparkTheme.textPrimary,
                     height: 1.5,
                   ),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                 ),
-              ),
 
-              const Spacer(),
+                const SizedBox(height: 20),
 
-              // Complete Compatibility Quiz Button
-              DefaultButton(
-                child: Text(
-                  "Complete Compatibility Quiz",
+                // Second paragraph
+                Text(
+                  "$APP_NAME isn't another swiping app – it's built to help you find real, lasting connection, not just instant attraction.",
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: SparkTheme.textPrimary,
+                    height: 1.5,
                   ),
+                  textAlign: TextAlign.left,
                 ),
-                onPressed: () async {
-                  // Mark user as having seen welcome screen
-                  await UserModel().updateUserData(
-                    userId: UserModel().user.userId,
-                    data: {USER_HAS_SEEN_WELCOME: true},
-                  );
 
-                  // Navigate to Complete Profile Screen (Compatibility Quiz)
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const CompleteProfileScreen(),
-                    ),
-                  );
-                },
-              ),
+                const SizedBox(height: 20),
 
-              const SizedBox(height: 20),
-            ],
+                // Third paragraph
+                const Text(
+                  "Most dating apps focus on looks and quick matches – and we get it, that can be exciting. But it often leads to ghosting and endless scrolling without real results, leading to burnout.",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: SparkTheme.textPrimary,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Fourth paragraph
+                const Text(
+                  "And if it doesn't work out, that's okay. Rejection isn't failure; it's protection – guiding you closer to someone who truly fits.",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: SparkTheme.textPrimary,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+
+                const Spacer(flex: 2),
+
+                // Begin Test Button
+                SparkGradientButton(
+                  text: "Begin Test",
+                  onPressed: () => _goToCompatibilityQuiz(context),
+                ),
+
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       ),

@@ -21,6 +21,7 @@ class ConversationsTabState extends State<ConversationsTab> {
   final ConversationsApi _conversationsApi = ConversationsApi();
   late AppLocalizations _i18n;
   late ProgressDialog _pr;
+  final Map<String, int> _userAgeCache = {};
 
   /// Get correct display name from conversation document
   String _getDisplayName(Map<String, dynamic> conversation) {
@@ -50,30 +51,60 @@ class ConversationsTabState extends State<ConversationsTab> {
       final now = DateTime.now();
       final difference = now.difference(dateTime);
 
-      if (difference.inDays == 0) {
-        // Today - show time
-        return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
-      } else if (difference.inDays == 1) {
-        // Yesterday
-        return "Yesterday";
-      } else if (difference.inDays < 7) {
-        // This week - show day
-        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        return days[dateTime.weekday - 1];
-      } else {
-        // More than a week - use timeago
-        return timeago.format(dateTime, locale: 'en');
-      }
+      if (difference.inMinutes < 1) return "Now";
+      if (difference.inMinutes < 60) return "${difference.inMinutes}m";
+      if (difference.inHours < 24) return "${difference.inHours}h";
+      if (difference.inDays < 7) return "${difference.inDays}d";
+      return timeago.format(dateTime, locale: 'en');
     } catch (e) {
       debugPrint("Error formatting timestamp: $e");
       return "";
     }
   }
 
+  /// Get user age from cache or Firestore
+  Future<int?> _getUserAge(String userId) async {
+    if (userId.isEmpty) return null;
+
+    if (_userAgeCache.containsKey(userId)) {
+      return _userAgeCache[userId];
+    }
+
+    try {
+      final userDoc = await UserModel().getUser(userId);
+      if (!userDoc.exists) return null;
+
+      final data = userDoc.data()!;
+      final birthYear = data[USER_BIRTH_YEAR] ?? 0;
+      final birthMonth = data[USER_BIRTH_MONTH] ?? 0;
+      final birthDay = data[USER_BIRTH_DAY] ?? 0;
+
+      if (birthYear == 0 || birthMonth == 0 || birthDay == 0) {
+        return null;
+      }
+
+      final birthDate = DateTime(birthYear, birthMonth, birthDay);
+      final age = UserModel().calculateUserAge(birthDate);
+
+      _userAgeCache[userId] = age;
+      return age;
+    } catch (e) {
+      debugPrint('Error getting user age: $e');
+      return null;
+    }
+  }
+
+  bool _isFakeConversation(Map<String, dynamic> data) {
+    final userId = (data[USER_ID] ?? '').toString().toLowerCase();
+    final fullName = (data[USER_FULLNAME] ?? '').toString().toLowerCase();
+    return userId.startsWith('fake_') || fullName.endsWith(' demo');
+  }
+
   /// Build a modern conversation item
   Widget _buildConversationItem(
-    DocumentSnapshot<Map<String, dynamic>> conversation,
-  ) {
+    DocumentSnapshot<Map<String, dynamic>> conversation, {
+    required bool showDivider,
+  }) {
     final data = conversation.data()!;
     final isUnread = !(data[MESSAGE_READ] ?? true);
     final displayName = _getDisplayName(data);
@@ -81,230 +112,136 @@ class ConversationsTabState extends State<ConversationsTab> {
     final messageType = data[MESSAGE_TYPE] ?? "text";
     final timestamp = _formatTimestamp(data[TIMESTAMP]);
     final userPhoto = data[USER_PROFILE_PHOTO] ?? "";
+    final userId = data[USER_ID] ?? "";
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isUnread
-              ? Theme.of(context).primaryColor.withOpacity(0.3)
-              : Colors.grey[200]!,
-          width: isUnread ? 2 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isUnread
-                ? Theme.of(context).primaryColor.withOpacity(0.1)
-                : Colors.black.withOpacity(0.05),
-            offset: const Offset(0, 2),
-            blurRadius: isUnread ? 8 : 4,
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _openChat(conversation),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // Profile photo with status indicator
-                Stack(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isUnread
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey[300]!,
-                          width: isUnread ? 3 : 2,
-                        ),
-                      ),
-                      child: ClipOval(
-                        child: userPhoto.isNotEmpty
-                            ? Image.network(
-                                userPhoto,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[200],
-                                    child: Icon(
-                                      Icons.person,
-                                      size: 30,
-                                      color: Colors.grey[500],
+    final previewText = messageType == 'image'
+        ? _i18n.translate("photo")
+        : (lastMessage.isEmpty ? "..." : lastMessage);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _openChat(conversation),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: SizedBox(
+                      width: 64,
+                      height: 64,
+                      child: userPhoto.isNotEmpty
+                          ? Image.network(
+                              userPhoto,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: const Color(0xFFE6E6EE),
+                                  child: const Icon(
+                                    Icons.person,
+                                    size: 30,
+                                    color: Color(0xFF9B9BAA),
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              color: const Color(0xFFE6E6EE),
+                              child: const Icon(
+                                Icons.person,
+                                size: 30,
+                                color: Color(0xFF9B9BAA),
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FutureBuilder<int?>(
+                                future: _getUserAge(userId),
+                                builder: (context, snapshot) {
+                                  final age = snapshot.data;
+                                  final title = age != null
+                                      ? "$displayName, $age"
+                                      : displayName;
+
+                                  return Text(
+                                    title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      height: 1.1,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF232332),
                                     ),
                                   );
                                 },
-                              )
-                            : Container(
-                                color: Colors.grey[200],
-                                child: Icon(
-                                  Icons.person,
-                                  size: 30,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                      ),
-                    ),
-                    if (isUnread)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-
-                const SizedBox(width: 16),
-
-                // Conversation content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Top line: Name and timestamp
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            displayName,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: isUnread
-                                  ? FontWeight.w700
-                                  : FontWeight.w600,
-                              color: const Color(0xFF2D3748),
-                            ),
-                          ),
-                          if (timestamp.isNotEmpty)
-                            Text(
-                              timestamp,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: isUnread
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.grey[500],
                               ),
                             ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      // Message preview
-                      Row(
-                        children: [
-                          // Icon for images
-                          if (messageType == 'image') ...[
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(6),
+                            if (timestamp.isNotEmpty)
+                              Row(
+                                children: [
+                                  Text(
+                                    timestamp,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF8A8A98),
+                                    ),
+                                  ),
+                                  if (isUnread) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      width: 9,
+                                      height: 9,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(
+                                          context,
+                                        ).primaryColor.withOpacity(0.35),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
-                              child: Icon(
-                                Icons.photo_camera,
-                                size: 14,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              _i18n.translate("photo"),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: isUnread
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                                color: isUnread
-                                    ? const Color(0xFF2D3748)
-                                    : Colors.grey[600],
-                              ),
-                            ),
-                          ] else ...[
-                            Expanded(
-                              child: Text(
-                                lastMessage.isEmpty ? "..." : lastMessage,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: isUnread
-                                      ? FontWeight.w600
-                                      : FontWeight.w400,
-                                  color: isUnread
-                                      ? const Color(0xFF2D3748)
-                                      : Colors.grey[600],
-                                ),
-                              ),
-                            ),
                           ],
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                // New message badge and arrow
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (isUnread) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
                         ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Theme.of(context).primaryColor,
-                              Theme.of(context).primaryColor.withOpacity(0.8),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _i18n.translate("new"),
+                        const SizedBox(height: 7),
+                        Text(
+                          previewText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 17,
+                            height: 1.1,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF7A7A89),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 14,
-                      color: isUnread
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey[400],
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
+            if (showDivider)
+              const Divider(
+                height: 1,
+                thickness: 1,
+                color: Color(0xFFECECF2),
+                indent: 98,
+                endIndent: 20,
+              ),
+          ],
         ),
       ),
     );
@@ -371,152 +308,191 @@ class ConversationsTabState extends State<ConversationsTab> {
     _pr = ProgressDialog(context);
 
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFF7FAFC), Color(0xFFEDF2F7)],
-        ),
-      ),
+      color: const Color(0xFFF2EEFF),
       child: Column(
         children: [
-          // Modern header
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-            decoration: BoxDecoration(
+          SafeArea(
+            bottom: false,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
               color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  offset: const Offset(0, 2),
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Theme.of(context).primaryColor.withOpacity(0.8),
-                      ],
+              child: Row(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    child: const Center(
+                      child: SvgIcon(
+                        "assets/icons/message_icon.svg",
+                        width: 25,
+                        height: 25,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  child: const SvgIcon(
-                    "assets/icons/message_icon.svg",
-                    width: 24,
-                    height: 24,
-                    color: Colors.white,
+                  const SizedBox(width: 16),
+                  Text(
+                    _i18n.translate("chats"),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF232332),
+                      letterSpacing: -0.4,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  _i18n.translate("chats"),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF2D3748),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFECECF2)),
 
           // Conversations list
           Expanded(
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: _conversationsApi.getConversations(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Container(
-                    padding: const EdgeInsets.all(40),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              color: const Color(0xFFF2EEFF),
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: _conversationsApi.getConversations(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container(
+                      padding: const EdgeInsets.all(40),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Icon(
+                              Icons.chat_bubble_outline,
+                              size: 60,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.chat_bubble_outline,
-                            size: 60,
-                            color: Theme.of(context).primaryColor,
+                          const SizedBox(height: 20),
+                          Text(
+                            _i18n.translate("loading"),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2D3748),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          _i18n.translate("loading"),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2D3748),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                        ],
+                      ),
+                    );
+                  }
 
-                if (snapshot.data!.docs.isEmpty) {
-                  return Container(
-                    padding: const EdgeInsets.all(40),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(40),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Icon(
+                              Icons.chat_bubble_outline,
+                              size: 60,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.chat_bubble_outline,
-                            size: 60,
-                            color: Theme.of(context).primaryColor,
+                          const SizedBox(height: 20),
+                          Text(
+                            _i18n.translate("no_conversation"),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2D3748),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          _i18n.translate("no_conversation"),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2D3748),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Start matching to begin conversations!",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Start matching to begin conversations!",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                        ],
+                      ),
+                    );
+                  }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    final conversation = snapshot.data!.docs[index];
-                    return _buildConversationItem(conversation);
-                  },
-                );
-              },
+                  final docs = snapshot.data!.docs
+                      .where((doc) => !_isFakeConversation(doc.data()))
+                      .toList();
+
+                  if (docs.isEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(40),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Icon(
+                              Icons.chat_bubble_outline,
+                              size: 60,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            _i18n.translate("no_conversation"),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2D3748),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Start matching to begin conversations!",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(top: 6),
+                    itemCount: docs.length,
+                    itemBuilder: (context, index) {
+                      return _buildConversationItem(
+                        docs[index],
+                        showDivider: index != docs.length - 1,
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ],

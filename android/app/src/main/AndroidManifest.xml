@@ -34,7 +34,7 @@
   </queries>
 
   <application
-    android:label="Cheers"
+    android:label="DateCinity"
     android:name="${applicationName}"
     android:icon="@mipmap/launcher_icon">
     <service android:name="com.lyokone.location.FlutterLocationService" android:foregroundServiceType="location" />

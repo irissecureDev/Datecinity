@@ -5,6 +5,7 @@ import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/models/user_model.dart';
 import 'package:cheers/models/app_model.dart';
 import 'package:cheers/screens/splash_screen.dart';
+import 'package:cheers/services/foreground_push_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cheers/constants/constants.dart';
@@ -40,6 +41,8 @@ void main() async {
           sound: true,
         );
   }
+
+  await ForegroundPushService.instance.initialize();
 
   runApp(const MyApp());
 }
@@ -108,12 +111,12 @@ class MyApp extends StatelessWidget {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(28)),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF120024),
         surfaceTintColor: Colors.transparent,
         elevation: Platform.isIOS ? 0 : 4.0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
-        titleTextStyle: const TextStyle(color: Colors.grey, fontSize: 18),
+        iconTheme: const IconThemeData(color: Colors.white),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -137,7 +140,9 @@ class MyApp extends StatelessWidget {
         surfaceTintColor: Colors.white,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF120024),
+        selectedItemColor: Color(0xFF9B59B6),
+        unselectedItemColor: Colors.white70,
       ),
     );
   }

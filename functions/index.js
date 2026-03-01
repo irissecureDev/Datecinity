@@ -59,3 +59,27 @@ exports.sendPushNotification = functions.https.onCall(async (data, context) => {
 		throw new functions.https.HttpsError('internal', errorMsg);
 	}
 });
+
+// Nettoyage automatique des Sparks expirés - exécuté toutes les heures
+exports.cleanupExpiredSparks = functions.pubsub
+	.schedule('every 1 hours')
+	.onRun(async (context) => {
+		const now = admin.firestore.Timestamp.now();
+
+		const expiredSparks = await admin.firestore()
+			.collection('Sparks')
+			.where('expires_at', '<', now)
+			.where('status', '==', 'pending')
+			.get();
+
+		const batch = admin.firestore().batch();
+
+		expiredSparks.docs.forEach((doc) => {
+			batch.update(doc.ref, { status: 'expired' });
+		});
+
+		await batch.commit();
+
+		console.log(`Cleaned up ${expiredSparks.docs.length} expired sparks`);
+		return null;
+	});

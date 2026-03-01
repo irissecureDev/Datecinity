@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
+    <!-- Primary purple color matching the logo -->
+    <color name="splash_background">#7F3BBF</color>
+    <color name="primary_purple">#7F3BBF</color>
+    <color name="primary_purple_dark">#6B2FA8</color>
 </resources>

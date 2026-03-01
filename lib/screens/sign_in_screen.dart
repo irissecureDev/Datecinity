@@ -42,59 +42,87 @@ class SignInScreenState extends State<SignInScreen> {
               ],
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              /// App logo
-              const AppLogo(),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: <Widget>[
+                  const Spacer(flex: 12),
 
-              const SizedBox(height: 15),
+                  /// App Logo
+                  const AppLogo(width: 100, height: 100),
 
-              Text(
-                _i18n.translate("app_short_description"),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18, color: Colors.white),
-              ),
+                  const SizedBox(height: 2),
 
-              const SizedBox(height: 100),
-
-              /// Sign in with Phone Number
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: SizedBox(
-                  width: double.maxFinite,
-                  child: DefaultButton(
-                    child: Text(
-                      _i18n.translate("sign_in_with_phone_number"),
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    onPressed: () {
-                      /// Go to phone number screen
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const PhoneNumberScreen(),
+                  /// App Name
+                  const Text(
+                    "DateCinity",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10,
+                          color: Colors.black38,
+                          offset: Offset(2, 2),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 15),
 
-              // Terms of Service section
-              Text(
-                _i18n.translate("by_tapping_log_in_you_agree_with_our"),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 7),
-              TermsOfServiceRow(),
+                  const SizedBox(height: 8),
 
-              const SizedBox(height: 15),
-            ],
+                  /// App description
+                  Text(
+                    _i18n.translate("app_short_description"),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  /// Sign in with Phone Number
+                  SizedBox(
+                    width: double.maxFinite,
+                    child: DefaultButton(
+                      child: Text(
+                        _i18n.translate("sign_in_with_phone_number"),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      onPressed: () {
+                        /// Go to phone number screen
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const PhoneNumberScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Terms of Service section
+                  Text(
+                    _i18n.translate("by_tapping_log_in_you_agree_with_our"),
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  TermsOfServiceRow(),
+
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
           ),
         ),
       ),

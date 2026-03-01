@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cheers/models/hotspot.dart';
+import 'package:cheers/models/nearby_place.dart';
 import 'package:cheers/services/hotspots_service.dart';
+import 'package:cheers/services/nearby_places_service.dart';
 import 'package:cheers/widgets/hotspots_map_widget.dart';
-import 'package:cheers/widgets/hotspots_list_widget.dart';
+import 'package:cheers/widgets/nearby_places_list_widget.dart';
 import 'package:cheers/widgets/processing.dart';
-import 'package:cheers/helpers/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-/// Onglet Matches transformé avec la logique des hotspots
+/// Matches tab with hotspots and nearby places logic
 ///
-/// Tab 1 - Carte : Affiche les zones de concentration d'utilisateurs avec marqueurs colorés
-/// Tab 2 - Liste : Liste des lieux populaires avec détails et actions
+/// Tab 1 - Map: Displays nearby places (bars, restaurants, etc.) on a map
+/// Tab 2 - List: List of nearby places within 4km radius
 class MatchesTab extends StatefulWidget {
   const MatchesTab({super.key});
 
@@ -20,21 +22,26 @@ class MatchesTab extends StatefulWidget {
 
 class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
   final HotspotsService _hotspotsService = HotspotsService();
+  final NearbyPlacesService _nearbyPlacesService = NearbyPlacesService();
 
-  // État
+  // Hotspots state (for map users)
   List<Hotspot> _hotspots = [];
   bool _isLoadingHotspots = false;
-  String? _errorMessage;
-  late AppLocalizations _i18n;
 
-  // Tab controller pour basculer entre carte et liste
+  // Nearby places state (for list and map)
+  List<NearbyPlace> _nearbyPlaces = [];
+  bool _isLoadingPlaces = false;
+
+  String? _errorMessage;
+
+  // Tab controller to switch between map and list
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _loadHotspots();
+    _loadData();
   }
 
   @override
@@ -43,13 +50,17 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  /// Charger les hotspots
+  /// Load all data (hotspots + places)
+  Future<void> _loadData() async {
+    await Future.wait([_loadHotspots(), _loadNearbyPlaces()]);
+  }
+
+  /// Load hotspots (for map users)
   Future<void> _loadHotspots() async {
     if (_isLoadingHotspots) return;
 
     setState(() {
       _isLoadingHotspots = true;
-      _errorMessage = null;
     });
 
     try {
@@ -68,53 +79,109 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
 
       if (mounted) {
         setState(() {
-          _errorMessage = 'Error loading popular places';
           _isLoadingHotspots = false;
         });
       }
     }
   }
 
-  /// Gérer le tap sur un hotspot
+  /// Load nearby places (for list and map)
+  Future<void> _loadNearbyPlaces() async {
+    if (_isLoadingPlaces) return;
+
+    setState(() {
+      _isLoadingPlaces = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final places = await _nearbyPlacesService.getNearbyPlaces();
+
+      if (mounted) {
+        setState(() {
+          _nearbyPlaces = places;
+          _isLoadingPlaces = false;
+        });
+      }
+
+      debugPrint('📍 ${places.length} nearby places loaded');
+    } catch (e) {
+      debugPrint('❌ Error loading nearby places: $e');
+
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Error loading places';
+          _isLoadingPlaces = false;
+        });
+      }
+    }
+  }
+
+  /// Handle tap on a hotspot (map)
   void _onHotspotTap(Hotspot hotspot) {
     debugPrint('🎯 Hotspot selected: ${hotspot.placeName}');
 
-    // Basculer vers l'onglet carte si on est sur la liste
+    // Switch to map tab if we're on the list
     if (_tabController.index == 1) {
       _tabController.animateTo(0);
     }
   }
 
-  /// Gérer la demande d'itinéraire
-  void _onGetDirections(Hotspot hotspot) {
-    // TODO: Intégrer avec une app de navigation externe
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('🧭 Route to ${hotspot.placeName}'),
-        action: SnackBarAction(
-          label: 'Open Maps',
-          onPressed: () {
-            // TODO: Ouvrir Google Maps ou Apple Maps
-            debugPrint('🗺️ Ouverture navigation vers ${hotspot.placeName}');
-          },
-        ),
-      ),
+  /// Handle tap on a place (list)
+  void _onPlaceTap(NearbyPlace place) {
+    debugPrint('📍 Place selected: ${place.name}');
+
+    // Switch to map tab if we're on the list
+    if (_tabController.index == 1) {
+      _tabController.animateTo(0);
+    }
+  }
+
+  /// Handle request for directions to a place
+  void _onGetPlaceDirections(NearbyPlace place) {
+    _openDirections(
+      place.location.latitude,
+      place.location.longitude,
+      place.name,
     );
   }
 
-  /// Actualiser les hotspots
-  Future<void> _refreshHotspots() async {
-    await _hotspotsService.forceRefresh();
-    await _loadHotspots();
+  /// Open Google Maps for directions
+  Future<void> _openDirections(double lat, double lng, String placeName) async {
+    final url = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving',
+    );
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('🧭 Directions to $placeName'),
+            action: SnackBarAction(
+              label: 'Open Maps',
+              onPressed: () async {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              },
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Refresh nearby places
+  Future<void> _refreshNearbyPlaces() async {
+    await _nearbyPlacesService.forceRefresh();
+    await _loadNearbyPlaces();
   }
 
   @override
   Widget build(BuildContext context) {
-    _i18n = AppLocalizations.of(context);
-
     return Column(
       children: [
-        // Barre d'onglets style moderne
+        // Modern tab bar style
         Container(
           margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           height: 54,
@@ -185,52 +252,61 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
           ),
         ),
 
-        // Contenu selon l'onglet sélectionné
+        // Content based on selected tab
         Expanded(child: _buildContent()),
       ],
     );
   }
 
-  /// Construire le contenu selon l'état
+  /// Build content based on state
   Widget _buildContent() {
-    if (_isLoadingHotspots) {
-      return const Processing(text: "Finding popular places...");
-    }
-
-    if (_errorMessage != null) {
-      return _buildErrorState();
-    }
+    // For Map tab, use nearby places
+    // For List tab, use nearby places (Google Places)
 
     return TabBarView(
       controller: _tabController,
       physics:
-          const NeverScrollableScrollPhysics(), // Désactive le swipe entre tabs pour éviter les conflits
+          const NeverScrollableScrollPhysics(), // Disable swipe between tabs to avoid conflicts
       children: [_buildMapView(), _buildListView()],
     );
   }
 
-  /// Construire la vue carte
+  /// Build the map view (nearby places)
   Widget _buildMapView() {
+    if (_isLoadingPlaces) {
+      return const Processing(text: "Searching for nearby places...");
+    }
+
     return Container(
       child: HotspotsMapWidget(
         hotspots: _hotspots,
+        nearbyPlaces: _nearbyPlaces,
         onHotspotTap: _onHotspotTap,
-        onRefresh: _refreshHotspots,
+        onPlaceTap: _onPlaceTap,
+        onRefresh: _refreshNearbyPlaces,
       ),
     );
   }
 
-  /// Construire la vue liste
+  /// Build the list view (nearby places)
   Widget _buildListView() {
-    return HotspotsListWidget(
-      hotspots: _hotspots,
-      onHotspotTap: _onHotspotTap,
-      onGetDirections: _onGetDirections,
-      onRefresh: _refreshHotspots,
+    if (_isLoadingPlaces) {
+      return const Processing(text: "Searching for nearby places...");
+    }
+
+    if (_errorMessage != null && _nearbyPlaces.isEmpty) {
+      return _buildErrorState();
+    }
+
+    return NearbyPlacesListWidget(
+      places: _nearbyPlaces,
+      onPlaceTap: _onPlaceTap,
+      onGetDirections: _onGetPlaceDirections,
+      onRefresh: _refreshNearbyPlaces,
     );
   }
 
-  /// Construire l'état d'erreur
+  /// Build error state
   Widget _buildErrorState() {
     return Center(
       child: Padding(
@@ -256,7 +332,7 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: _refreshHotspots,
+              onPressed: _refreshNearbyPlaces,
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(

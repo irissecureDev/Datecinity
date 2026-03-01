@@ -1,5 +1,5 @@
 name: cheers
-description: Cheers Dating App
+description: DateCinity Dating App
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,6 +31,7 @@ dependencies:
   firebase_auth: 5.6.2
   cloud_firestore: 5.6.11
   firebase_messaging: 15.2.9
+  flutter_local_notifications: 17.2.4
   firebase_storage: 12.4.9 
   cloud_functions: 5.6.1
   google_mobile_ads: 6.0.0
@@ -123,12 +124,12 @@ flutter_launcher_icons:
 
 # Generate splash logo settings
 flutter_native_splash:
-  color: "#E6DBD0"
-  color_dark: "#000000"
-  image: "assets/images/app_logo.png"
+  color: "#7F3BBF"
+  color_dark: "#7F3BBF"
+  image: "assets/images/logo-no-bg.png"
   android: true
   ios: true 
   android_12:
-    color: "#E6DBD0"
-    color_dark: "#000000"
-    image: "assets/images/app_logo.png"  
+    color: "#7F3BBF"
+    color_dark: "#7F3BBF"
+    image: "assets/images/logo-no-bg.png"  

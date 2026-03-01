@@ -10,11 +10,14 @@ import 'package:cheers/api/notifications_api.dart';
 import 'package:cheers/helpers/app_helper.dart';
 import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/helpers/app_notifications.dart';
+import 'package:cheers/datas/user.dart' as app_data;
 import 'package:cheers/models/user_model.dart';
+import 'package:cheers/services/foreground_push_service.dart';
 import 'package:cheers/services/suggestions_service.dart';
 import 'package:cheers/services/suggestions_notifications_service.dart';
-import 'package:cheers/models/proximity_profile.dart';
+import 'package:cheers/services/spark_service.dart';
 import 'package:cheers/screens/notifications_screen.dart';
+import 'package:cheers/screens/spark_like_received_screen.dart';
 import 'package:cheers/tabs/conversations_tab.dart';
 import 'package:cheers/tabs/discover_tab.dart';
 import 'package:cheers/tabs/matches_tab.dart';
@@ -22,6 +25,7 @@ import 'package:cheers/tabs/profile_tab.dart';
 import 'package:cheers/widgets/notification_counter.dart';
 import 'package:cheers/widgets/svg_icon.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cheers/constants/constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -43,6 +47,7 @@ class HomeScreenState extends State<HomeScreen> {
   final _appNotifications = AppNotifications();
   final _suggestionsService = SuggestionsService();
   final _suggestionsNotificationsService = SuggestionsNotificationsService();
+  final _sparkService = SparkService();
   int _selectedIndex = 0;
   late AppLocalizations _i18n;
   late Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream;
@@ -52,6 +57,8 @@ class HomeScreenState extends State<HomeScreen> {
 
   StreamSubscription<Position>? _positionStream;
   Timer? _proximityCheckTimer;
+  static const bool _enableFakeProximitySparkForTesting = true;
+  bool _didTriggerFakeProximitySpark = false;
 
   /// Tab navigation
   Widget _showCurrentNavBar() {
@@ -175,13 +182,58 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _handleNotificationClick(Map<String, dynamic>? data) async {
-    /// Handle notification click
+    final nType = data?[N_TYPE] ?? '';
+
+    // Gérer les notifications de type Spark
+    if (nType == 'spark' || nType == 'spark_like' || nType == 'spark_match') {
+      await _handleSparkNotification(nType);
+      return;
+    }
+
+    /// Handle other notification clicks
     await _appNotifications.onNotificationClick(
       context,
-      nType: data?[N_TYPE] ?? '',
+      nType: nType,
       nSenderId: data?[N_SENDER_ID] ?? '',
       nMessage: data?[N_MESSAGE] ?? '',
     );
+  }
+
+  /// Gérer les notifications de type Spark
+  Future<void> _handleSparkNotification(String nType) async {
+    try {
+      // Récupérer les sparks actifs
+      final sparks = await _sparkService.getActiveSparks();
+
+      if (sparks.isNotEmpty) {
+        final spark = sparks.first;
+
+        if (mounted) {
+          // Si c'est une notification de like reçu, afficher l'écran approprié
+          if (nType == 'spark_like') {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SparkLikeReceivedScreen(
+                  spark: spark,
+                  currentUser: UserModel().user,
+                ),
+              ),
+            );
+          } else {
+            // Pour les autres types de notification Spark, afficher le countdown
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => SparkCountdownScreen(spark: spark),
+            //   ),
+            // );
+            // Au lieu de l'écran countdown, on va sur l'onglet Discover
+            _onTappedNavBar(1);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur gestion notification Spark: $e');
+    }
   }
 
   /// Request push notifications permission.
@@ -234,11 +286,17 @@ class HomeScreenState extends State<HomeScreen> {
     });
 
     // Listen for incoming push notifications
-    FirebaseMessaging.onMessage.listen((RemoteMessage? message) async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       // Debug
-      debugPrint('onMessage() -> data: ${message?.data}');
+      debugPrint('onMessage() -> data: ${message.data}');
+
+      // Afficher une vraie notification push en foreground pour Nearby/Spark
+      await ForegroundPushService.instance.showForegroundMatchNotification(
+        message,
+      );
+
       // Handle notification data
-      await _handleNotificationClick(message?.data);
+      await _handleNotificationClick(message.data);
     });
   }
 
@@ -349,20 +407,17 @@ class HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withOpacity(0.8),
-              ],
+              colors: [Color(0xFF120024), Color(0xFF2D1B4E)],
             ),
           ),
         ),
         title: Row(
           children: [
-            Image.asset("assets/images/app_logo.png", width: 40, height: 40),
+            Image.asset("assets/images/logo-no-bg.png", width: 40, height: 40),
             const SizedBox(width: 5),
             const Text(
               APP_NAME,
@@ -389,6 +444,9 @@ class HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         elevation: Platform.isIOS ? 0 : 8,
+        backgroundColor: Colors.white,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey[600],
         currentIndex: _selectedIndex,
         onTap: _onTappedNavBar,
         items: [
@@ -400,7 +458,7 @@ class HomeScreenState extends State<HomeScreen> {
               height: 27,
               color: _selectedIndex == 0
                   ? Theme.of(context).primaryColor
-                  : null,
+                  : Colors.grey[600],
             ),
             label: _i18n.translate("discover"),
           ),
@@ -413,7 +471,7 @@ class HomeScreenState extends State<HomeScreen> {
                   : "assets/icons/heart_icon.svg",
               color: _selectedIndex == 1
                   ? Theme.of(context).primaryColor
-                  : null,
+                  : Colors.grey[600],
             ),
             label: _i18n.translate("matches"),
           ),
@@ -432,7 +490,7 @@ class HomeScreenState extends State<HomeScreen> {
                   : "assets/icons/user_icon.svg",
               color: _selectedIndex == 3
                   ? Theme.of(context).primaryColor
-                  : null,
+                  : Colors.grey[600],
             ),
             label: _i18n.translate("profile"),
           ),
@@ -481,7 +539,9 @@ class HomeScreenState extends State<HomeScreen> {
           : "assets/icons/message_icon.svg",
       width: 30,
       height: 30,
-      color: _selectedIndex == 2 ? Theme.of(context).primaryColor : null,
+      color: _selectedIndex == 2
+          ? Theme.of(context).primaryColor
+          : Colors.grey[600],
     );
 
     /// Handle stream
@@ -504,15 +564,15 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Détecter les nouveaux profils de proximité et envoyer des notifications
+  /// Détecter les nouveaux profils de proximité et créer des Sparks
   Future<void> _detectProximityProfiles() async {
     try {
       debugPrint('🔍 Détection profils de proximité...');
 
-      // Détecter les nouveaux profils dans un rayon de 100m avec 50% de compatibilité minimum
+      // Détecter les nouveaux profils dans un rayon de 500m avec 60% de compatibilité minimum
       final newProfiles = await _suggestionsService.detectNewProximityProfiles(
-        maxDistanceKm: 0.1, // 100 mètres
-        minCompatibility: 0.5, // 50% de compatibilité
+        maxDistanceKm: 0.5, // 500 mètres (rayon Spark)
+        minCompatibility: 0.6, // 60% de compatibilité
       );
 
       if (newProfiles.isNotEmpty) {
@@ -520,82 +580,103 @@ class HomeScreenState extends State<HomeScreen> {
           '✨ ${newProfiles.length} nouveaux profils détectés à proximité',
         );
 
-        // Filtrer les profils nécessitant une notification (très compatibles)
-        final notificationProfiles = newProfiles
-            .where((profile) => profile.compatibility >= 0.7) // 70% minimum
+        // Filtrer les profils pour créer des Sparks (très compatibles)
+        final sparkProfiles = newProfiles
+            .where(
+              (profile) => profile.compatibility >= 0.6,
+            ) // 60% minimum pour Spark
             .toList();
 
-        if (notificationProfiles.isNotEmpty) {
+        if (sparkProfiles.isNotEmpty) {
           debugPrint(
-            '🔔 Envoi de notifications pour ${notificationProfiles.length} profils hautement compatibles',
+            '🔔 Création de Sparks pour ${sparkProfiles.length} profils compatibles',
           );
 
-          // Déclencher les notifications via le service
-          await _suggestionsNotificationsService.checkAndNotifyNearbyMatches(
-            UserModel().user.userId,
+          // Créer un Spark pour le profil le plus compatible
+          final bestProfile = sparkProfiles.first;
+          final spark = await _sparkService.createSpark(
+            targetUser: bestProfile.user,
+            distance: bestProfile.distance,
+            compatibility: bestProfile.compatibility,
           );
 
-          // Afficher une notification locale
-          _showLocalProximityNotification(notificationProfiles);
+          // Si le Spark a été créé avec succès, afficher l'écran de countdown
+          if (spark != null && mounted) {
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => SparkCountdownScreen(spark: spark),
+            //   ),
+            // );
+            // Au lieu de l'écran countdown, on va sur l'onglet Discover
+            _onTappedNavBar(1);
+          }
         }
+      } else if (kDebugMode &&
+          _enableFakeProximitySparkForTesting &&
+          !_didTriggerFakeProximitySpark) {
+        await _createFakeProximitySparkForTesting();
       }
     } catch (e) {
       debugPrint('❌ Erreur détection proximité: $e');
     }
   }
 
-  /// Afficher une notification locale pour les profils de proximité
-  void _showLocalProximityNotification(List<ProximityProfile> profiles) {
-    if (profiles.isEmpty) return;
+  Future<void> _createFakeProximitySparkForTesting() async {
+    try {
+      _didTriggerFakeProximitySpark = true;
 
-    String message;
-    if (profiles.length == 1) {
-      final profile = profiles.first;
-      final distanceM = (profile.distance * 1000).round();
-      message =
-          '📍 ${profile.user.userFullname} est à ${distanceM}m de vous ! (${(profile.compatibility * 100).round()}% compatible)';
-    } else {
-      message =
-          '📍 ${profiles.length} personnes hautement compatibles sont près de vous !';
-    }
+      final now = DateTime.now();
+      final currentUser = UserModel().user;
 
-    // Afficher un toast
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.TOP,
-      backgroundColor: Theme.of(context).primaryColor,
-      textColor: Colors.white,
-      fontSize: 14.0,
-    );
-
-    // Afficher aussi un SnackBar si possible
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.location_on, color: Colors.white),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(message, style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).primaryColor,
-          duration: Duration(seconds: 5),
-          action: SnackBarAction(
-            label: 'Voir',
-            textColor: Colors.white,
-            onPressed: () {
-              // Aller à l'onglet Discover
-              setState(() {
-                _selectedIndex = 1; // Index pour Discover
-              });
-            },
-          ),
-        ),
+      final fakeUser = app_data.User(
+        userId: 'fake_proximity_spark_${now.millisecondsSinceEpoch}',
+        userProfilePhoto: 'https://i.pravatar.cc/900?img=29',
+        userFullname: 'Nina Proximity',
+        userGender: 'Female',
+        userBirthDay: 14,
+        userBirthMonth: 8,
+        userBirthYear: 1997,
+        userBio: 'Profil fake pour test Spark proximité',
+        userPhoneNumber: '',
+        userEmail: 'nina.proximity@test.cheers',
+        userGallery: const {},
+        userCountry: currentUser.userCountry,
+        userLocality: currentUser.userLocality,
+        userGeoPoint: currentUser.userGeoPoint,
+        userSettings: const {},
+        userStatus: 'active',
+        userLevel: 'user',
+        userIsVerified: true,
+        userRegDate: now,
+        userLastLogin: now,
+        userDeviceToken: '',
+        userTotalLikes: 0,
+        userTotalVisits: 0,
+        userTotalDisliked: 0,
+        education: 'Bachelor',
+        religion: '',
+        hobbies: const ['music', 'travel'],
+        languages: const ['fr'],
+        pets: const [],
+        preferences: const {},
       );
+
+      final spark = await _sparkService.createSpark(
+        targetUser: fakeUser,
+        distance: 0.02,
+        compatibility: 0.9,
+      );
+
+      if (spark != null && mounted) {
+        _onTappedNavBar(1);
+        Fluttertoast.showToast(
+          msg: '🧪 Spark fake créé pour test proximité',
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
+    } catch (e) {
+      _didTriggerFakeProximitySpark = false;
+      debugPrint('❌ Erreur création Spark fake: $e');
     }
   }
 

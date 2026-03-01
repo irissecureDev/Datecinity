@@ -27,6 +27,7 @@ class SwipeStack extends StatefulWidget {
   final void Function(int, SwiperPosition)? onRewind;
   final void Function()? onEnd;
   final EdgeInsetsGeometry padding;
+  final bool swipeEnabled;
 
   const SwipeStack(
       {super.key,
@@ -42,6 +43,7 @@ class SwipeStack extends StatefulWidget {
       this.onEnd,
       this.onSwipe,
       this.onRewind,
+      this.swipeEnabled = true,
       this.padding = const EdgeInsets.symmetric(vertical: 20, horizontal: 25)})
       : assert(maxAngle >= 0 && maxAngle <= 360),
         assert(threshold >= 1 && threshold <= 100),
@@ -245,10 +247,16 @@ class SwipeStackState extends State<SwipeStack>
                   : -1);
     }
 
-    return Positioned(
-      left: _left,
-      top: _top,
-      child: GestureDetector(
+    Widget child = Transform.rotate(
+      angle: _angle,
+      child: Container(
+          constraints: constraints,
+          child: widget.children[index].builder!(
+              _currentItemPosition, _progress)),
+    );
+
+    if (widget.swipeEnabled) {
+      child = GestureDetector(
           onPanStart: (DragStartDetails dragStartDetails) {
             RenderBox getBox = context.findRenderObject() as RenderBox;
             var local = getBox.globalToLocal(dragStartDetails.globalPosition);
@@ -273,13 +281,13 @@ class SwipeStackState extends State<SwipeStack>
             setState(() {});
           },
           onPanEnd: _onPandEnd,
-          child: Transform.rotate(
-            angle: _angle,
-            child: Container(
-                constraints: constraints,
-                child: widget.children[index].builder!(
-                    _currentItemPosition, _progress)),
-          )),
+          child: child);
+    }
+
+    return Positioned(
+      left: _left,
+      top: _top,
+      child: child,
     );
   }
 

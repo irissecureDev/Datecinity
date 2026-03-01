@@ -3,7 +3,6 @@ import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/edit_profile_screen.dart';
 import 'package:cheers/screens/profile_screen.dart';
 import 'package:cheers/screens/settings_screen.dart';
-import 'package:cheers/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class ProfileBasicInfoCard extends StatelessWidget {
@@ -25,276 +24,220 @@ class ProfileBasicInfoCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor.withOpacity(0.8),
-            Theme.of(context).primaryColor.withOpacity(0.9),
-          ],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Colors.grey.withOpacity(0.15),
             spreadRadius: 0,
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Container(
-        padding: const EdgeInsets.all(24.0),
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// Profile image and details
-            Row(
-              children: [
-                /// Enhanced Profile Avatar
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 3,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 0,
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 50,
-                    child: CircleAvatar(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      radius: 47,
-                      backgroundImage: NetworkImage(
-                        UserModel().user.userProfilePhoto,
-                      ),
-                      onBackgroundImageError: (e, s) => {
-                        debugPrint(e.toString()),
-                      },
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 20),
-
-                /// Enhanced Profile details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /// Name and age with modern typography
-                      Text(
-                        "${UserModel().user.userFullname.split(' ')[0].toUpperCase()},",
-                        style: const TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      Text(
-                        "${userAge.toString()} years",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white.withOpacity(0.9),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      /// Modern Location with enhanced styling
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SvgIcon(
-                              "assets/icons/location_point_icon.svg",
-                              color: Colors.white,
-                              width: 16,
-                              height: 16,
-                            ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                "${UserModel().user.userLocality}, ${UserModel().user.userCountry}",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+      child: Column(
+        children: [
+          /// Large Centered Profile Avatar
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.grey.withOpacity(0.2),
+                width: 4,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-
-            /// Modern Action Buttons
-            Row(
-              children: [
-                /// View Profile Button - Enhanced
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          spreadRadius: 0,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: TextButton.icon(
-                      icon: Icon(
-                        Icons.remove_red_eye_outlined,
-                        color: Theme.of(context).primaryColor,
-                        size: 18,
-                      ),
-                      label: Text(
-                        i18n.translate("view"),
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      onPressed: () {
-                        /// Go to profile screen
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ProfileScreen(
-                              user: UserModel().user,
-                              showButtons: false,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 70,
+              child: CircleAvatar(
+                backgroundColor: Colors.grey[200],
+                radius: 66,
+                backgroundImage: NetworkImage(
+                  UserModel().user.userProfilePhoto,
                 ),
-
-                const SizedBox(width: 8),
-
-                /// Settings Button - Enhanced
-                Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: IconButton(
-                    icon: const SvgIcon(
-                      "assets/icons/settings_icon.svg",
-                      color: Colors.white,
-                      width: 20,
-                      height: 20,
-                    ),
-                    onPressed: () {
-                      /// Go to profile settings
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(width: 8),
-
-                /// Edit Profile Button - Enhanced
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: TextButton.icon(
-                      icon: const Icon(
-                        Icons.edit_outlined,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      label: Text(
-                        i18n.translate("edit"),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      onPressed: () {
-                        /// Go to edit profile screen
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const EditProfileScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
+                onBackgroundImageError: (e, s) {
+                  debugPrint(e.toString());
+                },
+              ),
             ),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 20),
+
+          /// Name and Age - Centered
+          Text(
+            "${UserModel().user.userFullname.split(' ')[0]}, $userAge",
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+              letterSpacing: 0.3,
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          /// Action Buttons Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              /// Settings Button
+              _buildActionButton(
+                context: context,
+                icon: Icons.settings_outlined,
+                label: i18n.translate("settings"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
+              ),
+
+              /// Add Photos Button (larger, center)
+              _buildCenterButton(
+                context: context,
+                icon: Icons.camera_alt_outlined,
+                label: i18n.translate("view"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(
+                        user: UserModel().user,
+                        showButtons: false,
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              /// Edit Info Button
+              _buildActionButton(
+                context: context,
+                icon: Icons.edit_outlined,
+                label: i18n.translate("edit"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(30),
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              color: Colors.grey[700],
+              size: 24,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[600],
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCenterButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(35),
+          child: Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).primaryColor.withOpacity(0.8),
+                ],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[600],
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
     );
   }
 }
