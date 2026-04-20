@@ -5,8 +5,6 @@ import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/models/user_model.dart';
 import 'package:cheers/models/app_model.dart';
 import 'package:cheers/screens/splash_screen.dart';
-import 'package:cheers/services/foreground_push_service.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cheers/constants/constants.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cheers/services/push_navigation_service.dart';
 
 import 'firebase_options.dart';
 
@@ -30,20 +29,6 @@ void main() async {
   // Initialize Google Mobile Ads SDK
   await MobileAds.instance.initialize();
 
-  /// Update the iOS foreground notification presentation options to allow
-  /// heads up notifications.
-  /// Check iOS device
-  if (Platform.isIOS) {
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-  }
-
-  await ForegroundPushService.instance.initialize();
-
   runApp(const MyApp());
 }
 
@@ -51,8 +36,21 @@ void main() async {
 final navigatorKey = GlobalKey<NavigatorState>();
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      PushNavigationService.instance.initialize(navigatorKey);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

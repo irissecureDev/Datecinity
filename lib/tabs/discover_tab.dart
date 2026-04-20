@@ -1,18 +1,11 @@
 import 'dart:async';
-import 'package:cheers/api/notifications_api.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/datas/user.dart' as app_data;
 import 'package:cheers/helpers/app_localizations.dart';
 import 'package:cheers/models/proximity_profile.dart';
-import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/profile_screen.dart';
-import 'package:cheers/services/foreground_push_service.dart';
 import 'package:cheers/services/suggestions_service.dart';
 import 'package:cheers/widgets/discovery_flow_widget.dart';
 import 'package:cheers/widgets/no_data.dart';
 import 'package:cheers/widgets/processing.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -28,7 +21,6 @@ class DiscoverTabState extends State<DiscoverTab>
   static const double _sparkMaxDistanceKm = 0.5;
   static const double _sparkMinCompatibility = 0.6;
   static const double _sparkHighCompatibility = 0.75;
-  static const bool _enableFakeSparksForTesting = true;
 
   final SuggestionsService _suggestionsService = SuggestionsService();
 
@@ -41,8 +33,6 @@ class DiscoverTabState extends State<DiscoverTab>
   bool _isLoadingSparks = false;
   double _currentSparkPage = 0;
   bool _didCenterInitialSparkPage = false;
-  bool _didSimulateNearbyPush = false;
-  final NotificationsApi _notificationsApi = NotificationsApi();
 
   @override
   void initState() {
@@ -106,35 +96,14 @@ class DiscoverTabState extends State<DiscoverTab>
         return a.distance.compareTo(b.distance);
       });
 
-      final resolvedProfiles =
-          (kDebugMode && _enableFakeSparksForTesting && profiles.length < 5)
-          ? _buildFakeSparkProfiles()
-          : profiles;
-
-      final usingFakeProfiles =
-          kDebugMode && _enableFakeSparksForTesting && profiles.length < 5;
-
       if (mounted) {
         setState(() {
-          _sparkProfiles = resolvedProfiles;
+          _sparkProfiles = profiles;
           _isLoadingSparks = false;
           _didCenterInitialSparkPage = false;
         });
 
         _centerInitialSparkCardIfNeeded();
-
-        if (usingFakeProfiles &&
-            defaultTargetPlatform == TargetPlatform.iOS &&
-            !_didSimulateNearbyPush &&
-            resolvedProfiles.isNotEmpty) {
-          _didSimulateNearbyPush = true;
-          final fake = resolvedProfiles.first;
-          await ForegroundPushService.instance.showFakeNearbyMatchNotification(
-            fullName: fake.user.userFullname,
-            compatibility: fake.compatibility,
-            distanceKm: fake.distance,
-          );
-        }
       }
     } catch (e) {
       if (mounted) {
@@ -145,120 +114,6 @@ class DiscoverTabState extends State<DiscoverTab>
       }
       debugPrint('❌ Sparks load error: $e');
     }
-  }
-
-  List<ProximityProfile> _buildFakeSparkProfiles() {
-    final now = DateTime.now();
-
-    app_data.User fakeUser({
-      required String id,
-      required String fullName,
-      required int year,
-      required String photo,
-      required String gender,
-      required String city,
-    }) {
-      return app_data.User(
-        userId: id,
-        userProfilePhoto: photo,
-        userFullname: fullName,
-        userGender: gender,
-        userBirthDay: 12,
-        userBirthMonth: 6,
-        userBirthYear: year,
-        userBio: 'Profil de test pour le carousel Sparks',
-        userPhoneNumber: '',
-        userEmail: '$id@test.cheers',
-        userGallery: const {},
-        userCountry: 'France',
-        userLocality: city,
-        userGeoPoint: const GeoPoint(48.8566, 2.3522),
-        userSettings: const {},
-        userStatus: 'active',
-        userLevel: 'user',
-        userIsVerified: true,
-        userRegDate: now,
-        userLastLogin: now,
-        userDeviceToken: '',
-        userTotalLikes: 0,
-        userTotalVisits: 0,
-        userTotalDisliked: 0,
-        education: 'Bachelor',
-        religion: '',
-        hobbies: const ['music', 'travel'],
-        languages: const ['fr', 'en'],
-        pets: const [],
-        preferences: const {},
-      );
-    }
-
-    return [
-      ProximityProfile(
-        user: fakeUser(
-          id: 'fake_spark_1',
-          fullName: 'Justin Martin',
-          year: 1994,
-          photo: 'https://i.pravatar.cc/900?img=12',
-          gender: 'Male',
-          city: 'Paris',
-        ),
-        detectedAt: now.subtract(const Duration(minutes: 1)),
-        distance: 0.12,
-        compatibility: 0.91,
-      ),
-      ProximityProfile(
-        user: fakeUser(
-          id: 'fake_spark_2',
-          fullName: 'Emma Laurent',
-          year: 1997,
-          photo: 'https://i.pravatar.cc/900?img=47',
-          gender: 'Female',
-          city: 'Lyon',
-        ),
-        detectedAt: now.subtract(const Duration(minutes: 2)),
-        distance: 0.18,
-        compatibility: 0.88,
-      ),
-      ProximityProfile(
-        user: fakeUser(
-          id: 'fake_spark_3',
-          fullName: 'Sara Diallo',
-          year: 1998,
-          photo: 'https://i.pravatar.cc/900?img=32',
-          gender: 'Female',
-          city: 'Marseille',
-        ),
-        detectedAt: now.subtract(const Duration(minutes: 3)),
-        distance: 0.25,
-        compatibility: 0.86,
-      ),
-      ProximityProfile(
-        user: fakeUser(
-          id: 'fake_spark_4',
-          fullName: 'Nora Benali',
-          year: 1996,
-          photo: 'https://i.pravatar.cc/900?img=5',
-          gender: 'Female',
-          city: 'Bordeaux',
-        ),
-        detectedAt: now.subtract(const Duration(minutes: 4)),
-        distance: 0.31,
-        compatibility: 0.84,
-      ),
-      ProximityProfile(
-        user: fakeUser(
-          id: 'fake_spark_5',
-          fullName: 'Lucas Petit',
-          year: 1993,
-          photo: 'https://i.pravatar.cc/900?img=14',
-          gender: 'Male',
-          city: 'Nantes',
-        ),
-        detectedAt: now.subtract(const Duration(minutes: 5)),
-        distance: 0.39,
-        compatibility: 0.82,
-      ),
-    ];
   }
 
   void _centerInitialSparkCardIfNeeded() {
@@ -276,80 +131,6 @@ class DiscoverTabState extends State<DiscoverTab>
         _didCenterInitialSparkPage = true;
       });
     });
-  }
-
-  Future<void> _triggerFakeNearbyPush() async {
-    final profile = _sparkProfiles.isNotEmpty
-        ? _sparkProfiles.first
-        : _buildFakeSparkProfiles().first;
-
-    await ForegroundPushService.instance.showFakeNearbyMatchNotification(
-      fullName: profile.user.userFullname,
-      compatibility: profile.compatibility,
-      distanceKm: profile.distance,
-    );
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Notification test envoyée.'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
-  Future<void> _triggerSelfFcmPush() async {
-    try {
-      final messaging = FirebaseMessaging.instance;
-      await messaging.requestPermission(alert: true, badge: true, sound: true);
-
-      for (int i = 0; i < 5; i++) {
-        final apns = await messaging.getAPNSToken();
-        if (apns != null && apns.isNotEmpty) {
-          break;
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-      }
-
-      final token = await messaging.getToken();
-
-      if (token == null || token.isEmpty) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Token FCM indisponible. Active les notifications iOS et relance l\'app.',
-            ),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        return;
-      }
-
-      await _notificationsApi.sendPushNotification(
-        nTitle: '🧪 Test push FCM',
-        nBody: 'Push réelle envoyée sur ce device iOS.',
-        nType: 'nearby_match',
-        nSenderId: UserModel().user.userId,
-        nUserDeviceToken: token,
-      );
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Push FCM envoyée. Vérifie la bannière iOS.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur test push FCM: $e'),
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    }
   }
 
   @override
@@ -435,31 +216,6 @@ class DiscoverTabState extends State<DiscoverTab>
             },
           ),
         ),
-
-        if (kDebugMode && defaultTargetPlatform == TargetPlatform.iOS)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Wrap(
-              alignment: WrapAlignment.end,
-              spacing: 8,
-              runSpacing: 6,
-              children: [
-                TextButton.icon(
-                  onPressed: _triggerFakeNearbyPush,
-                  icon: const Icon(
-                    Icons.notifications_active_outlined,
-                    size: 18,
-                  ),
-                  label: const Text('Tester notification proximité'),
-                ),
-                TextButton.icon(
-                  onPressed: _triggerSelfFcmPush,
-                  icon: const Icon(Icons.send_outlined, size: 18),
-                  label: const Text('Tester push FCM (réelle)'),
-                ),
-              ],
-            ),
-          ),
 
         // Contenu selon l'onglet sélectionné
         Expanded(

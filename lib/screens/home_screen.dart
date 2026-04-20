@@ -9,32 +9,26 @@ import 'package:cheers/api/conversations_api.dart';
 import 'package:cheers/api/notifications_api.dart';
 import 'package:cheers/helpers/app_helper.dart';
 import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/helpers/app_notifications.dart';
-import 'package:cheers/datas/user.dart' as app_data;
 import 'package:cheers/models/user_model.dart';
-import 'package:cheers/services/foreground_push_service.dart';
 import 'package:cheers/services/suggestions_service.dart';
-import 'package:cheers/services/suggestions_notifications_service.dart';
 import 'package:cheers/services/spark_service.dart';
 import 'package:cheers/screens/notifications_screen.dart';
-import 'package:cheers/screens/spark_like_received_screen.dart';
 import 'package:cheers/tabs/conversations_tab.dart';
 import 'package:cheers/tabs/discover_tab.dart';
 import 'package:cheers/tabs/matches_tab.dart';
 import 'package:cheers/tabs/profile_tab.dart';
 import 'package:cheers/widgets/notification_counter.dart';
 import 'package:cheers/widgets/svg_icon.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cheers/constants/constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int initialTabIndex;
+
+  const HomeScreen({super.key, this.initialTabIndex = 0});
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -44,9 +38,7 @@ class HomeScreenState extends State<HomeScreen> {
   /// Variables
   final _conversationsApi = ConversationsApi();
   final _notificationsApi = NotificationsApi();
-  final _appNotifications = AppNotifications();
   final _suggestionsService = SuggestionsService();
-  final _suggestionsNotificationsService = SuggestionsNotificationsService();
   final _sparkService = SparkService();
   int _selectedIndex = 0;
   late AppLocalizations _i18n;
@@ -57,8 +49,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   StreamSubscription<Position>? _positionStream;
   Timer? _proximityCheckTimer;
-  static const bool _enableFakeProximitySparkForTesting = true;
-  bool _didTriggerFakeProximitySpark = false;
 
   /// Tab navigation
   Widget _showCurrentNavBar() {
@@ -181,128 +171,11 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _handleNotificationClick(Map<String, dynamic>? data) async {
-    final nType = data?[N_TYPE] ?? '';
-
-    // Gérer les notifications de type Spark
-    if (nType == 'spark' || nType == 'spark_like' || nType == 'spark_match') {
-      await _handleSparkNotification(nType);
-      return;
-    }
-
-    /// Handle other notification clicks
-    await _appNotifications.onNotificationClick(
-      context,
-      nType: nType,
-      nSenderId: data?[N_SENDER_ID] ?? '',
-      nMessage: data?[N_MESSAGE] ?? '',
-    );
-  }
-
-  /// Gérer les notifications de type Spark
-  Future<void> _handleSparkNotification(String nType) async {
-    try {
-      // Récupérer les sparks actifs
-      final sparks = await _sparkService.getActiveSparks();
-
-      if (sparks.isNotEmpty) {
-        final spark = sparks.first;
-
-        if (mounted) {
-          // Si c'est une notification de like reçu, afficher l'écran approprié
-          if (nType == 'spark_like') {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => SparkLikeReceivedScreen(
-                  spark: spark,
-                  currentUser: UserModel().user,
-                ),
-              ),
-            );
-          } else {
-            // Pour les autres types de notification Spark, afficher le countdown
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => SparkCountdownScreen(spark: spark),
-            //   ),
-            // );
-            // Au lieu de l'écran countdown, on va sur l'onglet Discover
-            _onTappedNavBar(1);
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('❌ Erreur gestion notification Spark: $e');
-    }
-  }
-
-  /// Request push notifications permission.
-  static Future<void> _requestNotificationsPermission() async {
-    // Request permission for iOS devices
-    if (Platform.isIOS) {
-      final settings = await FirebaseMessaging.instance.requestPermission();
-      final AuthorizationStatus status = settings.authorizationStatus;
-      // Debug
-      debugPrint('requestNotificationsPermission() for iOS -> $status');
-    } else {
-      // <-- Android permissions -->
-      final PermissionStatus status = await Permission.notification.request();
-      if (status.isPermanentlyDenied) {
-        // Permission permanently denied, you can open the app settings to allow permissions
-        await openAppSettings();
-      }
-      // Debug
-      debugPrint('requestNotificationsPermission() for Android -> $status');
-    }
-  }
-
-  ///
-  /// Handle incoming notifications while the app is in the Foreground
-  ///
-  Future<void> _initFirebaseMessage() async {
-    /// Request permission for IOS
-    await _requestNotificationsPermission();
-
-    // Get inicial message if the application
-    // has been opened from a terminated state.
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    // Check notification data
-    if (message != null) {
-      // Debug
-      debugPrint('getInitialMessage() -> data: ${message.data}');
-      // Handle notification data
-      await _handleNotificationClick(message.data);
-    }
-
-    // Returns a [Stream] that is called when a user
-    // presses a notification message displayed via FCM.
-    // Note: A Stream event will be sent if the app has
-    // opened from a background state (not terminated).
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      // Debug
-      debugPrint('onMessageOpenedApp() -> data: ${message.data}');
-      // Handle notification data
-      await _handleNotificationClick(message.data);
-    });
-
-    // Listen for incoming push notifications
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      // Debug
-      debugPrint('onMessage() -> data: ${message.data}');
-
-      // Afficher une vraie notification push en foreground pour Nearby/Spark
-      await ForegroundPushService.instance.showForegroundMatchNotification(
-        message,
-      );
-
-      // Handle notification data
-      await _handleNotificationClick(message.data);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
+
+    _selectedIndex = widget.initialTabIndex.clamp(0, 3);
 
     /// Restore VIP Subscription
     _appHelper.restoreVipAccount();
@@ -310,7 +183,12 @@ class HomeScreenState extends State<HomeScreen> {
     /// Init streams
     _getCurrentUserUpdates();
     _handlePurchaseUpdates();
-    _initFirebaseMessage();
+    unawaited(
+      Future.delayed(
+        const Duration(seconds: 1),
+        _sparkService.cleanupLegacyTestSparksForCurrentUser,
+      ),
+    );
     _initLocationListener();
   }
 
@@ -588,6 +466,12 @@ class HomeScreenState extends State<HomeScreen> {
             .toList();
 
         if (sparkProfiles.isNotEmpty) {
+          sparkProfiles.sort((a, b) {
+            final byCompatibility = b.compatibility.compareTo(a.compatibility);
+            if (byCompatibility != 0) return byCompatibility;
+            return a.distance.compareTo(b.distance);
+          });
+
           debugPrint(
             '🔔 Création de Sparks pour ${sparkProfiles.length} profils compatibles',
           );
@@ -611,72 +495,9 @@ class HomeScreenState extends State<HomeScreen> {
             _onTappedNavBar(1);
           }
         }
-      } else if (kDebugMode &&
-          _enableFakeProximitySparkForTesting &&
-          !_didTriggerFakeProximitySpark) {
-        await _createFakeProximitySparkForTesting();
       }
     } catch (e) {
       debugPrint('❌ Erreur détection proximité: $e');
-    }
-  }
-
-  Future<void> _createFakeProximitySparkForTesting() async {
-    try {
-      _didTriggerFakeProximitySpark = true;
-
-      final now = DateTime.now();
-      final currentUser = UserModel().user;
-
-      final fakeUser = app_data.User(
-        userId: 'fake_proximity_spark_${now.millisecondsSinceEpoch}',
-        userProfilePhoto: 'https://i.pravatar.cc/900?img=29',
-        userFullname: 'Nina Proximity',
-        userGender: 'Female',
-        userBirthDay: 14,
-        userBirthMonth: 8,
-        userBirthYear: 1997,
-        userBio: 'Profil fake pour test Spark proximité',
-        userPhoneNumber: '',
-        userEmail: 'nina.proximity@test.cheers',
-        userGallery: const {},
-        userCountry: currentUser.userCountry,
-        userLocality: currentUser.userLocality,
-        userGeoPoint: currentUser.userGeoPoint,
-        userSettings: const {},
-        userStatus: 'active',
-        userLevel: 'user',
-        userIsVerified: true,
-        userRegDate: now,
-        userLastLogin: now,
-        userDeviceToken: '',
-        userTotalLikes: 0,
-        userTotalVisits: 0,
-        userTotalDisliked: 0,
-        education: 'Bachelor',
-        religion: '',
-        hobbies: const ['music', 'travel'],
-        languages: const ['fr'],
-        pets: const [],
-        preferences: const {},
-      );
-
-      final spark = await _sparkService.createSpark(
-        targetUser: fakeUser,
-        distance: 0.02,
-        compatibility: 0.9,
-      );
-
-      if (spark != null && mounted) {
-        _onTappedNavBar(1);
-        Fluttertoast.showToast(
-          msg: '🧪 Spark fake créé pour test proximité',
-          gravity: ToastGravity.BOTTOM,
-        );
-      }
-    } catch (e) {
-      _didTriggerFakeProximitySpark = false;
-      debugPrint('❌ Erreur création Spark fake: $e');
     }
   }
 

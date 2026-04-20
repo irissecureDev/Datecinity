@@ -21,10 +21,12 @@ class ForegroundPushService {
       );
 
   bool _initialized = false;
+  void Function(String nType)? _onNotificationTap;
 
   Future<void> _showNotification({
     required String title,
     required String body,
+    required String payload,
   }) async {
     if (title.isEmpty && body.isEmpty) {
       return;
@@ -49,10 +51,15 @@ class ForegroundPushService {
           presentSound: true,
         ),
       ),
+      payload: payload,
     );
   }
 
-  Future<void> initialize() async {
+  Future<void> initialize({
+    void Function(String nType)? onNotificationTap,
+  }) async {
+    _onNotificationTap = onNotificationTap;
+
     if (_initialized || kIsWeb) return;
 
     const initializationSettings = InitializationSettings(
@@ -67,7 +74,16 @@ class ForegroundPushService {
       ),
     );
 
-    await _plugin.initialize(initializationSettings);
+    await _plugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (response) {
+        final payload = response.payload;
+        if (payload == null || payload.isEmpty) {
+          return;
+        }
+        _onNotificationTap?.call(payload);
+      },
+    );
 
     if (Platform.isAndroid) {
       await _plugin
@@ -99,7 +115,8 @@ class ForegroundPushService {
         nType == 'nearby_match' ||
         nType == 'spark' ||
         nType == 'spark_like' ||
-        nType == 'spark_match';
+        nType == 'spark_match' ||
+        nType == 'spark_declined';
 
     if (!isNearbyOrSpark) {
       return;
@@ -107,35 +124,15 @@ class ForegroundPushService {
 
     final title =
         message.notification?.title ??
-        (message.data['title'] ?? '✨ Match à proximité').toString();
+        (message.data['title'] ?? '✨ Match nearby').toString();
 
     final body =
         message.notification?.body ??
         (message.data['n_message'] ??
                 message.data['body'] ??
-                'Une personne compatible est près de vous.')
+                'A compatible person is nearby.')
             .toString();
 
-    await _showNotification(title: title, body: body);
-  }
-
-  Future<void> showFakeNearbyMatchNotification({
-    required String fullName,
-    required double compatibility,
-    required double distanceKm,
-  }) async {
-    if (kIsWeb) return;
-    if (!_initialized) {
-      await initialize();
-    }
-
-    final compatibilityPercent = (compatibility * 100).round();
-    final distanceMeters = (distanceKm * 1000).round();
-
-    await _showNotification(
-      title: '📍 Match à proximité',
-      body:
-          '$fullName est à ${distanceMeters}m de vous • $compatibilityPercent% de compatibilité',
-    );
+    await _showNotification(title: title, body: body, payload: nType);
   }
 }

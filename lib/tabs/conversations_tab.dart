@@ -94,12 +94,6 @@ class ConversationsTabState extends State<ConversationsTab> {
     }
   }
 
-  bool _isFakeConversation(Map<String, dynamic> data) {
-    final userId = (data[USER_ID] ?? '').toString().toLowerCase();
-    final fullName = (data[USER_FULLNAME] ?? '').toString().toLowerCase();
-    return userId.startsWith('fake_') || fullName.endsWith(' demo');
-  }
-
   /// Build a modern conversation item
   Widget _buildConversationItem(
     DocumentSnapshot<Map<String, dynamic>> conversation, {
@@ -434,9 +428,7 @@ class ConversationsTabState extends State<ConversationsTab> {
                     );
                   }
 
-                  final docs = snapshot.data!.docs
-                      .where((doc) => !_isFakeConversation(doc.data()))
-                      .toList();
+                  final docs = snapshot.data!.docs.toList();
 
                   if (docs.isEmpty) {
                     return Container(

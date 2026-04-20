@@ -2,9 +2,9 @@ import 'package:cheers/datas/user.dart';
 import 'package:cheers/dialogs/common_dialogs.dart';
 import 'package:cheers/models/user_model.dart';
 import 'package:cheers/screens/profile_likes_screen.dart';
+import 'package:cheers/screens/home_screen.dart';
 import 'package:cheers/screens/profile_screen.dart';
 import 'package:cheers/screens/profile_visits_screen.dart';
-import 'package:cheers/tabs/discover_tab.dart';
 import 'package:flutter/material.dart';
 
 class AppNotifications {
@@ -52,25 +52,30 @@ class AppNotifications {
       // Point 5: Nouveaux types de notifications intelligentes
       case 'high_compatibility':
       case 'new_matches':
+      case 'spark':
+      case 'spark_like':
+      case 'spark_match':
+      case 'spark_declined':
 
-        /// Aller à l'onglet Découvrir pour voir les nouvelles suggestions
+        /// Aller à Matches > Discover
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const DiscoverTab()),
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(initialTabIndex: 1),
+          ),
         );
         break;
 
       case 'nearby_match':
 
-        /// Aller à l'onglet Découvrir avec un message spécial
+        /// Aller à Matches > Discover avec un message spécial
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const DiscoverTab()),
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(initialTabIndex: 1),
+          ),
         );
-        // Optionnel: Afficher un snackbar pour indiquer qu'il faut activer la localisation
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '💡 Activez la localisation pour voir les matches à proximité',
-            ),
+          const SnackBar(
+            content: Text('💡 Enable location to discover nearby matches.'),
             backgroundColor: Colors.blue,
             duration: Duration(seconds: 3),
           ),
