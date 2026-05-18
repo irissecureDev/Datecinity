@@ -77,7 +77,10 @@ class HomeScreenState extends State<HomeScreen> {
     /// Subscribe to user updates
     _userStream.listen((userEvent) {
       // Update user
-      UserModel().updateUserObject(userEvent.data()!);
+      final data = userEvent.data();
+      if (data != null) {
+        UserModel().updateUserObject(data);
+      }
     });
   }
 

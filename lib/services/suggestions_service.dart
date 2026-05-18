@@ -608,29 +608,331 @@ class SuggestionsService {
     }
   }
 
-  /// Calculer la compatibilité basée sur les réponses au quiz
-  /// TEMPORAIRE: utilise les préférences disponibles en attendant l'implémentation du quiz
+  /// Calculer la compatibilité basée sur les réponses aux questions préférences (19 questions, 7 sections)
+  /// Pondération par section :
+  /// - Section 1 (Love Goals): 20%
+  /// - Section 2 (Feelings): 15%
+  /// - Section 3 (Communication): 20%
+  /// - Section 4 (Intimacy): 15%
+  /// - Section 5 (Lifestyle): 15%
+  /// - Section 6 (Personality): 10%
+  /// - Section 7 (Values): 5%
   double _calculateQuizCompatibility(User currentUser, User candidate) {
     try {
-      // Pour l'instant, utilisons les préférences utilisateur disponibles
       final currentUserPrefs = currentUser.preferences;
       final candidatePrefs = candidate.preferences;
 
-      if (currentUserPrefs == null || candidatePrefs == null) {
+      if (currentUserPrefs == null ||
+          currentUserPrefs.isEmpty ||
+          candidatePrefs == null ||
+          candidatePrefs.isEmpty) {
         return 0.5; // Score neutre si pas de préférences
       }
 
-      // Calculer une compatibilité basique basée sur les préférences disponibles
-      double score = 0.5; // Score de base
+      // Pondérations par section (section number -> weight)
+      const sectionWeights = {
+        1: 0.20, // WHAT YOU WANT IN LOVE
+        2: 0.15, // HOW YOU HANDLE FEELINGS
+        3: 0.20, // HOW YOU COMMUNICATE
+        4: 0.15, // LOVE & CONNECTION
+        5: 0.15, // LIFESTYLE & HABITS
+        6: 0.10, // PERSONALITY & CONNECTION STYLE
+        7: 0.05, // WHAT MATTERS MOST
+      };
 
-      // Bonus si les utilisateurs ont des préférences complètes
-      if (currentUserPrefs.isNotEmpty && candidatePrefs.isNotEmpty) {
-        score += 0.2;
-      }
+      double weightedScore = 0.0;
 
-      return score.clamp(0.0, 1.0);
+      // Parcourir chaque section et calculer le score de compatibilité
+      sectionWeights.forEach((section, weight) {
+        final sectionScore = _calculateSectionCompatibility(
+          section,
+          currentUserPrefs,
+          candidatePrefs,
+        );
+        weightedScore += sectionScore * weight;
+      });
+
+      return weightedScore.clamp(0.0, 1.0);
     } catch (e) {
       debugPrint('Erreur calcul compatibilité quiz: $e');
+      return 0.5;
+    }
+  }
+
+  /// Calculer la compatibilité pour une section spécifique (1-7)
+  /// Retourne un score 0-1
+  double _calculateSectionCompatibility(
+    int section,
+    Map<String, dynamic> currentUserPrefs,
+    Map<String, dynamic> candidatePrefs,
+  ) {
+    try {
+      double totalScore = 0.0;
+      int questionCount = 0;
+
+      // Questions par section (q_{section}_number)
+      final questionsInSection = _getQuestionsForSection(section);
+
+      for (final questionId in questionsInSection) {
+        final currentAnswer = currentUserPrefs[questionId];
+        final candidateAnswer = candidatePrefs[questionId];
+
+        if (currentAnswer == null || candidateAnswer == null) {
+          continue; // Skip if either user hasn't answered
+        }
+
+        double questionScore = _compareAnswers(
+          questionId,
+          currentAnswer,
+          candidateAnswer,
+          section,
+        );
+
+        totalScore += questionScore;
+        questionCount++;
+      }
+
+      // Return average score for this section
+      return questionCount > 0 ? totalScore / questionCount : 0.5;
+    } catch (e) {
+      debugPrint('Erreur calcul compatibilité section $section: $e');
+      return 0.5;
+    }
+  }
+
+  /// Get all question IDs for a specific section
+  /// This is a helper method that mirrors the CloudFunction question structure
+  List<String> _getQuestionsForSection(int section) {
+    switch (section) {
+      case 1:
+        return ['q_1_1', 'q_1_2', 'q_1_3', 'q_1_4'];
+      case 2:
+        return ['q_2_5', 'q_2_6'];
+      case 3:
+        return ['q_3_7', 'q_3_8', 'q_3_9'];
+      case 4:
+        return ['q_4_10', 'q_4_11', 'q_4_12'];
+      case 5:
+        return ['q_5_13', 'q_5_14', 'q_5_15'];
+      case 6:
+        return ['q_6_16', 'q_6_17', 'q_6_18'];
+      case 7:
+        return ['q_7_19'];
+      default:
+        return [];
+    }
+  }
+
+  /// Compare two answers for a question and return compatibility score (0-1)
+  /// Handles: single, multi, ranking, rating question types
+  double _compareAnswers(
+    String questionId,
+    dynamic currentAnswer,
+    dynamic candidateAnswer,
+    int section,
+  ) {
+    try {
+      // Determine question type from question ID
+      if (questionId == 'q_4_11') {
+        // Love languages ranking
+        return _compareRankingAnswers(currentAnswer, candidateAnswer);
+      } else if (questionId == 'q_5_13') {
+        // Activities multi-select
+        return _compareMultiSelectAnswers(currentAnswer, candidateAnswer);
+      } else if (questionId == 'q_7_19') {
+        // Traits rating
+        return _compareRatingAnswers(currentAnswer, candidateAnswer);
+      } else if (questionId == 'q_4_12') {
+        // How you show love - could be multi
+        return _compareAnswersFlexible(currentAnswer, candidateAnswer);
+      } else {
+        // Default: single select (most questions)
+        return _compareSingleSelectAnswers(currentAnswer, candidateAnswer);
+      }
+    } catch (e) {
+      debugPrint('Erreur comparaison réponses $questionId: $e');
+      return 0.5;
+    }
+  }
+
+  /// Compare single-select answers
+  /// Exact match = 1.0, otherwise weighted by answer types
+  double _compareSingleSelectAnswers(dynamic current, dynamic candidate) {
+    try {
+      if (current is String && candidate is String) {
+        // Exact match: full score
+        if (current == candidate) {
+          return 1.0;
+        }
+        // Different answers: lower score (some compatibility)
+        return 0.3;
+      }
+      return 0.5;
+    } catch (e) {
+      return 0.5;
+    }
+  }
+
+  /// Compare multi-select answers (e.g., activities)
+  /// Uses Jaccard similarity
+  double _compareMultiSelectAnswers(dynamic current, dynamic candidate) {
+    try {
+      List<String> currentList;
+      List<String> candidateList;
+
+      if (current is List) {
+        currentList = List<String>.from(current);
+      } else {
+        return 0.5;
+      }
+
+      if (candidate is List) {
+        candidateList = List<String>.from(candidate);
+      } else {
+        return 0.5;
+      }
+
+      if (currentList.isEmpty && candidateList.isEmpty) {
+        return 1.0; // Both have no activities = compatible
+      }
+
+      if (currentList.isEmpty || candidateList.isEmpty) {
+        return 0.3; // One has activities, other doesn't
+      }
+
+      // Jaccard similarity
+      Set<String> currentSet = currentList.toSet();
+      Set<String> candidateSet = candidateList.toSet();
+
+      int intersection = currentSet.intersection(candidateSet).length;
+      int union = currentSet.union(candidateSet).length;
+
+      double jaccardSimilarity = union > 0 ? intersection / union : 0.0;
+
+      // Bonus for shared activities
+      double bonus = intersection >= 2 ? 0.1 : 0.0;
+
+      return (jaccardSimilarity + bonus).clamp(0.0, 1.0);
+    } catch (e) {
+      return 0.5;
+    }
+  }
+
+  /// Compare ranking answers (e.g., love languages)
+  /// Measures correlation of rankings
+  double _compareRankingAnswers(dynamic current, dynamic candidate) {
+    try {
+      Map<String, int> currentRanking;
+      Map<String, int> candidateRanking;
+
+      if (current is Map && candidate is Map) {
+        currentRanking = Map<String, int>.from(current);
+        candidateRanking = Map<String, int>.from(candidate);
+      } else if (current is List && candidate is List) {
+        // If stored as lists instead of maps, convert
+        currentRanking = _listToRankingMap(current);
+        candidateRanking = _listToRankingMap(candidate);
+      } else {
+        return 0.5;
+      }
+
+      if (currentRanking.isEmpty || candidateRanking.isEmpty) {
+        return 0.5;
+      }
+
+      // Calculate Spearman correlation (simplified version)
+      double totalDiff = 0.0;
+      int count = 0;
+
+      currentRanking.forEach((key, currentPos) {
+        if (candidateRanking.containsKey(key)) {
+          int candidatePos = candidateRanking[key]!;
+          double diff = (currentPos - candidatePos).abs().toDouble();
+          totalDiff += diff;
+          count++;
+        }
+      });
+
+      if (count == 0) {
+        return 0.5;
+      }
+
+      // Normalize difference (max diff for 5 items is 4)
+      double avgDiff = totalDiff / count;
+      double maxDiff = 4.0;
+      double similarity = 1.0 - (avgDiff / maxDiff);
+
+      return similarity.clamp(0.0, 1.0);
+    } catch (e) {
+      return 0.5;
+    }
+  }
+
+  /// Convert list to ranking map (for backward compatibility)
+  Map<String, int> _listToRankingMap(List<dynamic> list) {
+    final map = <String, int>{};
+    for (int i = 0; i < list.length; i++) {
+      map[list[i].toString()] = i;
+    }
+    return map;
+  }
+
+  /// Compare rating answers (e.g., traits importance 1-5)
+  /// Measures how similar the importance ratings are
+  double _compareRatingAnswers(dynamic current, dynamic candidate) {
+    try {
+      Map<String, int> currentRatings;
+      Map<String, int> candidateRatings;
+
+      if (current is Map && candidate is Map) {
+        currentRatings = Map<String, int>.from(current);
+        candidateRatings = Map<String, int>.from(candidate);
+      } else {
+        return 0.5;
+      }
+
+      if (currentRatings.isEmpty || candidateRatings.isEmpty) {
+        return 0.5;
+      }
+
+      // Calculate average difference in ratings
+      double totalDiff = 0.0;
+      int count = 0;
+
+      currentRatings.forEach((key, currentRating) {
+        if (candidateRatings.containsKey(key)) {
+          int candidateRating = candidateRatings[key]!;
+          double diff = (currentRating - candidateRating).abs().toDouble();
+          totalDiff += diff;
+          count++;
+        }
+      });
+
+      if (count == 0) {
+        return 0.5;
+      }
+
+      // Normalize difference (max diff for 1-5 scale is 4)
+      double avgDiff = totalDiff / count;
+      double maxDiff = 4.0;
+      double similarity = 1.0 - (avgDiff / maxDiff);
+
+      return similarity.clamp(0.0, 1.0);
+    } catch (e) {
+      return 0.5;
+    }
+  }
+
+  /// Flexible comparison for answers that could be single or multi
+  double _compareAnswersFlexible(dynamic current, dynamic candidate) {
+    try {
+      // Check if both are lists (multi-select)
+      if (current is List && candidate is List) {
+        return _compareMultiSelectAnswers(current, candidate);
+      }
+      // Otherwise treat as single select
+      return _compareSingleSelectAnswers(current, candidate);
+    } catch (e) {
       return 0.5;
     }
   }

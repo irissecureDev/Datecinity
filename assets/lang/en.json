@@ -64,6 +64,7 @@
   "_EditProfileScreen": "*** Edit Profile Screen Translations ***",
   "edit_profile": "Edit profile",
   "profile_updated_successfully": "Profile updated successfully",
+  "please_answer_all_questions": "Please answer all questions before saving.",
   "an_error_occurred_while_updating_your_profile": "An error occurred while updating your profile.\nPlease try again later!",
   "photo_will_be_deleted": "Photo will be deleted, and this action cannot be reversed!",
   "_ProfileTab": "*** ProfileTab Translations ***",

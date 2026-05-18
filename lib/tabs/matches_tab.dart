@@ -32,6 +32,9 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
   List<NearbyPlace> _nearbyPlaces = [];
   bool _isLoadingPlaces = false;
 
+  /// When non-null, the map shows only this place (focused mode)
+  NearbyPlace? _focusedPlace;
+
   String? _errorMessage;
 
   // Tab controller to switch between map and list
@@ -131,10 +134,21 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
   void _onPlaceTap(NearbyPlace place) {
     debugPrint('📍 Place selected: ${place.name}');
 
-    // Switch to map tab if we're on the list
-    if (_tabController.index == 1) {
+    setState(() {
+      _focusedPlace = place;
+    });
+
+    // Switch to map tab
+    if (_tabController.index != 0) {
       _tabController.animateTo(0);
     }
+  }
+
+  /// Clear focused place and return to all-places view
+  void _onClearFocus() {
+    setState(() {
+      _focusedPlace = null;
+    });
   }
 
   /// Handle request for directions to a place
@@ -277,14 +291,14 @@ class MatchesTabState extends State<MatchesTab> with TickerProviderStateMixin {
       return const Processing(text: "Searching for nearby places...");
     }
 
-    return Container(
-      child: HotspotsMapWidget(
-        hotspots: _hotspots,
-        nearbyPlaces: _nearbyPlaces,
-        onHotspotTap: _onHotspotTap,
-        onPlaceTap: _onPlaceTap,
-        onRefresh: _refreshNearbyPlaces,
-      ),
+    return HotspotsMapWidget(
+      hotspots: _hotspots,
+      nearbyPlaces: _nearbyPlaces,
+      onHotspotTap: _onHotspotTap,
+      onPlaceTap: _onPlaceTap,
+      onRefresh: _refreshNearbyPlaces,
+      focusedPlace: _focusedPlace,
+      onClearFocus: _onClearFocus,
     );
   }
 

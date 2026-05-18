@@ -15,6 +15,12 @@ class HotspotsMapWidget extends StatefulWidget {
   final Function(NearbyPlace)? onPlaceTap;
   final VoidCallback? onRefresh;
 
+  /// When set, the map shows only this place + the user position
+  final NearbyPlace? focusedPlace;
+
+  /// Called when the user taps the "back to all" button in focused mode
+  final VoidCallback? onClearFocus;
+
   const HotspotsMapWidget({
     super.key,
     required this.hotspots,
@@ -22,6 +28,8 @@ class HotspotsMapWidget extends StatefulWidget {
     this.onHotspotTap,
     this.onPlaceTap,
     this.onRefresh,
+    this.focusedPlace,
+    this.onClearFocus,
   });
 
   @override
@@ -47,9 +55,19 @@ class _HotspotsMapWidgetState extends State<HotspotsMapWidget> {
   @override
   void didUpdateWidget(HotspotsMapWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.hotspots != widget.hotspots ||
+    final focusChanged = oldWidget.focusedPlace != widget.focusedPlace;
+    if (focusChanged ||
+        oldWidget.hotspots != widget.hotspots ||
         oldWidget.nearbyPlaces != widget.nearbyPlaces) {
       _updateMarkers();
+      if (focusChanged && widget.focusedPlace != null) {
+        _focusOnPlace(widget.focusedPlace!);
+      } else if (focusChanged && widget.focusedPlace == null) {
+        setState(() {
+          _polylines = {};
+        });
+        _fitAllHotspots();
+      }
     }
   }
 
@@ -97,7 +115,33 @@ class _HotspotsMapWidgetState extends State<HotspotsMapWidget> {
       );
     }
 
-    // Hotspot markers
+    // Focused mode: show only the focused place
+    if (widget.focusedPlace != null) {
+      final place = widget.focusedPlace!;
+      final color = _getPlaceMarkerColor(place.category);
+      final ratingStr = place.rating != null
+          ? '${place.rating!.toStringAsFixed(1)}★'
+          : '';
+      markers.add(
+        Marker(
+          markerId: MarkerId('place_${place.id}'),
+          position: LatLng(place.location.latitude, place.location.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(color),
+          infoWindow: InfoWindow(
+            title: place.name,
+            snippet: '${place.category.displayName} • $ratingStr',
+            onTap: () => _onPlaceMarkerTap(place),
+          ),
+          onTap: () => _onPlaceMarkerTap(place),
+        ),
+      );
+      setState(() {
+        _markers = markers;
+      });
+      return;
+    }
+
+    // Normal mode: Hotspot markers
     for (final hotspot in widget.hotspots) {
       final color = hotspot.type == HotspotType.high
           ? BitmapDescriptor.hueRed
@@ -118,7 +162,7 @@ class _HotspotsMapWidgetState extends State<HotspotsMapWidget> {
       );
     }
 
-    // Nearby places markers
+    // Normal mode: Nearby places markers
     for (final place in widget.nearbyPlaces) {
       final color = _getPlaceMarkerColor(place.category);
       final ratingStr = place.rating != null
@@ -143,6 +187,58 @@ class _HotspotsMapWidgetState extends State<HotspotsMapWidget> {
     setState(() {
       _markers = markers;
     });
+  }
+
+  /// Focus map on a single place: draw line to user + fit camera
+  void _focusOnPlace(NearbyPlace place) {
+    if (_userPosition == null) return;
+
+    final userLatLng = LatLng(
+      _userPosition!.latitude,
+      _userPosition!.longitude,
+    );
+    final placeLatLng = LatLng(
+      place.location.latitude,
+      place.location.longitude,
+    );
+
+    // Draw a dashed line between user and place
+    final polyline = Polyline(
+      polylineId: const PolylineId('focus_route'),
+      points: [userLatLng, placeLatLng],
+      color: const Color(0xFF6E43B7),
+      width: 4,
+      patterns: [PatternItem.dash(20), PatternItem.gap(10)],
+    );
+
+    setState(() {
+      _polylines = {polyline};
+    });
+
+    // Fit camera to show both markers
+    final double minLat = userLatLng.latitude < placeLatLng.latitude
+        ? userLatLng.latitude
+        : placeLatLng.latitude;
+    final double maxLat = userLatLng.latitude > placeLatLng.latitude
+        ? userLatLng.latitude
+        : placeLatLng.latitude;
+    final double minLng = userLatLng.longitude < placeLatLng.longitude
+        ? userLatLng.longitude
+        : placeLatLng.longitude;
+    final double maxLng = userLatLng.longitude > placeLatLng.longitude
+        ? userLatLng.longitude
+        : placeLatLng.longitude;
+
+    const double margin = 0.003;
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat - margin, minLng - margin),
+          northeast: LatLng(maxLat + margin, maxLng + margin),
+        ),
+        80.0,
+      ),
+    );
   }
 
   /// Get marker color based on place category
@@ -592,6 +688,66 @@ class _HotspotsMapWidgetState extends State<HotspotsMapWidget> {
             // Can be used to load more places when moving
           },
         ),
+
+        // Focused mode: top banner with place name + back button
+        if (widget.focusedPlace != null)
+          Positioned(
+            top: 12,
+            left: 12,
+            right: 72,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6E43B7),
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: widget.onClearFocus,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.25),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        widget.focusedPlace!.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
 
         // Main control buttons
         Positioned(

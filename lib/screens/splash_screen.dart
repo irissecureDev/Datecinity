@@ -29,8 +29,11 @@ class SplashScreenState extends State<SplashScreen> {
 
   /// Navigate to next page
   void _nextScreen(dynamic screen) {
-    // Go to next page route
-    Future(() {
+    // Defer navigation past the current build frame to avoid the
+    // _history.isNotEmpty assertion when pushAndRemoveUntil fires
+    // while the Navigator is mid-rebuild (e.g. due to ScopedModel notify).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => screen),
         (route) => false,

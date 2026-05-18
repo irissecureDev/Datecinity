@@ -363,7 +363,7 @@ class ProfileTab extends StatelessWidget {
                         icon: Icons.psychology_outlined,
                         iconColor: Theme.of(context).primaryColor,
                         title: "Compatibility Test",
-                        subtitle: null,
+                        subtitle: "Answer questions to find your best matches",
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -373,19 +373,6 @@ class ProfileTab extends StatelessWidget {
                             ),
                           );
                         },
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      /// Safety & Trust Card
-                      _buildProfileCard(
-                        context: context,
-                        icon: Icons.shield_outlined,
-                        iconColor: Colors.grey[700]!,
-                        title: "Safety & Trust",
-                        subtitle:
-                            "Privacy controls, reporting, and verification",
-                        onTap: showSafetyAndTrustOptions,
                       ),
 
                       const SizedBox(height: 12),
@@ -404,6 +391,19 @@ class ProfileTab extends StatelessWidget {
                             ),
                           );
                         },
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      /// Safety & Trust Card
+                      _buildProfileCard(
+                        context: context,
+                        icon: Icons.shield_outlined,
+                        iconColor: Colors.grey[700]!,
+                        title: "Safety & Trust",
+                        subtitle:
+                            "Privacy controls, reporting, and verification",
+                        onTap: showSafetyAndTrustOptions,
                       ),
 
                       const SizedBox(height: 30),

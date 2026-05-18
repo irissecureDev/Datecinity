@@ -2,8 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cheers/widgets/spark_theme.dart';
 import 'package:cheers/models/spark.dart';
-import 'package:cheers/screens/spark_compatibility_screen.dart';
-import 'package:cheers/services/spark_service.dart';
+import 'package:cheers/screens/spark_compatibility_intro_video_screen.dart';
 
 /// Écran de profil Spark - Affiche le profil de la personne avec countdown
 class SparkProfileScreen extends StatefulWidget {
@@ -18,7 +17,6 @@ class SparkProfileScreen extends StatefulWidget {
 class _SparkProfileScreenState extends State<SparkProfileScreen> {
   late Timer _countdownTimer;
   late Duration _timeRemaining;
-  final SparkService _sparkService = SparkService();
   bool _isLoading = false;
 
   @override
@@ -48,12 +46,6 @@ class _SparkProfileScreenState extends State<SparkProfileScreen> {
     }
   }
 
-  String get _formattedTime {
-    final minutes = _timeRemaining.inMinutes;
-    final seconds = _timeRemaining.inSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
   Future<void> _seeCompatibility() async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
@@ -61,7 +53,8 @@ class _SparkProfileScreenState extends State<SparkProfileScreen> {
     if (mounted) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => SparkCompatibilityScreen(spark: widget.spark),
+          builder: (context) =>
+              SparkCompatibilityIntroVideoScreen(spark: widget.spark),
         ),
       );
     }
