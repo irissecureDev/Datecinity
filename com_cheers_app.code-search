@@ -1,0 +1,13 @@
+# Query: com.cheers.app
+# ContextLines: 1
+
+2 results - 2 files
+
+android/app/src/debug/AndroidManifest.xml:
+  1  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  2:     package="com.irissecure.datecinity">
+  3      <!-- Flutter needs it to communicate with the running application
+
+android/app/src/main/kotlin/com/example/dating_app/MainActivity.kt:
+  1: package com.irissecure.datecinity
+  2  
