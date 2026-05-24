@@ -1,0 +1,13 @@
+# Query: com.irissecure.cheers
+# ContextLines: 1
+
+2 results - 1 file
+
+ios/Runner/Runner.entitlements:
+  18  	<array>
+  19: 		<string>group.com.irissecure.datecinity</string>
+  20  	</array>
+
+  24  	<array>
+  25: 		<string>$(AppIdentifierPrefix)com.irissecure.datecinity</string>
+  26  	</array>
