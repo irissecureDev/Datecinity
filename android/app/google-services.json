@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:984474280325:android:50b877601e076da98664ec",
         "android_client_info": {
-          "package_name": "com.cheers.app"
+          "package_name": "com.irissecure.datecinity"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:984474280325:android:e806bb9e345838838664ec",
         "android_client_info": {
-          "package_name": "com.irisecure.soulemate"
+          "package_name": "com.irissecure.datecinity"
         }
       },
       "oauth_client": [],
@@ -47,7 +47,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:984474280325:android:7bac239b7c9574bc8664ec",
         "android_client_info": {
-          "package_name": "com.irissecure.soulemate"
+          "package_name": "com.irissecure.datecinity"
         }
       },
       "oauth_client": [],
