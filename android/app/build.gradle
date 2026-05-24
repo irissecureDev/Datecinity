@@ -23,8 +23,6 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-// Properties for Release
-
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -32,9 +30,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.cheers.app"
+    namespace "com.irissecure.datecinity"
     compileSdkVersion 35
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
@@ -48,7 +47,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.cheers.app"
+        applicationId "com.irissecure.datecinity"
         minSdkVersion 23
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
@@ -75,4 +74,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    coreLibraryDesugaring 'com.android.tools.desugar_jdk_libs:2.0.4'
+}
