@@ -18,8 +18,20 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await MobileAds.instance.initialize();
+
+  try {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
+
+  try {
+    await MobileAds.instance.initialize();
+  } catch (e) {
+    debugPrint('AdMob init error: $e');
+  }
+
   runApp(const MyApp());
 }
 
