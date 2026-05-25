@@ -1,38 +1,28 @@
 import 'dart:io';
 
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/models/app_model.dart';
-import 'package:cheers/screens/splash_screen.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/models/app_model.dart';
+import 'package:datecinity/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:cheers/constants/constants.dart';
+import 'package:datecinity/constants/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cheers/services/push_navigation_service.dart';
+import 'package:datecinity/services/push_navigation_service.dart';
 
 import 'firebase_options.dart';
 
 void main() async {
-  // Initialized before calling runApp to init firebase app
   WidgetsFlutterBinding.ensureInitialized();
-
-  /// ***  Initialize Firebase App *** ///
-  /// 👉 Please check the [Documentation - README FIRST] instructions in the
-  /// Table of Contents at section: [NEW - Firebase initialization for Dating App]
-  /// in order to fix it and generate the required [firebase_options.dart] for your app.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Initialize Google Mobile Ads SDK
   await MobileAds.instance.initialize();
-
   runApp(const MyApp());
 }
 
-// Define the Navigator global key state to be used when the build context is not available!
 final navigatorKey = GlobalKey<NavigatorState>();
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -63,28 +53,19 @@ class _MyAppState extends State<MyApp> {
           scaffoldMessengerKey: scaffoldMessengerKey,
           title: APP_NAME,
           debugShowCheckedModeBanner: false,
-
-          /// Setup translations
           localizationsDelegates: const [
-            // AppLocalizations is where the lang translations is loaded
             AppLocalizations.delegate,
             CountryLocalizations.delegate,
             ...GlobalMaterialLocalizations.delegates,
             GlobalWidgetsLocalizations.delegate,
           ],
           supportedLocales: SUPPORTED_LOCALES,
-
-          /// Returns a locale which will be used by the app
           localeResolutionCallback: (locale, supportedLocales) {
-            // Check if the current device locale is supported
             for (var supportedLocale in supportedLocales) {
               if (supportedLocale.languageCode == locale!.languageCode) {
                 return supportedLocale;
               }
             }
-
-            /// If the locale of the device is not supported, use the first one
-            /// from the list (English, in this case).
             return supportedLocales.first;
           },
           home: const SplashScreen(),
@@ -94,7 +75,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  // App theme
   ThemeData _appTheme() {
     return ThemeData(
       primaryColor: APP_PRIMARY_COLOR,
