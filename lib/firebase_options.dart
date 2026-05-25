@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDP5y0I6tCJI2n7ZR2kR0dGpydn3URKqmg',
-    appId: '1:984474280325:ios:ce828d90b3bde9918664ec',
+    appId: '1:984474280325:ios:44019f31e04b0ab38664ec',
     messagingSenderId: '984474280325',
     projectId: 'soulemate-e3cc5',
     storageBucket: 'soulemate-e3cc5.firebasestorage.app',
