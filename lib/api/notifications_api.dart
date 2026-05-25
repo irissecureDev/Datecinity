@@ -1,15 +1,15 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:datecinity/constants/constants.dart';
 import 'package:datecinity/models/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class NotificationsApi {
   /// FINAL VARIABLES
   ///
   /// Firestore instance
   final _firestore = FirebaseFirestore.instance;
-  static final _functions = FirebaseFunctions.instance;
 
   /// Save notification in database
   Future<void> saveNotification({
@@ -53,7 +53,6 @@ class NotificationsApi {
 
   /// Get stream notifications for current user
   Stream<QuerySnapshot<Map<String, dynamic>>> getNotifications() {
-    /// Build query
     return _firestore
         .collection(C_NOTIFICATIONS)
         .where(N_RECEIVER_ID, isEqualTo: UserModel().user.userId)
@@ -68,14 +67,10 @@ class NotificationsApi {
         .where(N_RECEIVER_ID, isEqualTo: UserModel().user.userId)
         .get()
         .then((QuerySnapshot<Map<String, dynamic>> snapshot) async {
-          // Check result
           if (snapshot.docs.isEmpty) return;
-
-          /// Loop notifications and delete one by one
           for (DocumentSnapshot<Map<String, dynamic>> doc in snapshot.docs) {
             await doc.reference.delete();
           }
-
           debugPrint('deleteUserNotifications() -> deleted');
         });
   }
@@ -86,10 +81,7 @@ class NotificationsApi {
         .where(N_SENDER_ID, isEqualTo: UserModel().user.userId)
         .get()
         .then((QuerySnapshot<Map<String, dynamic>> snapshot) async {
-          // Check result
           if (snapshot.docs.isEmpty) return;
-
-          /// Loop notifications
           for (DocumentSnapshot<Map<String, dynamic>> doc in snapshot.docs) {
             await doc.reference.delete();
           }
@@ -97,26 +89,37 @@ class NotificationsApi {
         });
   }
 
-  /// Send push notification method
+  /// Send push notification via Firebase Cloud Functions HTTP endpoint
   Future<void> sendPushNotification({
     required String nTitle,
     required String nBody,
     required String nType,
     required String nSenderId,
     required String nUserDeviceToken,
-    // Call Info Map Data
     Map<String, dynamic>? nCallInfo,
   }) async {
     try {
-      await _functions.httpsCallable('sendPushNotification').call({
-        'type': nType,
-        'title': nTitle,
-        'body': nBody,
-        'deviceToken': nUserDeviceToken,
-        'call': nCallInfo,
-        'senderId': nSenderId,
-      });
-      debugPrint('sendPushNotification() -> success');
+      const String functionUrl =
+          'https://us-central1-soulemate-e3cc5.cloudfunctions.net/sendPushNotification';
+
+      final response = await http.post(
+        Uri.parse(functionUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'type': nType,
+          'title': nTitle,
+          'body': nBody,
+          'deviceToken': nUserDeviceToken,
+          'call': nCallInfo,
+          'senderId': nSenderId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('sendPushNotification() -> success');
+      } else {
+        debugPrint('sendPushNotification() -> error: ${response.statusCode}');
+      }
     } catch (e) {
       debugPrint('sendPushNotification() -> error: $e');
     }
