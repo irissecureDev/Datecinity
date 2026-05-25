@@ -1,13 +1,13 @@
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/dialogs/report_dialog.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/plugins/swipe_stack/swipe_stack.dart';
-import 'package:cheers/widgets/custom_badge.dart';
-import 'package:cheers/widgets/default_card_border.dart';
-import 'package:cheers/widgets/show_like_or_dislike.dart';
-import 'package:cheers/widgets/svg_icon.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/dialogs/report_dialog.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/plugins/swipe_stack/swipe_stack.dart';
+import 'package:datecinity/widgets/custom_badge.dart';
+import 'package:datecinity/widgets/default_card_border.dart';
+import 'package:datecinity/widgets/show_like_or_dislike.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:cheers/helpers/app_helper.dart';
+import 'package:datecinity/helpers/app_helper.dart';
 
 class ProfileCard extends StatelessWidget {
   /// User object

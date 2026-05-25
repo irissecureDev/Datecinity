@@ -1,5 +1,5 @@
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/widgets/my_circular_progress.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/widgets/my_circular_progress.dart';
 import 'package:flutter/material.dart';
 
 class Processing extends StatelessWidget {

@@ -1,8 +1,8 @@
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/edit_profile_screen.dart';
-import 'package:cheers/screens/profile_screen.dart';
-import 'package:cheers/screens/settings_screen.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/edit_profile_screen.dart';
+import 'package:datecinity/screens/profile_screen.dart';
+import 'package:datecinity/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProfileBasicInfoCard extends StatelessWidget {

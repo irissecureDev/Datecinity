@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/datas/preferences_question.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/datas/preferences_question.dart';
 
 class PreferencesQuestionsApi {
   final FirebaseFirestore _firestore;

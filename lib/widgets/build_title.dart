@@ -1,4 +1,4 @@
-import 'package:cheers/widgets/svg_icon.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class BuildTitle extends StatelessWidget {

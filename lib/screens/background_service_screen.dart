@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/widgets/background_service_control_widget.dart';
+import 'package:datecinity/widgets/background_service_control_widget.dart';
 
 /// Écran de configuration et gestion du service de suggestions en arrière-plan
 class BackgroundServiceScreen extends StatefulWidget {

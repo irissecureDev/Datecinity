@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/proximity_profile.dart';
-import 'package:cheers/screens/profile_screen.dart';
-import 'package:cheers/services/suggestions_service.dart';
-import 'package:cheers/widgets/discovery_flow_widget.dart';
-import 'package:cheers/widgets/no_data.dart';
-import 'package:cheers/widgets/processing.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/proximity_profile.dart';
+import 'package:datecinity/screens/profile_screen.dart';
+import 'package:datecinity/services/suggestions_service.dart';
+import 'package:datecinity/widgets/discovery_flow_widget.dart';
+import 'package:datecinity/widgets/no_data.dart';
+import 'package:datecinity/widgets/processing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

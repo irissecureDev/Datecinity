@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:cheers/widgets/spark_theme.dart';
-import 'package:cheers/models/spark.dart';
-import 'package:cheers/screens/spark_crossed_paths_screen.dart';
+import 'package:datecinity/widgets/spark_theme.dart';
+import 'package:datecinity/models/spark.dart';
+import 'package:datecinity/screens/spark_crossed_paths_screen.dart';
 
 /// Écran du compte à rebours - "Time to connect"
 /// Affiché quand l'utilisateur ouvre l'app depuis une notification

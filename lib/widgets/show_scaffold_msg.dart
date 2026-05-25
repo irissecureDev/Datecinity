@@ -1,5 +1,5 @@
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/main.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/main.dart';
 import 'package:flutter/material.dart';
 
 void showScaffoldMessage({

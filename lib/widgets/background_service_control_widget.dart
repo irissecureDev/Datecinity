@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/services/background_suggestions_service.dart';
+import 'package:datecinity/services/background_suggestions_service.dart';
 
 /// Widget de contrôle pour le service de suggestions en arrière-plan
 ///

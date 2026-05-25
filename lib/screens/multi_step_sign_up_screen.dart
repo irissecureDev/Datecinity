@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/sign_in_screen.dart';
-import 'package:cheers/screens/update_location_sceen.dart';
-import 'package:cheers/widgets/image_source_sheet.dart';
-import 'package:cheers/widgets/processing.dart';
-import 'package:cheers/widgets/show_scaffold_msg.dart';
-import 'package:cheers/widgets/svg_icon.dart';
-import 'package:cheers/widgets/terms_of_service_row.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/sign_in_screen.dart';
+import 'package:datecinity/screens/update_location_sceen.dart';
+import 'package:datecinity/widgets/image_source_sheet.dart';
+import 'package:datecinity/widgets/processing.dart';
+import 'package:datecinity/widgets/show_scaffold_msg.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
+import 'package:datecinity/widgets/terms_of_service_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:scoped_model/scoped_model.dart';

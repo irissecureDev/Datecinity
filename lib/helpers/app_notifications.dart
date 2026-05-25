@@ -1,10 +1,10 @@
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/profile_likes_screen.dart';
-import 'package:cheers/screens/home_screen.dart';
-import 'package:cheers/screens/profile_screen.dart';
-import 'package:cheers/screens/profile_visits_screen.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/profile_likes_screen.dart';
+import 'package:datecinity/screens/home_screen.dart';
+import 'package:datecinity/screens/profile_screen.dart';
+import 'package:datecinity/screens/profile_visits_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppNotifications {

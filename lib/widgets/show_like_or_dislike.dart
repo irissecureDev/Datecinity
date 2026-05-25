@@ -1,4 +1,4 @@
-import 'package:cheers/plugins/swipe_stack/swipe_stack.dart';
+import 'package:datecinity/plugins/swipe_stack/swipe_stack.dart';
 import 'package:flutter/material.dart';
 
 class ShowLikeOrDislike extends StatelessWidget {

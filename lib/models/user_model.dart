@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/models/app_model.dart';
-import 'package:cheers/plugins/geoflutterfire/geoflutterfire.dart';
-import 'package:cheers/plugins/locationpicker/place_picker.dart';
-import 'package:cheers/services/suggestions_notifications_service.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/helpers/app_helper.dart';
+import 'package:datecinity/models/app_model.dart';
+import 'package:datecinity/plugins/geoflutterfire/geoflutterfire.dart';
+import 'package:datecinity/plugins/locationpicker/place_picker.dart';
+import 'package:datecinity/services/suggestions_notifications_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';

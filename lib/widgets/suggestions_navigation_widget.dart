@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/screens/advanced_suggestions_screen.dart';
+import 'package:datecinity/screens/advanced_suggestions_screen.dart';
 
 /// Widget bouton pour accéder aux suggestions avancées
 ///

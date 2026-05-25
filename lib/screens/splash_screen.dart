@@ -1,19 +1,19 @@
 import 'dart:io';
 
-import 'package:cheers/screens/blocked_account_screen.dart';
-import 'package:cheers/screens/welcome_screen.dart';
-import 'package:cheers/screens/home_screen.dart';
-import 'package:cheers/screens/update_location_sceen.dart';
+import 'package:datecinity/screens/blocked_account_screen.dart';
+import 'package:datecinity/screens/welcome_screen.dart';
+import 'package:datecinity/screens/home_screen.dart';
+import 'package:datecinity/screens/update_location_sceen.dart';
 import 'package:flutter/material.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/screens/update_app_screen.dart';
-import 'package:cheers/widgets/app_logo.dart';
-import 'package:cheers/widgets/my_circular_progress.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/multi_step_sign_up_screen.dart';
-import 'package:cheers/screens/sign_in_screen.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/helpers/app_helper.dart';
+import 'package:datecinity/screens/update_app_screen.dart';
+import 'package:datecinity/widgets/app_logo.dart';
+import 'package:datecinity/widgets/my_circular_progress.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/multi_step_sign_up_screen.dart';
+import 'package:datecinity/screens/sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

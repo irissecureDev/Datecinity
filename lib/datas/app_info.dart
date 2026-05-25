@@ -1,4 +1,4 @@
-import 'package:cheers/constants/constants.dart';
+import 'package:datecinity/constants/constants.dart';
 
 class AppInfo {
   /// Variables

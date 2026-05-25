@@ -1,14 +1,14 @@
-import 'package:cheers/api/dislikes_api.dart';
-import 'package:cheers/api/likes_api.dart';
-import 'package:cheers/api/matches_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/dialogs/its_match_dialog.dart';
-import 'package:cheers/dialogs/report_dialog.dart';
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/widgets/show_scaffold_msg.dart';
+import 'package:datecinity/api/dislikes_api.dart';
+import 'package:datecinity/api/likes_api.dart';
+import 'package:datecinity/api/matches_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/dialogs/its_match_dialog.dart';
+import 'package:datecinity/dialogs/report_dialog.dart';
+import 'package:datecinity/helpers/app_helper.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/widgets/show_scaffold_msg.dart';
 
 import 'package:flutter/material.dart';
 import 'dart:ui'; // For ImageFilter

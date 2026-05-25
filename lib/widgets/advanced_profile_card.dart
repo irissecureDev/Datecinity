@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/widgets/compatibility_score_widget.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/widgets/compatibility_score_widget.dart';
 
 /// Widget de carte de profil avancée pour les suggestions
 ///

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:cheers/services/background_suggestions_service.dart';
-import 'package:cheers/models/user_model.dart';
+import 'package:datecinity/services/background_suggestions_service.dart';
+import 'package:datecinity/models/user_model.dart';
 
 /// Configuration et initialisation du service de suggestions en arrière-plan
 class BackgroundServiceConfig {

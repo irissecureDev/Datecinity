@@ -1,6 +1,6 @@
-import 'package:cheers/dialogs/vip_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/widgets/default_card_border.dart';
+import 'package:datecinity/dialogs/vip_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 
 class VipAccountCard extends StatelessWidget {

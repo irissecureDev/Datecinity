@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/models/nearby_place.dart';
+import 'package:datecinity/models/nearby_place.dart';
 
 /// Activity level for a place
 enum ActivityLevel { calm, moderate, busy }

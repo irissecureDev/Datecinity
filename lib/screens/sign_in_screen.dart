@@ -1,8 +1,8 @@
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/screens/phone_number_screen.dart';
-import 'package:cheers/widgets/app_logo.dart';
-import 'package:cheers/widgets/default_button.dart';
-import 'package:cheers/widgets/terms_of_service_row.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/screens/phone_number_screen.dart';
+import 'package:datecinity/widgets/app_logo.dart';
+import 'package:datecinity/widgets/default_button.dart';
+import 'package:datecinity/widgets/terms_of_service_row.dart';
 import 'package:flutter/material.dart';
 
 class SignInScreen extends StatefulWidget {

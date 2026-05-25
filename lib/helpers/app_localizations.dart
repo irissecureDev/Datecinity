@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cheers/constants/constants.dart';
+import 'package:datecinity/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

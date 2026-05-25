@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/services/suggestions_service.dart';
-import 'package:cheers/services/suggestions_notifications_service.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/services/suggestions_service.dart';
+import 'package:datecinity/services/suggestions_notifications_service.dart';
 
 /// Service en arrière-plan pour les suggestions intelligentes
 ///

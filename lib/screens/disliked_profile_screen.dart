@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/api/dislikes_api.dart';
-import 'package:cheers/api/visits_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/dialogs/vip_dialog.dart';
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/profile_screen.dart';
-import 'package:cheers/widgets/build_title.dart';
-import 'package:cheers/widgets/loading_card.dart';
-import 'package:cheers/widgets/no_data.dart';
-import 'package:cheers/widgets/processing.dart';
-import 'package:cheers/widgets/profile_card.dart';
-import 'package:cheers/widgets/users_grid.dart';
+import 'package:datecinity/api/dislikes_api.dart';
+import 'package:datecinity/api/visits_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/dialogs/vip_dialog.dart';
+import 'package:datecinity/helpers/app_helper.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/profile_screen.dart';
+import 'package:datecinity/widgets/build_title.dart';
+import 'package:datecinity/widgets/loading_card.dart';
+import 'package:datecinity/widgets/no_data.dart';
+import 'package:datecinity/widgets/processing.dart';
+import 'package:datecinity/widgets/profile_card.dart';
+import 'package:datecinity/widgets/users_grid.dart';
 import 'package:flutter/material.dart';
 
 class DislikedProfilesScreen extends StatefulWidget {

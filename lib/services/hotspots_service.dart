@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/models/hotspot.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/models/hotspot.dart';
 
 /// Service pour détecter et gérer les zones de concentration d'utilisateurs (hotspots)
 class HotspotsService {

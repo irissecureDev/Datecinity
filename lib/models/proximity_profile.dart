@@ -1,4 +1,4 @@
-import 'package:cheers/datas/user.dart';
+import 'package:datecinity/datas/user.dart';
 
 /// Modèle pour gérer les profils détectés à proximité avec expiration automatique
 class ProximityProfile {

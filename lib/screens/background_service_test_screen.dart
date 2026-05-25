@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/services/background_suggestions_service.dart';
-import 'package:cheers/services/background_service_config.dart';
-import 'package:cheers/screens/background_service_screen.dart';
-import 'package:cheers/widgets/background_service_floating_button.dart';
+import 'package:datecinity/services/background_suggestions_service.dart';
+import 'package:datecinity/services/background_service_config.dart';
+import 'package:datecinity/screens/background_service_screen.dart';
+import 'package:datecinity/widgets/background_service_floating_button.dart';
 
 /// Écran de test et démonstration du service en arrière-plan
 ///

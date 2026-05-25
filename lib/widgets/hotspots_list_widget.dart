@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/models/hotspot.dart';
-import 'package:cheers/services/hotspots_service.dart';
+import 'package:datecinity/models/hotspot.dart';
+import 'package:datecinity/services/hotspots_service.dart';
 
 /// Widget pour afficher la liste des lieux populaires (hotspots)
 class HotspotsListWidget extends StatefulWidget {

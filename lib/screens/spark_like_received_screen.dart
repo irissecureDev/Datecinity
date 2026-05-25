@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
-import 'package:cheers/widgets/spark_theme.dart';
-import 'package:cheers/models/spark.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/services/spark_service.dart';
-import 'package:cheers/screens/spark_match_success_screen.dart';
+import 'package:datecinity/widgets/spark_theme.dart';
+import 'package:datecinity/models/spark.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/services/spark_service.dart';
+import 'package:datecinity/screens/spark_match_success_screen.dart';
 
 /// Écran affiché quand l'utilisateur reçoit un like d'un Spark
 /// Affiche un cœur, les deux photos floues, et un bouton "SWIPE TO ADD"

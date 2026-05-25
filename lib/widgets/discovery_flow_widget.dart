@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/models/discovery_state.dart';
-import 'package:cheers/screens/chat_screen.dart';
-import 'package:cheers/services/spark_service.dart';
-import 'package:cheers/services/suggestions_service.dart';
-import 'package:cheers/widgets/discovery_animations.dart';
+import 'package:datecinity/models/discovery_state.dart';
+import 'package:datecinity/screens/chat_screen.dart';
+import 'package:datecinity/services/spark_service.dart';
+import 'package:datecinity/services/suggestions_service.dart';
+import 'package:datecinity/widgets/discovery_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

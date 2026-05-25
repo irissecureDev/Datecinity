@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/plugins/locationpicker/entities/localization_item.dart';
-import 'package:cheers/plugins/locationpicker/place_picker.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/plugins/locationpicker/entities/localization_item.dart';
+import 'package:datecinity/plugins/locationpicker/place_picker.dart';
 import 'package:flutter/material.dart';
 
 class PassportScreen extends StatelessWidget {

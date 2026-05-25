@@ -1,13 +1,13 @@
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/dialogs/progress_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/plugins/otp_screen/otp_screen.dart';
-import 'package:cheers/screens/welcome_screen.dart';
-import 'package:cheers/screens/home_screen.dart';
-import 'package:cheers/screens/multi_step_sign_up_screen.dart';
-import 'package:cheers/screens/update_location_sceen.dart';
-import 'package:cheers/widgets/svg_icon.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/dialogs/progress_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/plugins/otp_screen/otp_screen.dart';
+import 'package:datecinity/screens/welcome_screen.dart';
+import 'package:datecinity/screens/home_screen.dart';
+import 'package:datecinity/screens/multi_step_sign_up_screen.dart';
+import 'package:datecinity/screens/update_location_sceen.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class VerificationCodeScreen extends StatefulWidget {

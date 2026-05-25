@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:cheers/api/blocked_users_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/dialogs/flag_user_dialog.dart';
-import 'package:cheers/dialogs/progress_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/main.dart';
-import 'package:cheers/widgets/show_scaffold_msg.dart';
+import 'package:datecinity/api/blocked_users_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/dialogs/flag_user_dialog.dart';
+import 'package:datecinity/dialogs/progress_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/main.dart';
+import 'package:datecinity/widgets/show_scaffold_msg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

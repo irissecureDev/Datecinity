@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/datas/user.dart';
+import 'package:datecinity/datas/user.dart';
 
 /// Type de hotspot selon le nombre d'utilisateurs
 enum HotspotType {

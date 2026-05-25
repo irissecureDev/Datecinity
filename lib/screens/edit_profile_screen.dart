@@ -1,13 +1,13 @@
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/dialogs/progress_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/profile_screen.dart';
-import 'package:cheers/widgets/image_source_sheet.dart';
-import 'package:cheers/widgets/svg_icon.dart';
-import 'package:cheers/widgets/user_gallery.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/dialogs/progress_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/profile_screen.dart';
+import 'package:datecinity/widgets/image_source_sheet.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
+import 'package:datecinity/widgets/user_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 

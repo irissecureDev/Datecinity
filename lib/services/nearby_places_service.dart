@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:cheers/models/nearby_place.dart';
-import 'package:cheers/constants/constants.dart';
+import 'package:datecinity/models/nearby_place.dart';
+import 'package:datecinity/constants/constants.dart';
 
 /// Service pour récupérer les lieux à proximité via Google Places API
 class NearbyPlacesService {

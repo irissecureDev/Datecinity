@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:cheers/widgets/spark_theme.dart';
-import 'package:cheers/screens/spark_forming_screen.dart';
-import 'package:cheers/services/spark_service.dart';
-import 'package:cheers/models/spark.dart';
+import 'package:datecinity/widgets/spark_theme.dart';
+import 'package:datecinity/screens/spark_forming_screen.dart';
+import 'package:datecinity/services/spark_service.dart';
+import 'package:datecinity/models/spark.dart';
 
 /// Écran "Detecting Proximity..." - Animation de recherche de sparks
 class SparkDetectingScreen extends StatefulWidget {

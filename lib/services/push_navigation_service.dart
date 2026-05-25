@@ -1,5 +1,5 @@
-import 'package:cheers/screens/home_screen.dart';
-import 'package:cheers/services/foreground_push_service.dart';
+import 'package:datecinity/screens/home_screen.dart';
+import 'package:datecinity/services/foreground_push_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

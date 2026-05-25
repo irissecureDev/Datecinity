@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:cheers/api/notifications_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/services/suggestions_service.dart';
+import 'package:datecinity/api/notifications_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/services/suggestions_service.dart';
 
 /// Service de notifications intelligentes pour les suggestions de profils
 ///

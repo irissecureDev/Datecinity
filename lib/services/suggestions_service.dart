@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/models/proximity_profile.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/models/proximity_profile.dart';
 import 'package:flutter/foundation.dart';
 
 /// Service pour gérer les suggestions de profils proches et compatibles

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:cheers/screens/complete_profile_screen.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/constants/constants.dart';
+import 'package:datecinity/screens/complete_profile_screen.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/constants/constants.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

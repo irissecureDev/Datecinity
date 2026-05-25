@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/helpers/app_localizations.dart';
+import 'package:datecinity/helpers/app_helper.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class TermsOfServiceRow extends StatelessWidget {

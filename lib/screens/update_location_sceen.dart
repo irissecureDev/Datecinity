@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/dialogs/progress_dialog.dart';
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/welcome_screen.dart';
-import 'package:cheers/widgets/default_button.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/dialogs/progress_dialog.dart';
+import 'package:datecinity/helpers/app_helper.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/welcome_screen.dart';
+import 'package:datecinity/widgets/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';

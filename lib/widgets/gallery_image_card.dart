@@ -1,10 +1,10 @@
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/dialogs/progress_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/widgets/default_card_border.dart';
-import 'package:cheers/widgets/image_source_sheet.dart';
-import 'package:cheers/dialogs/vip_dialog.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/dialogs/progress_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/widgets/default_card_border.dart';
+import 'package:datecinity/widgets/image_source_sheet.dart';
+import 'package:datecinity/dialogs/vip_dialog.dart';
 import 'package:flutter/material.dart';
 
 class GalleryImageCard extends StatelessWidget {

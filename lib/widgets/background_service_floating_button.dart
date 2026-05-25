@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/services/background_suggestions_service.dart';
-import 'package:cheers/screens/background_service_screen.dart';
+import 'package:datecinity/services/background_suggestions_service.dart';
+import 'package:datecinity/screens/background_service_screen.dart';
 
 /// Widget de bouton flottant pour accéder rapidement au service en arrière-plan
 class BackgroundServiceFloatingButton extends StatefulWidget {

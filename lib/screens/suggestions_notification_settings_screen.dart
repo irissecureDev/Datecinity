@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/services/suggestions_notifications_service.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/services/suggestions_notifications_service.dart';
 
 /// Interface de paramètres pour les notifications intelligentes de suggestions
 ///

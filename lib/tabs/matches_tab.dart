@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:cheers/models/hotspot.dart';
-import 'package:cheers/models/nearby_place.dart';
-import 'package:cheers/services/hotspots_service.dart';
-import 'package:cheers/services/nearby_places_service.dart';
-import 'package:cheers/widgets/hotspots_map_widget.dart';
-import 'package:cheers/widgets/nearby_places_list_widget.dart';
-import 'package:cheers/widgets/processing.dart';
+import 'package:datecinity/models/hotspot.dart';
+import 'package:datecinity/models/nearby_place.dart';
+import 'package:datecinity/services/hotspots_service.dart';
+import 'package:datecinity/services/nearby_places_service.dart';
+import 'package:datecinity/widgets/hotspots_map_widget.dart';
+import 'package:datecinity/widgets/nearby_places_list_widget.dart';
+import 'package:datecinity/widgets/processing.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Matches tab with hotspots and nearby places logic

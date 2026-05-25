@@ -1,4 +1,4 @@
-import 'package:cheers/services/suggestions_service.dart';
+import 'package:datecinity/services/suggestions_service.dart';
 import 'package:flutter/material.dart';
 
 /// Widget de test pour le service de suggestions

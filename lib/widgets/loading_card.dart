@@ -1,5 +1,5 @@
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/widgets/default_card_border.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/widgets/default_card_border.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

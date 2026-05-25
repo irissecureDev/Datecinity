@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cheers/datas/user.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/services/suggestions_service.dart';
-import 'package:cheers/widgets/advanced_profile_card.dart';
-import 'package:cheers/widgets/no_data.dart';
-import 'package:cheers/widgets/processing.dart';
+import 'package:datecinity/datas/user.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/services/suggestions_service.dart';
+import 'package:datecinity/widgets/advanced_profile_card.dart';
+import 'package:datecinity/widgets/no_data.dart';
+import 'package:datecinity/widgets/processing.dart';
 
 /// Interface utilisateur avancée pour afficher les suggestions de profils
 ///

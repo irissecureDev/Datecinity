@@ -1,4 +1,4 @@
-import 'package:cheers/models/proximity_profile.dart';
+import 'package:datecinity/models/proximity_profile.dart';
 
 enum DiscoveryStep {
   proximityDetected, // Notification et bouton click-to-match

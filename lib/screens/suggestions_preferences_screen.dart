@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cheers/models/user_model.dart';
+import 'package:datecinity/models/user_model.dart';
 
 /// Écran de paramètres des préférences de suggestions
 /// 

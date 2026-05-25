@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:cheers/helpers/app_helper.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/screens/about_us_screen.dart';
-import 'package:cheers/widgets/default_card_border.dart';
-import 'package:cheers/widgets/svg_icon.dart';
+import 'package:datecinity/helpers/app_helper.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/screens/about_us_screen.dart';
+import 'package:datecinity/widgets/default_card_border.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 class AppSectionCard extends StatelessWidget {

@@ -1,13 +1,13 @@
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/dialogs/show_me_dialog.dart';
-// import 'package:cheers/dialogs/vip_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/app_model.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/plugins/locationpicker/place_picker.dart';
-// import 'package:cheers/screens/passport_screen.dart';
-import 'package:cheers/widgets/show_scaffold_msg.dart';
-import 'package:cheers/widgets/svg_icon.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/dialogs/show_me_dialog.dart';
+// import 'package:datecinity/dialogs/vip_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/app_model.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/plugins/locationpicker/place_picker.dart';
+// import 'package:datecinity/screens/passport_screen.dart';
+import 'package:datecinity/widgets/show_scaffold_msg.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 

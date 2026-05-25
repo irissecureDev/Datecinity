@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:cheers/widgets/spark_theme.dart';
-import 'package:cheers/models/spark.dart';
-import 'package:cheers/screens/spark_compatibility_intro_video_screen.dart';
+import 'package:datecinity/widgets/spark_theme.dart';
+import 'package:datecinity/models/spark.dart';
+import 'package:datecinity/screens/spark_compatibility_intro_video_screen.dart';
 
 /// Écran de profil Spark - Affiche le profil de la personne avec countdown
 class SparkProfileScreen extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:cheers/widgets/spark_theme.dart';
-import 'package:cheers/models/spark.dart';
-import 'package:cheers/screens/chat_screen.dart';
+import 'package:datecinity/widgets/spark_theme.dart';
+import 'package:datecinity/models/spark.dart';
+import 'package:datecinity/screens/chat_screen.dart';
 
 /// Écran "Your Spark has become a Flame" - Match confirmé !
 class SparkMatchSuccessScreen extends StatefulWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:cheers/models/hotspot.dart';
-import 'package:cheers/models/nearby_place.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/services/hotspots_service.dart';
+import 'package:datecinity/models/hotspot.dart';
+import 'package:datecinity/models/nearby_place.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/services/hotspots_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Map widget to display hotspots, nearby places and user position

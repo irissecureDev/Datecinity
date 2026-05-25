@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/datas/preferences_question.dart';
-import 'package:cheers/api/preferences_questions_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/datas/preferences_question.dart';
+import 'package:datecinity/api/preferences_questions_api.dart';
 
 /// API to handle user preference answers validation and management
 class PreferencesAnswersApi {

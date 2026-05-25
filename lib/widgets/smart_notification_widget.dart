@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/api/notifications_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/screens/notifications_screen.dart';
+import 'package:datecinity/api/notifications_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/screens/notifications_screen.dart';
 
 /// Widget de notification intelligent pour l'écran principal
 ///

@@ -1,6 +1,6 @@
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/screens/delete_account_screen.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/screens/delete_account_screen.dart';
 import 'package:flutter/material.dart';
 
 class DeleteAccountButton extends StatelessWidget {

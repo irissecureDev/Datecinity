@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:cheers/api/preferences_questions_api.dart';
-import 'package:cheers/api/preferences_answers_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/datas/preferences_question.dart';
-import 'package:cheers/datas/preferences_answer.dart';
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/dialogs/progress_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
-import 'package:cheers/screens/home_screen.dart';
+import 'package:datecinity/api/preferences_questions_api.dart';
+import 'package:datecinity/api/preferences_answers_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/datas/preferences_question.dart';
+import 'package:datecinity/datas/preferences_answer.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/dialogs/progress_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
+import 'package:datecinity/screens/home_screen.dart';
 
 /// Refactored CompleteProfileScreen with TabBar for 7 sections
 /// Supports 4 question types: single, multi, ranking, rating

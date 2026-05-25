@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cheers/api/notifications_api.dart';
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/dialogs/common_dialogs.dart';
-import 'package:cheers/dialogs/progress_dialog.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/helpers/app_notifications.dart';
-import 'package:cheers/widgets/custom_badge.dart';
-import 'package:cheers/widgets/no_data.dart';
-import 'package:cheers/widgets/processing.dart';
-import 'package:cheers/widgets/svg_icon.dart';
+import 'package:datecinity/api/notifications_api.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/dialogs/common_dialogs.dart';
+import 'package:datecinity/dialogs/progress_dialog.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/helpers/app_notifications.dart';
+import 'package:datecinity/widgets/custom_badge.dart';
+import 'package:datecinity/widgets/no_data.dart';
+import 'package:datecinity/widgets/processing.dart';
+import 'package:datecinity/widgets/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

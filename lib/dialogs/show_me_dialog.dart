@@ -1,6 +1,6 @@
-import 'package:cheers/constants/constants.dart';
-import 'package:cheers/helpers/app_localizations.dart';
-import 'package:cheers/models/user_model.dart';
+import 'package:datecinity/constants/constants.dart';
+import 'package:datecinity/helpers/app_localizations.dart';
+import 'package:datecinity/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ShowMeDialog extends StatefulWidget {

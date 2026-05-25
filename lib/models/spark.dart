@@ -1,4 +1,4 @@
-import 'package:cheers/datas/user.dart';
+import 'package:datecinity/datas/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Modèle pour gérer les "Sparks" - matches de proximité avec compte à rebours
