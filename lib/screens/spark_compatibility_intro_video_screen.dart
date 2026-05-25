@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:datecinity/models/spark.dart';
 import 'package:datecinity/screens/spark_compatibility_screen.dart';
 import 'package:datecinity/widgets/spark_theme.dart';
@@ -16,32 +17,50 @@ class SparkCompatibilityIntroVideoScreen extends StatefulWidget {
 
 class _SparkCompatibilityIntroVideoScreenState
     extends State<SparkCompatibilityIntroVideoScreen> {
-  late final YoutubePlayerController _controller;
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
+  bool _initialized = false;
+
+  static const _firebaseVideoUrl =
+      'https://firebasestorage.googleapis.com/v0/b/soulemate-e3cc5.firebasestorage.app/o/uploads%2FVideos%2Fintro_video.mp4?alt=media&token=3ee987ae-adff-473e-ba7d-fb23d9f99864';
 
   @override
   void initState() {
     super.initState();
-    _controller = YoutubePlayerController.fromVideoId(
-      videoId: 'e6L97wfq-MQ',
-      autoPlay: true,
-      params: const YoutubePlayerParams(
-        showControls: true,
-        showFullscreenButton: true,
-        strictRelatedVideos: true,
-        enableCaption: false,
-      ),
+    _initializePlayer();
+  }
+
+  Future<void> _initializePlayer() async {
+    _videoPlayerController = VideoPlayerController.networkUrl(
+      Uri.parse(_firebaseVideoUrl),
     );
 
-    _controller.stream.listen((value) {
-      if (value.playerState == PlayerState.ended && mounted) {
+    await _videoPlayerController!.initialize();
+
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController!,
+      autoPlay: true,
+      looping: false,
+      allowFullScreen: true,
+      showControls: false,
+      placeholder: Container(color: Colors.black),
+    );
+
+    _videoPlayerController!.addListener(() {
+      if (_videoPlayerController!.value.position >=
+              _videoPlayerController!.value.duration &&
+          mounted) {
         _goToCompatibilityTest();
       }
     });
+
+    if (mounted) setState(() => _initialized = true);
   }
 
   @override
   void dispose() {
-    _controller.close();
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 
@@ -107,7 +126,13 @@ class _SparkCompatibilityIntroVideoScreenState
                       borderRadius: BorderRadius.circular(18),
                       child: AspectRatio(
                         aspectRatio: 9 / 16,
-                        child: YoutubePlayer(controller: _controller),
+                        child: _initialized && _chewieController != null
+                            ? Chewie(controller: _chewieController!)
+                            : const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ),
