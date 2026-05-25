@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:datecinity/screens/complete_profile_screen.dart';
 import 'package:datecinity/models/user_model.dart';
 import 'package:datecinity/constants/constants.dart';
@@ -13,55 +14,46 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  WebViewController? _controller;
-  bool _pageLoaded = false;
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
+  bool _videoInitialized = false;
   bool _navigating = false;
-  Timer? _fallbackTimer;
 
   static const _bgColor = Color(0xFF0D001A);
   static const _accentColor = Color(0xFFFA7E45);
 
-  // Mobile Safari UA so YouTube renders its full mobile player
-  static const _userAgent =
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) '
-      'AppleWebKit/605.1.15 (KHTML, like Gecko) '
-      'Version/17.0 Mobile/15E148 Safari/604.1';
-
-  static const _videoUrl = 'https://www.youtube.com/shorts/e6L97wfq-MQ';
+  static const _firebaseVideoUrl =
+      'https://firebasestorage.googleapis.com/v0/b/soulemate-e3cc5.firebasestorage.app/o/uploads%2FVideos%2Fintro_video.mp4?alt=media&token=3ee987ae-adff-473e-ba7d-fb23d9f99864';
 
   @override
   void initState() {
     super.initState();
-    // Fallback: always show button after 4 s even if the video never loads
-    _fallbackTimer = Timer(const Duration(seconds: 4), () {
-      if (mounted && !_pageLoaded) setState(() => _pageLoaded = true);
-    });
-    // Defer WebView creation until after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final ctrl = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(Colors.black)
-        ..setUserAgent(_userAgent)
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onPageFinished: (_) {
-              if (mounted) setState(() => _pageLoaded = true);
-            },
-            onWebResourceError: (_) {
-              if (mounted) setState(() => _pageLoaded = true);
-            },
-          ),
-        )
-        ..loadRequest(Uri.parse(_videoUrl));
+    _initializePlayer();
+  }
 
-      if (mounted) setState(() => _controller = ctrl);
-    });
+  Future<void> _initializePlayer() async {
+    _videoPlayerController = VideoPlayerController.networkUrl(
+      Uri.parse(_firebaseVideoUrl),
+    );
+
+    await _videoPlayerController!.initialize();
+
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController!,
+      autoPlay: true,
+      looping: true,
+      showControls: false,
+      allowFullScreen: false,
+      placeholder: Container(color: Colors.black),
+    );
+
+    if (mounted) setState(() => _videoInitialized = true);
   }
 
   @override
   void dispose() {
-    _fallbackTimer?.cancel();
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 
@@ -78,7 +70,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           builder: (_) => const CompleteProfileScreen(showBackButton: true),
         ),
       );
-      // Reset flag so the button works again if the user comes back
       if (mounted) _navigating = false;
     }
   }
@@ -90,15 +81,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ── Video (YouTube Shorts page) ────────────────────────────────
-          if (_controller != null) WebViewWidget(controller: _controller!),
+          // ── Video (Firebase Storage MP4) ──────────────────────────────
+          if (_videoInitialized && _chewieController != null)
+            Chewie(controller: _chewieController!)
+          else
+            Container(color: _bgColor),
 
-          // ── Loading overlay ────────────────────────────────────────────
+          // ── Loading overlay ───────────────────────────────────────────
           AnimatedOpacity(
-            opacity: _pageLoaded ? 0.0 : 1.0,
+            opacity: _videoInitialized ? 0.0 : 1.0,
             duration: const Duration(milliseconds: 500),
             child: IgnorePointer(
-              ignoring: _pageLoaded,
+              ignoring: _videoInitialized,
               child: Container(
                 color: _bgColor,
                 child: Center(
@@ -125,12 +119,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
 
-          // ── Top gradient ───────────────────────────────────────────────
+          // ── Top gradient ──────────────────────────────────────────────
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 140,
+            top: 0, left: 0, right: 0, height: 140,
             child: IgnorePointer(
               child: Container(
                 decoration: const BoxDecoration(
@@ -144,12 +135,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
 
-          // ── Bottom gradient ────────────────────────────────────────────
+          // ── Bottom gradient ───────────────────────────────────────────
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 180,
+            bottom: 0, left: 0, right: 0, height: 180,
             child: IgnorePointer(
               child: Container(
                 decoration: const BoxDecoration(
@@ -163,11 +151,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
 
-          // ── Top bar: back + skip ───────────────────────────────────────
+          // ── Top bar: skip ─────────────────────────────────────────────
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
+            top: 0, left: 0, right: 0,
             child: SafeArea(
               bottom: false,
               child: Padding(
@@ -183,17 +169,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
 
-          // ── Bottom CTA ─────────────────────────────────────────────────
+          // ── Bottom CTA ────────────────────────────────────────────────
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+            bottom: 0, left: 0, right: 0,
             child: SafeArea(
               top: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
                 child: AnimatedOpacity(
-                  opacity: _pageLoaded ? 1.0 : 0.0,
+                  opacity: _videoInitialized ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 400),
                   child: GestureDetector(
                     onTap: _goToCompatibilityQuiz,
@@ -230,35 +214,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ── Shared small widgets ──────────────────────────────────────────────────────
-
-class _GlassIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _GlassIconButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.14),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withOpacity(0.22), width: 1),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 10),
-          ],
-        ),
-        child: Icon(icon, color: Colors.white, size: 18),
       ),
     );
   }
